@@ -13,6 +13,21 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->foreignId('company_id')->constrained();
+            $table->string('nit');
+            $table->string('nrc');
+            $table->foreignId('departamento_id')->constrained('departamentos');
+            $table->foreignId('distrito_id')->constrained('distritos');
+            $table->string('address');
+            $table->foreignId('economic_activity_id')->constrained('economic_activities');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('web');
+            $table->integer('prices_by_products')->default(2);
+            $table->json('logo')->nullable();
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListCategories extends ListRecords
 {
     protected static string $resource = CategoryResource::class;
-
+protected static    ?string $navigationIcon='as'; // Corregido el acento en "Categorías"
     protected function getHeaderActions(): array
     {
         return [

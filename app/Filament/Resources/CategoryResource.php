@@ -10,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoryResource extends Resource
 {
@@ -19,30 +17,43 @@ class CategoryResource extends Resource
     protected static  ?string $label= 'Categorías';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Almacén';
+    protected static ?string $recordTitleAttribute = 'name';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('parent_id')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+                Forms\Components\Section::make('Información de la categoría')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Categoría de producto') // Corregido el acento en "producto"
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\BelongsToSelect::make('parent_id')
+                            ->relationship('category', 'name')
+                            ->nullable()
+                            ->placeholder('Seleccione una categoría')
+                            ->preload()
+                            ->searchable()
+                            ->label('Categoría padre'),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Activo') // Agregué un label para darle más claridad al toggle
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Categoría de producto') // Corregido el acento en "producto"
                     ->searchable(),
-                Tables\Columns\TextColumn::make('parent_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Categoría padre')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
@@ -59,7 +70,11 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+               Tables\actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

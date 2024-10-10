@@ -18,23 +18,30 @@ class MarcaResource extends Resource
     protected static ?string $model = Marca::class;
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected  static bool $softDelete = true;
-    protected static ?string $navigationGroup="Almacén";
+    protected static bool $softDelete = true;
+    protected static ?string $navigationGroup = "Almacén";
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('descripcion')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('imagen')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('estado')
-                    ->required(),
+                Forms\Components\Section::make('Información de Marca de prodúctos')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('descripcion')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('imagen')
+                            ->image()
+                            ->directory('marcas'),
+
+                        Forms\Components\Toggle::make('estado')
+                            ->default(true)
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
 
@@ -46,8 +53,10 @@ class MarcaResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('descripcion')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('imagen')
-                    ->searchable(),
+                Tables\Columns\ImageColumn::make('imagen')
+                    ->placeholder('Sin imagen')
+
+                    ->circular(),
                 Tables\Columns\IconColumn::make('estado')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
