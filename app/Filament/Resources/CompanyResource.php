@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
+use App\Models\Distrito;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -25,49 +26,99 @@ class CompanyResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nrc')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nit')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('whatsapp')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('logo')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('economic_activity')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('country')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('departamento_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('distrito_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('web')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('api_key')
-                    ->maxLength(255)
-                    ->default(null),
+                Forms\Components\Section::make('Información General')
+//                    ->compact()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Empresa')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('logo')
+                            ->directory('configuracion')
+                            ->avatar()
+                            ->imageEditor()
+                            ->inlineLabel(),
+                        Forms\Components\TextInput::make('nrc')
+                            ->label('No Regisro')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('nit')
+                            ->label('NIT')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone')
+                            ->tel()
+                            ->label('Teléfono')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('whatsapp')
+                            ->required()
+                            ->label('WhatsApp')
+                            ->inlineLabel()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->label('Correo')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\BelongsToSelect::make('economic_activity_id')
+                            ->relationship('economic_activity', 'description')
+                            ->required()
+                            ->preload()
+                            ->inlineLabel()
+                            ->searchable()
+                            ->label('Rubro')
+                            ->inlineLabel(),
+                        Forms\Components\BelongsToSelect::make('country_id')
+                            ->required()
+                            ->inlineLabel()
+                            ->relationship('country', 'name')
+                            ->preload()
+                            ->searchable(),
+                        Forms\Components\BelongsToSelect::make('departamento_id')
+                            ->relationship('departamento', 'name')
+                            ->afterStateUpdated(function ($state, $set) {
+                                $set('distrito_id', null);
+                            })
+                            ->preload()
+                            ->inlineLabel()
+                            ->searchable()
+                            ->required(),
+                        Forms\Components\BelongsToSelect::make('distrito_id')
+                            ->relationship('distrito', 'name')
+                            ->required()
+                            ->inlineLabel()
+                            ->options(function(callable $get){
+                                $departamentoID=$get('departamento_id');
+                                if(!$departamentoID){
+                                    return [];
+                                }
+                                return Distrito::where('departamento_id',$departamentoID)->pluck('name','id');
+                            })
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\TextInput::make('address')
+                            ->required()
+                            ->inlineLabel()
+
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('web')
+                            ->required()
+                            ->inlineLabel()
+
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('api_key')
+                            ->maxLength(255)
+                            ->inlineLabel()
+
+                            ->default(null),
+                    ])->columns(2)
             ]);
     }
 
@@ -83,28 +134,28 @@ class CompanyResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('whatsapp')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('economic_activity')
+//                Tables\Columns\TextColumn::make('whatsapp')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('email')
+//                    ->searchable(),
+                Tables\Columns\TextColumn::make('economic_activity.description')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('country')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('departamento_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('distrito_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+                    ->wrap()
+                    ->sortable(),   Tables\Columns\TextColumn::make('departamento.name')
+//                    ->numeric()
+//                    ->sortable(),
+//                Tables\Columns\TextColumn::make('distrito.name')
+//                    ->sortable(),
+//                Tables\Columns\TextColumn::make('address')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('country.name')
+//                    ->numeric()
+//                    ->sortable(),
+//
                 Tables\Columns\TextColumn::make('web')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('api_key')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('api_key')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -138,7 +189,7 @@ class CompanyResource extends Resource
     {
         return [
             'index' => Pages\ListCompanies::route('/'),
-            'create' => Pages\CreateCompany::route('/create'),
+//            'create' => Pages\CreateCompany::route('/create'),
             'edit' => Pages\EditCompany::route('/{record}/edit'),
         ];
     }

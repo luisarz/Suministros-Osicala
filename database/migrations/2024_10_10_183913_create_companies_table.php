@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('whatsapp');
             $table->string('email');
             $table->json('logo')->nullable();
-            $table->foreignId('economic_activity')->constrained('economic_activities');
-            $table->foreignId('country')->constrained('countries');
+            $table->foreignId('economic_activity_id')->constrained('economic_activities');
+            $table->foreignId('country_id')->constrained('countries');
             $table->foreignId('departamento_id')->constrained('departamentos');
             $table->foreignId('distrito_id')->constrained('distritos');
             $table->string('address');
