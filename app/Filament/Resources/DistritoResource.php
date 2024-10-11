@@ -19,7 +19,7 @@ class DistritoResource extends Resource
 {
     protected static ?string $model = Distrito::class;
 
-    protected static  ?string $label= 'Distritos';
+    protected static  ?string $label= 'Municipios';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Configuración';
 
@@ -27,20 +27,25 @@ class DistritoResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->label('Nombre distrito')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\BelongsToSelect::make('departamento_id')
-                    ->relationship('departamento', 'name')
-                    ->label('Departamento')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                Forms\Components\Section::make('Información del Municipio')
+                    ->compact()
+                    ->schema([
+                        Forms\Components\TextInput::make('code')
+                            ->label('Código')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Municipio')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('departamento_id')
+                            ->relationship('departamento', 'name')
+                            ->inlineLabel()
+                            ->required()
+                            ->columnSpanFull()
+                            ->preload()
+                            ->searchable(),
+                    ]),
 
             ]);
     }
@@ -52,6 +57,7 @@ class DistritoResource extends Resource
                 Tables\Columns\TextColumn::make('code')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Municipio')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('departamento.name')
                     ->sortable(),
@@ -98,8 +104,8 @@ class DistritoResource extends Resource
     {
         return [
             'index' => Pages\ListDistritos::route('/'),
-//            'create' => Pages\CreateDistrito::route('/create'),
-//            'edit' => Pages\EditDistrito::route('/{record}/edit'),
+            'create' => Pages\CreateDistrito::route('/create'),
+            'edit' => Pages\EditDistrito::route('/{record}/edit'),
         ];
     }
 }

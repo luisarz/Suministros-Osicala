@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('prices_by_products')->default(2);
             $table->json('logo')->nullable();
             $table->boolean('is_active')->default(true);
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Filament\Resources\BranchResource\RelationManagers;
 use App\Models\Branch;
+use App\Models\Distrito;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,54 +19,104 @@ class BranchResource extends Resource
     protected static ?string $model = Branch::class;
     protected static ?string $label = 'Sucursales';
     protected static ?string $navigationGroup = 'Configuración';
+    protected static ?int $navigationSort = 1;
+
+    public static function getActions(): array
+    {
+        return [];
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('nit')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nrc')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('departamento_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('distrito_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('economic_activity_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('web')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('prices_by_products')
-                    ->required()
-                    ->numeric()
-                    ->default(2),
-                Forms\Components\Textarea::make('logo')
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+                Forms\Components\Section::make('Informacion del producto')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nombre Sucursal')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('company_id')
+                            ->relationship('company', 'name')
+                            ->inlineLabel()
+                            ->required()
+                            ->preload()
+                            ->searchable(),
+                        Forms\Components\TextInput::make('nrc')
+                            ->label('NRC')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('nit')
+                            ->label('NIT')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\Select::make('departamento_id')
+                            ->relationship('departamento', 'name')
+                            ->afterStateUpdated(function ($state, $set) {
+                                if ($state) {
+                                    $set('distrito_id', null);
+                                }
+                            })
+                            ->preload()
+                            ->inlineLabel()
+                            ->searchable()
+                            ->required(),
+
+                        Forms\Components\Select::make('distrito_id')
+                            ->relationship('distrito', 'name')
+                            ->label('Municipio')
+                            ->required()
+                            ->inlineLabel()
+                            ->options(function (callable $get) {
+                                $departamentoID = $get('departamento_id');
+                                if (!$departamentoID) {
+                                    return [];
+                                }
+                                return Distrito::where('departamento_id', $departamentoID)->pluck('name', 'id');
+                            })
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\Select::make('economic_activity_id')
+                            ->label('Actividad Economica')
+                            ->relationship('economicactivity', 'description')
+//                            ->inlineLabel()
+                            ->preload()
+                            ->searchable()
+                            ->columnSpanFull()
+                            ->columns(1)
+                            ->required(),
+                        Forms\Components\TextInput::make('address')
+                            ->label('Dirección')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Teléfono')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->label('Correo')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('web')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('prices_by_products')
+                            ->label('Precios por productos')
+                            ->required()
+                            ->numeric()
+                            ->default(2),
+                        Forms\Components\FileUpload::make('logo')
+                            ->directory('/productos')
+                            ->columnSpanFull(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->inlineLabel()
+                            ->label('Activo')
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
 
@@ -104,6 +155,10 @@ class BranchResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

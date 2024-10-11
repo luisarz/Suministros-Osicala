@@ -12,17 +12,21 @@ class Company extends Model
     protected $casts = [
         'logo' => 'array',
     ];
-    public function departamento()
+    public function departamento(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Departamento::class);
+        return $this->belongsTo(Departamento::class, 'departamento_id', 'id');
     }
-    public function economic_activity()
+    public function economicactivity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(EconomicActivity::class);
+        return $this->belongsTo(EconomicActivity::class, 'economic_activity_id', 'id');
     }
-    public function country()
+    public function distrito(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(Distrito::class, 'distrito_id', 'id');
+    }
+    public function country(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
     }
 
 

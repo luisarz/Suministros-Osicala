@@ -17,28 +17,27 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
-    protected static ?string $label = 'Conf. Global';
-    protected static ?bool $softDelete = true;
+    protected static ?string $label = 'Conf. Globales';
     protected static ?string $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 1;
-
+    public static function getActions(): array
+    {
+        return [];
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('Información General')
-//                    ->compact()
+                    ->compact()
                     ->schema([
+
                         Forms\Components\TextInput::make('name')
                             ->label('Empresa')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\FileUpload::make('logo')
-                            ->directory('configuracion')
-                            ->avatar()
-                            ->imageEditor()
-                            ->inlineLabel(),
+
                         Forms\Components\TextInput::make('nrc')
                             ->label('No Regisro')
                             ->inlineLabel()
@@ -67,57 +66,62 @@ class CompanyResource extends Resource
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\BelongsToSelect::make('economic_activity_id')
-                            ->relationship('economic_activity', 'description')
+                        Forms\Components\Select::make('economic_activity_id')
+                            ->relationship('economicactivity', 'description')
                             ->required()
                             ->preload()
-                            ->inlineLabel()
                             ->searchable()
                             ->label('Rubro')
                             ->inlineLabel(),
-                        Forms\Components\BelongsToSelect::make('country_id')
+                        Forms\Components\Select::make('country_id')
                             ->required()
                             ->inlineLabel()
                             ->relationship('country', 'name')
                             ->preload()
                             ->searchable(),
-                        Forms\Components\BelongsToSelect::make('departamento_id')
+                        Forms\Components\Select::make('departamento_id')
                             ->relationship('departamento', 'name')
                             ->afterStateUpdated(function ($state, $set) {
-                                $set('distrito_id', null);
+                                if ($state) {
+                                    $set('distrito_id', null);
+                                }
                             })
                             ->preload()
                             ->inlineLabel()
                             ->searchable()
                             ->required(),
-                        Forms\Components\BelongsToSelect::make('distrito_id')
+
+                        Forms\Components\Select::make('distrito_id')
                             ->relationship('distrito', 'name')
                             ->required()
                             ->inlineLabel()
-                            ->options(function(callable $get){
-                                $departamentoID=$get('departamento_id');
-                                if(!$departamentoID){
+                            ->options(function (callable $get) {
+                                $departamentoID = $get('departamento_id');
+                                if (!$departamentoID) {
                                     return [];
                                 }
-                                return Distrito::where('departamento_id',$departamentoID)->pluck('name','id');
+                                return Distrito::where('departamento_id', $departamentoID)->pluck('name', 'id');
                             })
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('address')
                             ->required()
                             ->inlineLabel()
-
                             ->maxLength(255),
                         Forms\Components\TextInput::make('web')
                             ->required()
                             ->inlineLabel()
-
                             ->maxLength(255),
                         Forms\Components\TextInput::make('api_key')
                             ->maxLength(255)
                             ->inlineLabel()
-
                             ->default(null),
+                        Forms\Components\FileUpload::make('logo')
+                            ->directory('/configuracion')
+                            ->avatar()
+                            ->imageEditor()
+                            ->inlineLabel()
+                        ->columnSpanFull(),
                     ])->columns(2)
             ]);
     }
@@ -126,6 +130,9 @@ class CompanyResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('logo')
+                    ->label('Logo')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nrc')
@@ -134,28 +141,15 @@ class CompanyResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('whatsapp')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('email')
-//                    ->searchable(),
-                Tables\Columns\TextColumn::make('economic_activity.description')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('economicactivity.description')
+                    ->color('primary')
+                    ->icon('heroicon-o-shield-check')
+                    ->iconPosition('before')
+                    ->label('Actividad Comercial')
                     ->wrap()
-                    ->sortable(),   Tables\Columns\TextColumn::make('departamento.name')
-//                    ->numeric()
-//                    ->sortable(),
-//                Tables\Columns\TextColumn::make('distrito.name')
-//                    ->sortable(),
-//                Tables\Columns\TextColumn::make('address')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('country.name')
-//                    ->numeric()
-//                    ->sortable(),
-//
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('web')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('api_key')
-//                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -173,7 +167,7 @@ class CompanyResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+//                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

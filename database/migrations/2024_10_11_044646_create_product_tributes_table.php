@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tributes', function (Blueprint $table) {
+        Schema::create('product_tributes', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('name');
-            $table->boolean('is_percentage')->default(false);
-            $table->decimal('rate', 10, 2)->default(0);
-            $table->boolean('is_active')->default(true);
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tribute_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tributes');
+        Schema::dropIfExists('product_tributes');
     }
 };

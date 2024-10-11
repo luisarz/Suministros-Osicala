@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UnitMeasurement extends Model
+class product_tribute extends Model
 {
     use HasFactory;
-    protected $fillable = ['code', 'description'];
 }

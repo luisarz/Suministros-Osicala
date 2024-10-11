@@ -67,8 +67,12 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
 //                SpotlightPlugin::make(),
             ])
+//            ->collapsedSidebarWidth('64px')
+                ->collapsibleNavigationGroups()
+
             ->navigationGroups([
                 NavigationGroup::make()
+
                     ->label('Almacén')
                     ->icon('heroicon-o-building-office')
                     ->collapsed(),
@@ -90,6 +94,10 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Configuración')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Catálogos')
                     ->icon('heroicon-o-cog-6-tooth')
                     ->collapsed(),
                 NavigationGroup::make()

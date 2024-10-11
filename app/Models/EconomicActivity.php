@@ -9,5 +9,8 @@ class EconomicActivity extends Model
 {
     use HasFactory;
     protected $fillable = ['code', 'description'];
-
+    public function companies(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Company::class, 'economic_activity_id', 'id');
+    }
 }

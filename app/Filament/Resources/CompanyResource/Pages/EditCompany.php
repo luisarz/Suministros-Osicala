@@ -13,7 +13,13 @@ class EditCompany extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+//            Actions\DeleteAction::make(),
         ];
     }
+    public function getRedirectUrl(): ?string
+    {
+        // Redirige al índice del recurso
+        return static::getResource()::getUrl('index');
+    }
+
 }
