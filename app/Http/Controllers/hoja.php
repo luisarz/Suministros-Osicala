@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\hoja1;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class hoja extends Controller
+{
+    //
+    public function ejecutar()
+    {
+        $productos = hoja1::all();
+        $items = [];
+
+        foreach ($productos as $producto) {
+            try {
+                $nuevo = new Product();
+                $nuevo->name = trim($producto->Produ);
+                $nuevo->aplications = "";
+                $nuevo->sku = trim($producto->sku);
+                $nuevo->bar_code = $producto->codigo_barras;
+                $nuevo->is_service = false;
+                $nuevo->category_id = ($producto->Linea == 0) ? 52 : $producto->Linea;
+                $nuevo->marca_id = ($producto->marca == 0) ? 49 : $producto->marca;
+                $nuevo->unit_measurement_id = 1;
+                $nuevo->is_taxed = true;
+                $nuevo->images = null;
+                $nuevo->is_active = true;
+                $nuevo->save();
+
+                //llenar el inventario y los precios de venta
+
+            } catch (\Exception $e) {
+                $items[] = $producto->id; // Use the actual product ID for tracking failures
+                // Log the error message for further analysis
+                Log::error("Failed to save product ID {$producto->id}: " . $e->getMessage());
+            }
+        }
+
+// Output any failed product IDs
+        if (!empty($items)) {
+            dd($items); // Output failed IDs after processing all products
+        }
+
+
+    }
+}

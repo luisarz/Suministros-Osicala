@@ -5,33 +5,49 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
+use Filament\Actions\RestoreAction;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-    protected static ?string $label = 'Productos';
+    protected static ?string $label = 'Prodúctos';
     protected static ?string $navigationGroup = 'Almacén';
-
+    protected static ?string $recordTitleAttribute = 'name';
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'sku', 'bar_code'];
+    }
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Prodúcto' => $record->name,
+            'sku' => $record->sku,
+            'Codigo de Barra' => $record->bar_code,
+        ];
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('Información del prodúcto')
+                    ->compact()
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nombre')
                             ->required()
+
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('description')
-                            ->label('Descripción'),
+                        Forms\Components\Textarea::make('aplications')
+                            ->label('Aplicaciones'),
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
                             ->maxLength(255)
@@ -59,16 +75,27 @@ class ProductResource extends Resource
                             ->searchable()
                             ->relationship('unitMeasurement', 'description')
                             ->required(),
-                        Forms\Components\MultiSelect::make('tribute_id')
-                            ->label('Impuestos')
-                            ->preload()
-                            ->searchable()
-                            ->relationship('tributes', 'name'),
-                        Forms\Components\Toggle::make('is_service')
-                            ->label('Es un servicio')
-                            ->required(),
-                        Forms\Components\Toggle::make('is_active')
-                            ->required(),
+//                        Forms\Components\MultiSelect::make('tribute_id')
+//                            ->label('Impuestos')
+//                            ->preload()
+//                            ->searchable()
+//                            ->relationship('tributes', 'name'),
+
+                        Forms\Components\Section::make('Configuración')
+                            ->schema([
+                                Forms\Components\Toggle::make('is_service')
+                                    ->label('Es un servicio')
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Activo')
+                                    ->default(true)
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_taxed')
+                                    ->label('Gravado')
+                                    ->default(true)
+                                    ->required(),
+                            ])->columns(3),
+
                         Forms\Components\FileUpload::make('images')
                             ->directory('products')
                             ->image()
@@ -90,19 +117,30 @@ class ProductResource extends Resource
                     ->openUrlInNewTab()
                 ->circular(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Producto')
+                    ->sortable()
                     ->wrap()
+                    ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? "<span style='text-decoration: line-through; color: red;'>$state</span>" :$state)
+                    ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('bar_code')
+                    ->label('C. Barras')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_service')
                     ->label('Servicios')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
+                Tables\Columns\IconColumn::make('is_taxed')
+                    ->label('Gravado')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
+                    ->label('Linea')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('marca.nombre')
                     ->numeric()
@@ -127,7 +165,11 @@ class ProductResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+            ]) ->paginationPageOptions([
+                5,10, 25, 50, 100 // Define your specific pagination limits here
             ])
+
             ->filters([
                 //
                 Tables\Filters\SelectFilter::make('category_id')
@@ -154,11 +196,14 @@ class ProductResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\DeleteAction::make(),])
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -178,4 +223,5 @@ class ProductResource extends Resource
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
+
 }

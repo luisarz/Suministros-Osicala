@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -30,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+
             ->path('admin')
 //            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
 
@@ -65,6 +67,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                GlobalSearchModalPlugin::make()
+
 //                SpotlightPlugin::make(),
             ])
 //            ->collapsedSidebarWidth('64px')
@@ -72,7 +76,6 @@ class AdminPanelProvider extends PanelProvider
 
             ->navigationGroups([
                 NavigationGroup::make()
-
                     ->label('Almacén')
                     ->icon('heroicon-o-building-office')
                     ->collapsed(),

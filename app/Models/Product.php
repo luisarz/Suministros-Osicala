@@ -12,19 +12,19 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'description', 'sku', 'bar_code', 'is_service', 'category_id',
-        'marca_id', 'unit_measurement_id', 'tribute_id', 'images', 'is_active'
+        'name', 'aplications', 'sku', 'bar_code', 'is_service', 'category_id',
+        'marca_id', 'unit_measurement_id', 'is_taxed', 'images', 'is_active'
     ];
 
     protected $casts = [
-        'tribute_id' => 'array', // Casts tribute_id as an array
+//        'tribute_id' => 'array', // Casts tribute_id as an array
         'images' => 'array',     // Casts images as an array
     ];
 
-    public function tributes(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(Tribute::class, 'product_tributes', 'product_id', 'tribute_id');
-    }
+//    public function tributes(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+//    {
+//        return $this->belongsToMany(Tribute::class, 'product_tributes', 'product_id', 'tribute_id');
+//    }
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
