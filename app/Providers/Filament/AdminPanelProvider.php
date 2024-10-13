@@ -81,7 +81,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Inventario')
-                    ->icon('heroicon-o-building-office')
+                    ->icon('heroicon-o-circle-stack')
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Facturación')

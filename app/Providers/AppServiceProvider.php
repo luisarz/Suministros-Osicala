@@ -5,6 +5,8 @@ namespace App\Providers;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Livewire\Notifications;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +33,8 @@ class AppServiceProvider extends ServiceProvider
         Textarea::configureUsing(function (Textarea $textarea) {
             $textarea->inlineLabel();
         });
+
+        Notifications::alignment(Alignment::Center);
+
     }
 }

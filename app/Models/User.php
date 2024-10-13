@@ -50,4 +50,9 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
         ];
     }
+    public function getFilamentAvatarUrl(): string
+    {
+        return $this->profile_photo_url;
+    }
+
 }

@@ -125,6 +125,9 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
+                    ->copyable()
+                    ->copyMessage('SKU  copied')
+
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('bar_code')

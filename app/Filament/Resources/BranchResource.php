@@ -80,8 +80,8 @@ class BranchResource extends Resource
                         Forms\Components\Select::make('economic_activity_id')
                             ->label('Actividad Economica')
                             ->relationship('economicactivity', 'description')
-//                            ->inlineLabel()
                             ->preload()
+                            ->inlineLabel(false)
                             ->searchable()
                             ->columnSpanFull()
                             ->columns(1)
@@ -126,35 +126,40 @@ class BranchResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nit')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('company.name')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
+                    ->label('Empresa'),
+//                Tables\Columns\TextColumn::make('nit')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('nrc')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('departamento_id')
+                Tables\Columns\TextColumn::make('departamento.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('distrito_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('distrito.name')
+              ->label('Municipio')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('address')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('economic_activity_id')
-                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->searchable(),
                 Tables\Columns\TextColumn::make('web')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                                        ->searchable(),
                 Tables\Columns\TextColumn::make('prices_by_products')
+                    ->label('Precios por productos')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+//                Tables\Columns\IconColumn::make('is_active')
+//                    ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -172,7 +177,14 @@ class BranchResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ReplicateAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
