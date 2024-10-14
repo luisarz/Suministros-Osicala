@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Filament\Resources\InventoryResource\RelationManagers;
+
+use App\Models\Inventory;
+use App\Models\Price;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class PricesRelationManager extends RelationManager
+{
+    protected static string $relationship = 'Prices';
+    protected static ?string $label = "Precios";
+
+
+
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Información del Precio')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->inlineLabel(false)
+                        ->label('Descripción Precio')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('price')
+                        ->label('Precio')
+                        ->inlineLabel(false)
+                        ->required()
+                        ->numeric()
+                        ->rules(function (?Price $record) {
+                            $inventory = Inventory::find($record->inventory_id ?? null); // Cambia 'inventory_id' al nombre correcto del campo de relación
+                            $cost = $inventory ? $inventory->cost_with_taxes : 0; // Obtén el costo, o 0 si no hay inventario
+                            return [
+                                'required',
+                                'numeric',
+                                'gt:' . $cost,
+                            ];
+                        }),
+                    Forms\Components\Toggle::make('is_default')
+                        ->label('Predeterminado'),
+                ]),
+            ]);
+        // Asegúrate de que estás usando el modelo correcto
+
+    }
+
+    public function table(Table $table): Table
+    {
+        $inventory = $this->ownerRecord;
+        $branch = $inventory->branch;
+        $maxPriceByProduct=$branch->prices_by_products;
+        $pricesCount = Price::where('inventory_id', $inventory->id)->count();
+        $canCreate = $pricesCount < $maxPriceByProduct;
+
+        return $table
+            ->recordTitleAttribute('name')
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                ->label('Descripción Precio'),
+                Tables\Columns\TextColumn::make('price')
+                    ->numeric()
+                    ->money('USD', locale: 'en_US')
+                ->label('Precio'),
+                Tables\Columns\ToggleColumn::make('is_default')
+                ->label('Predeterminado'),
+                Tables\Columns\ToggleColumn::make('is_active')
+                ->label('Activo'),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()->visible($canCreate),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+    protected function afterSave(): void
+    {
+        $this->model->precios()->each(function ($precio) {
+            if ($precio->is_default) {
+                Price::where('inventory_id', $precio->inventory_id)
+                    ->where('id', '!=', $precio->id)
+                    ->update(['is_default' => false]);
+            }
+        });
+    }
+    protected function getValidationRules(): array
+    {
+        return [
+            'name' => 'required|max:255',
+            'price' => [
+                'required',
+                'numeric',
+                'gt:' . ($this->record->inventory->cost ?? 0), // Asegúrate de tener acceso al costo
+            ],
+        ];
+    }
+
+    protected function getValidationMessages(): array
+    {
+        return [
+            'name.required' => 'La descripción del precio es obligatoria.',
+            'price.required' => 'El campo Precio es obligatorio.',
+            'price.numeric' => 'El campo Precio debe ser un número.',
+            'price.gt' => 'El Precio debe ser mayor que el costo del inventario, que es ' . ($this->record->inventory->cost ?? 0) . '.',
+        ];
+    }
+}

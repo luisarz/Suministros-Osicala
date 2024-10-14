@@ -121,7 +121,7 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Producto')
                     ->getStateUsing(function ($record) {
-                        return "{$record->product->name} <br>(SKU: {$record->product->sku}, ID: {$record->product->id})";
+                        return "{$record->product->name}  <br> Aplicaciones: {$record->product->description}";
                     })
                     ->html()
                     ->sortable(),
@@ -130,20 +130,24 @@ class InventoryResource extends Resource
                     ->copyable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Sucursal')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_min')
+                    ->label('Stock Minimo')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_max')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Stock Maximo')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('cost_without_taxes')
+                    ->label('Costo')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cost_with_taxes')
+                    ->label('C. con IVA')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_stock_alert')
@@ -196,7 +200,7 @@ class InventoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PricesRelationManager::class,
         ];
     }
 
@@ -205,6 +209,7 @@ class InventoryResource extends Resource
         return [
             'index' => Pages\ListInventories::route('/'),
             'create' => Pages\CreateInventory::route('/create'),
+//            'replicate' => Pages\ReplicateInventory::route('/{record}/replicate'),
             'edit' => Pages\EditInventory::route('/{record}/edit'),
         ];
     }

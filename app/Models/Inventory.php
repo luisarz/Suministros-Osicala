@@ -33,4 +33,9 @@ class Inventory extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+    public function prices()
+    {
+        return $this->hasMany(Price::class);
+    }
+
 }
