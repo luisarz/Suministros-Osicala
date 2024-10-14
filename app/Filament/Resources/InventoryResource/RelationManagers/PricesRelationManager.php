@@ -6,11 +6,14 @@ use App\Models\Inventory;
 use App\Models\Price;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 class PricesRelationManager extends RelationManager
 {
@@ -51,7 +54,36 @@ class PricesRelationManager extends RelationManager
         // Asegúrate de que estás usando el modelo correcto
 
     }
+    protected function beforeDelete(DeleteAction $action): void
+    {
+        $inventoryId = $this->ownerRecord->id;
+        dd($inventoryId);
+        $pricesCount = Price::where('inventory_id', $inventoryId)->count();
+        // Si hay solo un precio, cancelar la eliminación
+        if ($pricesCount <= 1) {
+            $action->halt(); // Detener la acción de eliminación
+            Notification::make()
+                ->title('Debe existir al menos un precio.')
+                ->danger()
+                ->send();
+        }
+    }
 
+    // Para eliminar en masa
+    protected function beforeBulkDelete(DeleteBulkAction $action): void
+    {
+        $inventoryId = $this->ownerRecord->id;
+        $pricesCount = Price::where('inventory_id', $inventoryId)->count();
+
+        // Si hay solo un precio, cancelar la eliminación
+        if ($pricesCount <= 1) {
+            $action->halt(); // Detener la acción de eliminación en masa
+            Notification::make()
+                ->title('Debe existir al menos un precio.')
+                ->danger()
+                ->send();
+        }
+    }
     public function table(Table $table): Table
     {
         $inventory = $this->ownerRecord;
@@ -61,9 +93,11 @@ class PricesRelationManager extends RelationManager
         $canCreate = $pricesCount < $maxPriceByProduct;
 
         return $table
+            ->searchable()
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable()
                 ->label('Descripción Precio'),
                 Tables\Columns\TextColumn::make('price')
                     ->numeric()
@@ -121,4 +155,5 @@ class PricesRelationManager extends RelationManager
             'price.gt' => 'El Precio debe ser mayor que el costo del inventario, que es ' . ($this->record->inventory->cost ?? 0) . '.',
         ];
     }
+
 }

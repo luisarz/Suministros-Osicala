@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\hoja1;
+use App\Models\Inventory;
+use App\Models\Price;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +13,7 @@ class hoja extends Controller
     //
     public function ejecutar()
     {
+        set_time_limit(0);
         $productos = hoja1::all();
         $items = [];
 
@@ -31,7 +33,22 @@ class hoja extends Controller
                 $nuevo->is_active = true;
                 $nuevo->save();
 
-                //llenar el inventario y los precios de venta
+                //llenar el inventario
+                $inventario = new Inventory();
+                $inventario->product_id = $nuevo->id;
+                $inventario->branch_id = 1;
+                $inventario->stock = $producto->Existencia;
+                $inventario->stock_min = $producto->ExisteMinima??0;
+                $inventario->stock_max = $producto->E_Maxima??0;
+                $inventario->save();
+                //llenar los precios
+                $precio = new Price();
+                $precio->inventory_id = $inventario->id;
+                $precio->name = "Público";
+                $precio->price = $producto->PrecioIVA;
+                $precio->is_default = true;
+                $precio->is_active = true;
+                $precio->save();
 
             } catch (\Exception $e) {
                 $items[] = $producto->id; // Use the actual product ID for tracking failures
