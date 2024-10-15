@@ -37,9 +37,14 @@ class hoja extends Controller
                 $inventario = new Inventory();
                 $inventario->product_id = $nuevo->id;
                 $inventario->branch_id = 1;
+                $inventario->cost_without_taxes = $producto->Costo;
+                $inventario->cost_with_taxes = $producto->CostoIVA;
                 $inventario->stock = $producto->Existencia;
                 $inventario->stock_min = $producto->ExisteMinima??0;
                 $inventario->stock_max = $producto->E_Maxima??0;
+                $inventario->is_stock_alert =true;
+                $inventario->is_expiration_date = false;
+                $inventario->is_active = true;
                 $inventario->save();
                 //llenar los precios
                 $precio = new Price();

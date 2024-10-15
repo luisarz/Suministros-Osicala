@@ -44,7 +44,6 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nombre')
                             ->required()
-
                             ->maxLength(255),
                         Forms\Components\Textarea::make('aplications')
                             ->label('Aplicaciones'),

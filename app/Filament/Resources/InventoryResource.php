@@ -7,13 +7,18 @@ use App\Filament\Resources\InventoryResource\RelationManagers;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Tribute;
+use Filament\Actions\ReplicateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Notifications\Actions\Action;
+use Filament\Tables\Actions;
+use Filament\Forms\Components\TextInput;
+
+// Importar correctamente el componente
 
 class InventoryResource extends Resource
 {
@@ -24,11 +29,11 @@ class InventoryResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $tax = Tribute::find(1)->select('rate','is_percentage')->first();
+        $tax = Tribute::find(1)->select('rate', 'is_percentage')->first();
         if (!$tax) {
-            $tax = (object) ['rate' => 0, 'is_percentage' => false];
+            $tax = (object)['rate' => 0, 'is_percentage' => false];
         }
-        $divider = ($tax->is_percentage) ?100:1;
+        $divider = ($tax->is_percentage) ? 100 : 1;
         $iva = $tax->rate / $divider;
         return $form
             ->schema([
@@ -109,8 +114,9 @@ class InventoryResource extends Resource
                                     ->default(true)
                                     ->label('Activo')
                                     ->required(),
-                            ]),
-                    ])
+                            ])
+
+                    ]),
             ]);
     }
 
@@ -120,14 +126,19 @@ class InventoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Producto')
-                    ->getStateUsing(function ($record) {
-                        return "{$record->product->name}  <br> Aplicaciones: {$record->product->description}";
-                    })
+                    ->wrap()
                     ->html()
+                    ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('product.aplications')
+                    ->label('Aplicaciones')
+                    ->badge()
+                    ->searchable()
+                    ->separator(';'),
                 Tables\Columns\TextColumn::make('product.sku')
                     ->label('SKU')
                     ->copyable()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label('Sucursal')
@@ -138,6 +149,8 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('stock_min')
                     ->label('Stock Minimo')
                     ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_max')
                     ->label('Stock Maximo')
@@ -145,21 +158,21 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('cost_without_taxes')
                     ->label('Costo')
                     ->numeric()
+                    ->money('USD',locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cost_with_taxes')
-                    ->label('C. con IVA')
+                    ->label('C.+    IVA')
                     ->numeric()
+                    ->money('USD',locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_stock_alert')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_expiration_date')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
@@ -174,22 +187,92 @@ class InventoryResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->deferLoading()
+            ->striped()
             ->filters([
-                //
-            ])
+                Tables\Filters\TrashedFilter::make(),
+
+
+                Tables\Filters\SelectFilter::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->label('Sucursal')
+                    ->preload()
+                    ->placeholder('Buscar por sucursal'),
+                Tables\Filters\Filter::make('product_name') // Filtro para el nombre del producto
+                ->form([
+                    TextInput::make('product_name') // Nombre del campo del filtro
+                    ->label('Producto')
+                        ->placeholder('Enter part of the product name'),
+                ])
+                    ->query(function ($query, array $data) {
+                        // Usar la relación con la tabla de productos para buscar por nombre
+                        return $query->whereHas('product', function ($query) use ($data) {
+                            $query->where('name', 'like', '%' . $data['product_name'] . '%');
+                        });
+                    }),
+                Tables\Filters\Filter::make('description')
+                    ->form([TextInput::make('product_aplications')
+                        ->label('Aplicaciones')
+                        ->placeholder('Enter part of the product name'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query->whereHas('product', function ($query) use ($data) {
+                            $query->where('aplications', 'like', '%' . $data['product_aplications'] . '%');
+                        });
+                    }),
+            ])->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make(),
+                    Tables\Actions\ReplicateAction::make()
+                        ->form([
+                            Forms\Components\Select::make('branch_did')
+                                ->relationship('branch', 'name')
+                                ->label('Sucursal Destino')
+                                ->required()
+                                ->placeholder('Ingresa el ID de la sucursal'),
+                        ])
+                        ->beforeReplicaSaved(function (Inventory $record, Actions\Action $action, $replica, array $data): void {
+                            try {
+                                $existencia = Inventory::withTrashed()
+                                    ->where('product_id', $record->product_id)
+                                    ->where('branch_id', $data['branch_did'])
+                                    ->first();
+                                if ($existencia) {
+                                    if ($existencia) {
+                                        // Si el registro está eliminado
+                                        if ($existencia->trashed()) {
+                                            Notification::make('Inventario Eliminado')
+                                                ->title('Replicar Inventario')
+                                                ->danger()
+                                                ->body('El inventario ya existe en la sucursal destino, pero el estado es eliminado, restarualo para poder replicarlo')
+                                                ->send();
+                                            $action->halt(); // Detener la acción si el inventario está eliminado
+                                        } else {
+                                            // Si el registro existe y no está eliminado
+                                            Notification::make('Registro Duplicado')
+                                                ->danger()
+                                                ->body('Ya existe un registro con el producto ' . $record->product->name . ' en la sucursal ' . $record->branch->name. '.')
+                                                ->send();
+                                            $action->halt(); // Detener la acción si se encuentra un registro duplicado
+                                        }
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                $action->halt(); // Detener la acción en caso de error
+                            }
+                        }),
+
+
                     Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
                 ]),
             ])
             ->headerActions([
 
             ])
-            ->searchable('product.name', 'product.sku', 'branch.name')
-
+            ->searchable('product.name', 'product.sku', 'branch.name', 'product.aplications')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
