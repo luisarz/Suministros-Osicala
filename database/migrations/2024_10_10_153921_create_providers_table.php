@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('nacionality')->nullable();
+            $table->string('legal_name');
+            $table->string('comercial_name');
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('department_id')->constrained('departamentos');
-            $table->foreignId('distrito_id')->constrained('distritos');
+            $table->foreignId('municipility_id')->constrained('distritos');
+            $table->foreignId('distrito_id')->constrained('municipalities');//Los distritos se gurdan en municipalities
             $table->string('direction')->nullable();
             $table->string('phone_one')->nullable();
             $table->string('phone_two')->nullable();
@@ -24,7 +26,7 @@ return new class extends Migration
             $table->string('nrc')->nullable();
             $table->string('nit')->nullable();
             $table->foreignId('economic_activity_id')->constrained('economic_activities');
-            $table->enum('condition_payment', ['Contado', 'Credito']);
+            $table->enum('condition_payment', ['Contado', 'Credito'])->nullable();
             $table->integer('credit_days')->nullable();
             $table->decimal('credit_limit', 10, 2)->nullable();
             $table->decimal('balance', 10, 2)->nullable();
@@ -33,6 +35,9 @@ return new class extends Migration
             $table->string('contact_seller')->nullable();
             $table->string('phone_seller')->nullable();
             $table->string('email_seller')->nullable();
+            $table->date('last_purchase')->nullable();
+            $table->integer('purchase_decimals')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
