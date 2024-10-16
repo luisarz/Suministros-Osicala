@@ -12,8 +12,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProviderResource extends Resource
 {
@@ -27,7 +25,7 @@ class ProviderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Información del Proveedor')
-                    ->columns(2)
+                    ->columns()
                     ->compact()
                     ->schema([
                         Forms\Components\TextInput::make('legal_name')
@@ -96,11 +94,20 @@ class ProviderResource extends Resource
                         Forms\Components\DatePicker::make('last_purchase')
                             ->inlineLabel()
                             ->label('Última Compra'),
-
-
+                        Forms\Components\TextInput::make('purchase_decimals')
+                            ->label('Decimales de Compra')
+                            ->required()
+                            ->minLength(1)
+                            ->maxLength(1)
+                            ->numeric()
+                            ->default(2),
                     ]),
-                Forms\Components\Section::make('Informción Comercial')
-                    ->columns(2)
+                Forms\Components\Section::make('Dirección Comercial')
+                    ->columns()
+                    ->extraAttributes([
+                        'class' => 'bg-parimary text-white p-2 rounded-md' // Cambiar el color de fondo y texto
+                    ])
+                    ->icon('heroicon-o-map-pin')
                     ->compact()
                     ->schema([
                         Forms\Components\Select::make('country_id')
@@ -163,7 +170,7 @@ class ProviderResource extends Resource
                     ]),
                 Forms\Components\Section::make('Información de contacto')
                     ->compact()
-                    ->columns(2)
+                    ->columns()
                     ->schema([
                         Forms\Components\TextInput::make('phone_one')
                             ->label('Teléfono Empresa')
@@ -202,6 +209,9 @@ class ProviderResource extends Resource
             ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -269,7 +279,7 @@ class ProviderResource extends Resource
                     ->boolean(),
                 Tables\Columns\TextColumn::make('contact_seller')
                     ->label('Vendedor')
-                    ->formatStateUsing(fn ($record) => "{$record->contact_seller}  <br> Telf: {$record->phone_seller} <br> Email:{$record->email_seller}") // Agrupar columnas
+                    ->formatStateUsing(fn ($record) => "$record->contact_seller  <br> Telf: $record->phone_seller <br> Email:$record->email_seller") // Agrupar columnas
                     ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone_seller')

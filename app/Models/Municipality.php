@@ -12,7 +12,9 @@ class Municipality extends Model
     use softDeletes;
     protected $fillable = ['code', 'name', 'distrito_id', 'is_active'];
 
-    public function distrito()
+
+
+    public function distrito(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Distrito::class);
     }
