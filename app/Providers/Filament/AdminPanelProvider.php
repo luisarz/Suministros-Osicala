@@ -93,7 +93,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Recursos Humanos')
-                    ->icon('heroicon-o-pencil')
+                    ->icon('heroicon-o-academic-cap')
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Configuración')
