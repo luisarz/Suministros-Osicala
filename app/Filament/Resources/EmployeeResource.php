@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
+use App\Models\Distrito;
 use App\Models\Employee;
+use App\Models\Municipality;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
@@ -14,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 class EmployeeResource extends Resource
 {
@@ -30,13 +33,15 @@ class EmployeeResource extends Resource
                     ->tabs([
                         Tabs\tab::make('Datos Personales')
                             ->icon('heroicon-o-user')
+                            ->columns(23    )
                             ->schema([
                                 Forms\Components\Card::make('Datos Laborales')
-                                    ->description('Información Sucursal y Cargo')
+//                                    ->description('Información Sucursal y Cargo')
                                     ->icon('heroicon-o-briefcase')
                                     ->compact()
                                     ->columns(2)
                                     ->schema([
+
                                         Forms\Components\Select::make('branch_id')
                                             ->label('Sucursal')
                                             ->relationship('wherehouse', 'name')
@@ -49,73 +54,129 @@ class EmployeeResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required(),
-                                    ]),
 
 
-                                Forms\Components\Card::make('Datos Personales')
-                                    ->description('Datos Personales')
-                                    ->icon('heroicon-o-user')
+                                    ])->columnSpanFull(true),
+
+
+                                        Forms\Components\Card::make('Datos Personales')
+//                                            ->description('Datos Personales')
+                                            ->icon('heroicon-o-user')
+                                            ->compact()
+                                            ->columns()
+                                            ->schema([
+                                                    Forms\Components\TextInput::make('name')
+                                                        ->label('Nombre')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Forms\Components\TextInput::make('lastname')
+                                                        ->label('Apellido')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Forms\Components\DatePicker::make('birthdate')
+                                                        ->label('Fecha de Nacimiento')
+                                                        ->inlineLabel(true),
+
+                                                    Forms\Components\Select::make('gender')
+                                                        ->label('Género')
+                                                        ->options([
+                                                            'M' => 'Masculino',
+                                                            'F' => 'Femenino',
+                                                        ])
+                                                        ->required(),
+
+                                                    Forms\Components\TextInput::make('dui')
+                                                        ->maxLength(255)
+                                                        ->required()
+                                                        ->default(null),
+                                                    Forms\Components\TextInput::make('nit')
+                                                        ->maxLength(255)
+                                                        ->default(null),
+
+                                                    Forms\Components\TextInput::make('phone')
+                                                        ->tel()
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Forms\Components\TextInput::make('email')
+                                                        ->email()
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Forms\Components\FileUpload::make('photo')
+//                                                        ->inlineLabel()
+                                                        ->columnSpanFull()
+
+                                                        ->label('Foto')
+                                                        ->directory('employees'),
+
+                                            ]),
+
+                            ]),
+                        Tabs\Tab::make('Informacion de contacto')
+                            ->icon('heroicon-o-map-pin')
+                            ->columns(2)
+                            ->schema([
+                                Forms\Components\Card::make('Datos de contacto')
+                                    ->description('')
+                                    ->icon('heroicon-o-map-pin')
                                     ->compact()
                                     ->columns(2)
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
-                                            ->label('Nombre')
-                                            ->required()
-                                            ->maxLength(255),
-                                        Forms\Components\TextInput::make('lastname')
-                                            ->label('Apellido')
-                                            ->required()
-                                            ->maxLength(255),
-                                        Forms\Components\Select::make('gender')
-                                            ->label('Género')
-                                            ->options([
-                                                'M' => 'Masculino',
-                                                'F' => 'Femenino',
-                                            ])
+                                        Forms\Components\Select::make('department_id')
+                                            ->relationship('departamento', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function ( $state, $set) {
+                                                if(!$state) {
+                                                    $set('municipility_id', null);
+                                                }
+                                            })
                                             ->required(),
-                                        Forms\Components\FileUpload::make('photo')
-//                                            ->avatar()
-                                            ->directory('emplyees'),
-//                                            ->columnSpanFull(),
-                                        Forms\Components\TextInput::make('dui')
-                                            ->maxLength(255)
-                                            ->default(null),
-                                        Forms\Components\TextInput::make('nit')
-                                            ->maxLength(255)
-                                            ->default(null),
-                                        Forms\Components\TextInput::make('email')
-                                            ->email()
-                                            ->required()
-                                            ->maxLength(255),
-                                        Forms\Components\TextInput::make('phone')
-                                            ->tel()
-                                            ->required()
-                                            ->maxLength(255),
-                                    ]),
-                                Forms\Components\Card::make()
-                                    ->description('Datos de contacto')
-                                    ->icon('heroicon-o-calendar')
-                                    ->compact()
-                                    ->schema([
-                                        Forms\Components\TextInput::make('department_id')
-                                            ->required()
-                                            ->numeric(),
-                                        Forms\Components\TextInput::make('municipility_id')
-                                            ->required()
-                                            ->numeric(),
-                                        Forms\Components\TextInput::make('distrito_id')
-                                            ->required()
-                                            ->numeric(),
+                                        Forms\Components\Select::make('distrito_id')
+                                            ->label('Municipio')
+                                            ->options(function (callable $get) {
+                                                $department = $get('department_id');
+                                                if ($department) {
+                                                    return Distrito::where('departamento_id',$department)->pluck('name', 'id');
+                                                }
+                                                return [];
+                                            })
+                                            ->live()
+                                            ->afterStateUpdated(function ( $state, $set) {
+                                                if(!$state) {
+                                                    $set('municipility_id', null);
+                                                }
+                                            })
+                                            ->preload()
+                                            ->searchable()
+                                            ->required(),
+                                        Forms\Components\Select::make('municipility_id')
+                                            ->label('Distrito')
+                                            ->options(function (callable $get) {
+                                                $distrito = $get('distrito_id');
+                                                if ($distrito) {
+                                                    return Municipality::where('distrito_id',$distrito)->pluck('name', 'id');
+                                                }
+                                                return [];
+                                            })
+                                            ->preload()
+                                            ->searchable()
+                                            ->required(),
                                         Forms\Components\TextInput::make('address')
                                             ->required()
+                                            ->label('Dirección')
                                             ->maxLength(255),
                                     ]),
+                            ]),
+                        Tabs\Tab::make('Datos de Familiares')
+                            ->icon('heroicon-o-phone')
+                            ->columns(2)
+                            ->schema([
                                 Forms\Components\Card::make('Datos Familiares')
                                     ->description('Datos Familiares')
                                     ->icon('heroicon-o-briefcase')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\DatePicker::make('birthdate'),
 
                                         Forms\Components\TextInput::make('marital_status')
                                             ->required(),
@@ -126,17 +187,7 @@ class EmployeeResource extends Resource
                                             ->tel()
                                             ->maxLength(255)
                                             ->default(null),
-                                    ])
-                            ]),
-                        Tabs\Tab::make('Datos Laborales')
-                            ->icon('heroicon-o-briefcase')
-                            ->schema([
-
-                            ]),
-                        Tabs\Tab::make('Datos de Contacto')
-                            ->icon('heroicon-o-phone')
-                            ->columns(2)
-                            ->schema([
+                                    ]),
                                 Forms\Components\Toggle::make('is_comisioned')
                                     ->required(),
                                 Forms\Components\TextInput::make('comision')
