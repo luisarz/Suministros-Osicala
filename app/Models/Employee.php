@@ -27,25 +27,32 @@ class Employee extends Model
         'dui',
         'nit',
         'department_id',
-        'municipility_id',
+        'municipalitie_id',
         'distrito_id',
         'branch_id',
         'job_title_id',
         'is_comisioned',
         'comision',
         'is_active'];
+    protected $casts = [
+        'photo' => 'array',
+    ];
+    public function fullName()
+    {
+        return $this->name . ' ' . $this->lastname;
+    }
     public function departamento()
     {
         return $this->belongsTo(Departamento::class, 'department_id');
     }
     public function municipio()
     {
-        return $this->belongsTo(Distrito::class, 'municipility_id');
+        return $this->belongsTo(Municipality::class, 'municipalitie_id');
 
     }
     public function distrito()
     {
-        return $this->belongsTo(Municipality::class, 'distrito_id');
+        return $this->belongsTo(Distrito::class, 'distrito_id');
     }
     public function wherehouse()
     {
@@ -53,6 +60,6 @@ class Employee extends Model
     }
     public function job()
     {
-        return $this->belongsTo(JobTitle::class, 'job_title');
+        return $this->belongsTo(JobTitle::class, 'job_title_id');
     }
 }

@@ -24,6 +24,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
+        'employee_id',
         'email',
         'password',
     ];
@@ -50,9 +51,13 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
         ];
     }
-    public function getFilamentAvatarUrl(): string
+    public function getFilamentAvatarUrl(): ?string
     {
-        return $this->profile_photo_url;
+        return $this->avatar_url;
+    }
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class,'employee_id');
     }
 
 }

@@ -110,7 +110,7 @@ class BranchResource extends Resource
                             ->numeric()
                             ->default(2),
                         Forms\Components\FileUpload::make('logo')
-                            ->directory('/productos')
+                            ->directory('wherehouses')
                             ->columnSpanFull(),
                         Forms\Components\Toggle::make('is_active')
                             ->inlineLabel()

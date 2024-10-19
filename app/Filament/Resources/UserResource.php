@@ -17,29 +17,52 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static  ?string $label= 'Usuarios';
+    protected static ?string $label = 'Usuarios';
     protected static ?string $navigationGroup = 'Seguridad';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable()
+                Forms\Components\Section::make('Informacion del usuario')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('employee_id')
+                            ->relationship('employee', 'name')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' ' . $record->lastname) // Concatenar campos
+                            ->preload()
+                            ->required()
+                            ->searchable()
+                            ->inlineLabel()
+                            ->label('Empleado'),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Usuario')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->label('Correo')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\DateTimePicker::make('email_verified_at')
+                            ->inlineLabel()
+                            ->label('Fecha verificaión'),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+//                        ->rules(function ($record){
+//                            return [
+//                                $record ? 'nullable' : 'required',
+//                                'confirmed',
+//                            ];
+//                        })
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                    ])
             ]);
     }
 
@@ -47,13 +70,17 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('employee.name')
+                    ->label('Empleado')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Usuario')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+//                Tables\Columns\TextColumn::make('email_verified_at')
+//                    ->dateTime()
+//                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

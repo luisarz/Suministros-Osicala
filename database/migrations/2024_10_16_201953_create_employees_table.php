@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('lastname');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('phone');
             $table->string('address');
             $table->json('photo')->nullable();
@@ -27,8 +27,8 @@ return new class extends Migration
             $table->string('dui')->unique()->nullable();
             $table->string('nit')->unique()->nullable();
             $table->foreignId('department_id')->constrained('departamentos');
-            $table->foreignId('municipility_id')->constrained('distritos');
-            $table->foreignId('distrito_id')->constrained('municipalities');
+            $table->foreignId('distrito_id')->constrained('distritos');//Municipoio
+            $table->foreignId('municipalitie_id')->constrained('municipalities');//Distrito
             $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete();
             $table->foreignId('job_title_id')->constrained('job_titles')->cascadeOnDelete();
             $table->boolean('is_comisioned')->default(true);

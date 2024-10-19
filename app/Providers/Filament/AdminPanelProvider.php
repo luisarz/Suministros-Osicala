@@ -8,9 +8,11 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
+use Filament\Pages\Auth\EditProfile;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -26,16 +28,19 @@ class AdminPanelProvider extends PanelProvider
     /**
      * @throws \Exception
      */
+
+
     public function panel(Panel $panel): Panel
     {
+//        dd(session('branch_logo'));
         return $panel
             ->default()
             ->id('admin')
-
             ->path('admin')
-//            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
-
-            ->brandLogo('<img src="https://filamentapp.com/img/logo.svg" alt="Filament" />')
+            ->profile(isSimple: false)
+            ->profile(EditProfile::class)
+            ->brandLogo(asset(session('branch_logo')))
+            ->maxContentWidth(MaxWidth::Full)
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -72,8 +77,7 @@ class AdminPanelProvider extends PanelProvider
 //                SpotlightPlugin::make(),
             ])
 //            ->collapsedSidebarWidth('64px')
-                ->collapsibleNavigationGroups()
-
+            ->collapsibleNavigationGroups()
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('Almacén')

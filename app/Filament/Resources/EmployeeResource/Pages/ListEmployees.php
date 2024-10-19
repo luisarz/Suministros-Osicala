@@ -13,7 +13,7 @@ class ListEmployees extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->successRedirectUrl(route('filament.admin.resources.employees.index')),
         ];
     }
 }
