@@ -94,6 +94,13 @@
       0 => 'Filament\\Widgets\\WidgetsServiceProvider',
     ),
   ),
+  'hasnayeen/themes' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Hasnayeen\\Themes\\ThemesServiceProvider',
+    ),
+  ),
   'kirschbaum-development/eloquent-power-joins' => 
   array (
     'providers' => 

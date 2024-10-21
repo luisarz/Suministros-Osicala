@@ -22,11 +22,27 @@ use Filament\Forms\Components\TextInput;
 
 class InventoryResource extends Resource
 {
+    protected static function getWhereHouse(): string
+    {
+        return \Auth::user()->employee->wherehouse->name?? 'N/A'; // Si no hay valor, usa 'N/A'
+    }
     protected static ?string $model = Inventory::class;
     protected static ?string $navigationGroup = 'Inventario';
-    protected static ?string $label = 'Inventario';
 
+    protected static ?string $label = 'Inventario Suc.'; // Singular
+    protected static ?string $pluralLabel = null;
 
+    public static function getLabel(): string
+    {
+        $wherehouse = self::getWhereHouse();
+
+        return self::$label . ' ' . $wherehouse;
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return self::getLabel(); // Usar la misma lógica para plural o ajustarlo según sea necesario
+    }
     public static function form(Form $form): Form
     {
         $tax = Tribute::find(1)->select('rate', 'is_percentage')->first();

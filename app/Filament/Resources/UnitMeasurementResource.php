@@ -19,7 +19,8 @@ class UnitMeasurementResource extends Resource
 
     protected static  ?string $label= 'U. Medida';
     protected static ?bool $softDelete = true;
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {

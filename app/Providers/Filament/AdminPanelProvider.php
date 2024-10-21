@@ -21,28 +21,51 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class AdminPanelProvider extends PanelProvider
 {
+    public function render()
+    {
+        $branchId = session('branch_id');
+        $branchName = session('branch_name');
+        $branchLogo = session('branch_logo');
+
+        return view('filament.pages.dashboard', [
+            'branchId' => $branchId,
+            'branchName' => $branchName,
+            'branchLogo' => $branchLogo,
+        ]);
+    }
+
     /**
-     * @throws \Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-
-
     public function panel(Panel $panel): Panel
     {
-//        dd(session('branch_logo'));
+
         return $panel
+
+            ->brandLogo(fn () => view('logo'))
+            ->brandLogoHeight('5rem')
+//            ->brandName(fn () => auth()->check()
+//                ? 'Suc.: '. auth()->user()->employee->wherehouse->name ?? 'No hay sucursal'
+//                : asset('storage/default-logo.png'))
             ->default()
-            ->id('admin')
+            ->sidebarWidth('18rem')
+
+        ->id('admin')
             ->path('admin')
             ->profile(isSimple: false)
-            ->profile(EditProfile::class)
-            ->brandLogo(asset(session('branch_logo')))
+            ->authGuard('web')
+            ->databaseTransactions()
+            ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
-            ->login(CustomLogin::class)
+            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -67,12 +90,17 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \Hasnayeen\Themes\Http\Middleware\SetTheme::class
+
             ])
             ->authMiddleware([
                 Authenticate::class,
+
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \Hasnayeen\Themes\ThemesPlugin::make(),
+
                 GlobalSearchModalPlugin::make()
 
 //                SpotlightPlugin::make(),
@@ -105,13 +133,17 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-cog-6-tooth')
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('Catálogos')
-                    ->icon('heroicon-o-cog-6-tooth')
+                    ->label('Catálogos Hacienda')
+                    ->icon('heroicon-o-magnifying-glass-circle')
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Seguridad')
                     ->icon('heroicon-o-shield-check')
                     ->collapsed(),
-            ]);
+            ])
+            ->bootUsing(function (Panel $panel) {
+                // ...
+//                dd(session::get('branch_id'));
+            });
     }
 }

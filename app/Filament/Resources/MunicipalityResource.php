@@ -18,9 +18,10 @@ class MunicipalityResource extends Resource
     protected static ?string $model = Municipality::class;
 
     protected static bool $softDelete = true;
-    protected static ?string $navigationGroup = "Configuración";
+    protected static ?string $navigationGroup = "Catálogos Hacienda";
     protected static ?string $label = 'Distritos';
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?int $navigationSort = 4;
     public static function form(Form $form): Form
     {
         return $form

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('stablisment_type_id')->constrained('stablishment_types');
             $table->string('name');
             $table->foreignId('company_id')->constrained();
             $table->string('nit');

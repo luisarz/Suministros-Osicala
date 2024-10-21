@@ -19,7 +19,8 @@ class TributeResource extends Resource
 
     protected static  ?string $label= 'Impuestos';
     protected static ?bool $softDelete = true;
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {

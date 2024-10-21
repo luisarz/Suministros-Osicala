@@ -14,23 +14,23 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('last_name');
-            $table->string('email');
-            $table->string('phone');
-            $table->foreignId('country_id')->constrained('countries', 'id');
-            $table->foreignId('departamento_id')->constrained('departamentos', 'id');
-            $table->foreignId('municipio_id')->constrained('distritos', 'id');
-            $table->foreignId('distrito_id')->constrained('municipalities', 'id');
-            $table->foreignId('economic_activities_id')->constrained('economic_activities', 'id');
+            $table->string('last_name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->foreignId('country_id')->nullable()->constrained('countries', 'id');
+            $table->foreignId('departamento_id')->nullable()->constrained('departamentos', 'id');
+            $table->foreignId('municipio_id')->nullable()->constrained('municipalities', 'id');
+            $table->foreignId('distrito_id')->nullable()->constrained('distritos', 'id');
+            $table->foreignId('economicactivity_id')->nullable()->constrained('economic_activities', 'id');
             $table->foreignId('wherehouse_id')->constrained('branches', 'id');
 //            $table->foreignId('seller_id')->nullable();
             $table->string('address')->nullable();
             $table->string('nrc')->nullable();
             $table->string('dui')->nullable();
             $table->string('nit')->nullable();
-            $table->boolean('is_taxed')->default(true);//si es contribuyente o exento
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_credit_client')->default(false);
+            $table->boolean('is_taxed')->default(true)->nullable();//si es contribuyente o exento
+            $table->boolean('is_active')->default(true)->nullable();
+            $table->boolean('is_credit_client')->default(false)->nullable();
             $table->decimal('credit_limit',10,2)->nullable();
             $table->integer('credit_days')->nullable();
             $table->decimal('credit_balance',10,2)->nullable();

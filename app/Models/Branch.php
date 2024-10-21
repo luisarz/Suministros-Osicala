@@ -10,7 +10,7 @@ class Branch extends Model
     use HasFactory;
     protected $softDelete = true;
 
-    protected $fillable = ['name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products', 'logo', 'is_active'];
+    protected $fillable = ['stablisment_type_id','name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products', 'logo', 'is_active'];
 
     protected $casts = [
         'logo' => 'array',
@@ -32,5 +32,9 @@ class Branch extends Model
         return $this->belongsTo(EconomicActivity::class, 'economic_activity_id', 'id');
     }
 
+    public function stablishmenttype(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(StablishmentType::class, 'stablisment_type_id', 'id');
+    }
 
 }

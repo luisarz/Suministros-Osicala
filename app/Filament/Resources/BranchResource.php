@@ -32,8 +32,15 @@ class BranchResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Informacion del producto')
                     ->schema([
+                        Forms\Components\Select::make('stablisment_type_id')
+                            ->relationship('stablishmenttype', 'name')
+                            ->label('Tipo de Establecimiento')
+                            ->inlineLabel()
+                            ->required()
+                            ->preload()
+                            ->searchable(),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nombre Sucursal')
+                            ->label('Nombre')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('company_id')
@@ -124,6 +131,10 @@ class BranchResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('stablishmenttype.name')
+                    ->label('Tipo')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('company.name')

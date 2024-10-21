@@ -21,8 +21,8 @@ class DistritoResource extends Resource
 
     protected static  ?string $label= 'Municipios';
     protected static ?bool $softDelete = true;
-    protected static ?string $navigationGroup = 'Configuración';
-
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 3;
     public static function form(Form $form): Form
     {
         return $form

@@ -19,8 +19,8 @@ class DepartamentoResource extends Resource
     protected static ?string $model = Departamento::class;
     protected static  ?string $label= 'Departamentos';
     protected static ?bool $softDelete = true;
-    protected static ?string $navigationGroup = 'Configuración';
-
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

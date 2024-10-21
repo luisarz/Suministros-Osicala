@@ -19,7 +19,8 @@ class EconomicActivityResource extends Resource
     protected static ?string $label = 'Actividades Económicas';
     protected static string $icon = 'heroicon-o-collection';
     protected static $softDelete = true;
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

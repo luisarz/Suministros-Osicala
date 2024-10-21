@@ -14,6 +14,8 @@ use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
@@ -35,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
+
+
         Filament::serving(function () {
             $user = Auth::user();
             if ($user && $user->employee) {
@@ -45,14 +49,11 @@ class AppServiceProvider extends ServiceProvider
                     session(['branch_name' => $sucursal->name]);
                     session(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
 
-                } else {
-                    session(['branch_id' => null]);
-                    session(['branch_name' => null]);
-                    session(['branch_logo' => null]);
                 }
             }
-//            dd(session('branch_logo'));
-
+            View::composer('*', function ($view) {
+                $view->with('branch_logo', session('branch_logo'));
+            });
         });
 
         TextInput::configureUsing(function (TextInput $textInput) {

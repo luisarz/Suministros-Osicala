@@ -15,14 +15,6 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
-namespace App\Http\Responses;
-
-use Filament\Forms\Components\Component;
-use Filament\Forms\Components\TextInput;
-use Filament\Pages\Auth\Login;
-use Illuminate\Http\Request;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse as FilamentLoginResponse;
-use Illuminate\Validation\ValidationException;
 
 class CustomLogin extends Login
 {
@@ -81,7 +73,7 @@ class CustomLogin extends Login
         ]);
     }
 
-    public function authenticate(): ?FilamentLoginResponse
+    public function authenticate(): ?LoginResponse
     {
         try {
             $this->rateLimit(5);
@@ -104,22 +96,22 @@ class CustomLogin extends Login
             Filament::auth()->logout();
             $this->throwFailureValidationException();
         }
-//        session()->regenerate();
-        if ($user && $user->employee) {
-            $employee = Employee::with('wherehouse')->find($user->employee->id);
-            $sucursal = $employee->wherehouse;
-            if ($sucursal) {
-                Session::put(['branch_id' => $sucursal->id]);
-                Session::put(['branch_name' => $sucursal->name]);
-                Session::put(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
+        session()->regenerate();
+//        if ($user && $user->employee) {
+//            $employee = Employee::with('wherehouse')->find($user->employee->id);
+//            $sucursal = $employee->wherehouse;
+//            if ($sucursal) {
+//                Session::put(['branch_id' => $sucursal->id]);
+//                Session::put(['branch_name' => $sucursal->name]);
+//                Session::put(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
+//
+//            }
+//        }
+//        dd(Session::all());  // Verifica si los datos de la sesión están presentes
 
-            }
-        }
-
-//        dd($user);
 //        eturn redirect()->intended(Filament::getUrl());
-        return $this->redirect('/admin');
-//        return app(LoginResponse::class);
+//        return $this->redirect('/admin');
+        return app(LoginResponse::class);
     }
 
 
