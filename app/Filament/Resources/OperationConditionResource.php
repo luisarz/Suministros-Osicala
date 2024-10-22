@@ -85,7 +85,7 @@ class OperationConditionResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->label('Ver'),    
+                    Tables\Actions\ViewAction::make()->label('Ver'),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ReplicateAction::make(),
                     Tables\Actions\DeleteAction::make(),

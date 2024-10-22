@@ -56,7 +56,7 @@ class AdminPanelProvider extends PanelProvider
 //                ? 'Suc.: '. auth()->user()->employee->wherehouse->name ?? 'No hay sucursal'
 //                : asset('storage/default-logo.png'))
             ->default()
-            ->sidebarWidth('18rem')
+            ->sidebarWidth('20rem')
 
         ->id('admin')
             ->path('admin')

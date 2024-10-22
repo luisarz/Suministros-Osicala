@@ -29,15 +29,15 @@ class InventoryResource extends Resource
     protected static ?string $model = Inventory::class;
     protected static ?string $navigationGroup = 'Inventario';
 
-    protected static ?string $label = 'Inventario Suc.'; // Singular
+    protected static ?string $label = 'Inventario'; // Singular
     protected static ?string $pluralLabel = null;
 
-    public static function getLabel(): string
-    {
-        $wherehouse = self::getWhereHouse();
-
-        return self::$label . ' ' . $wherehouse;
-    }
+//    public static function getLabel(): string
+//    {
+//        $wherehouse = self::getWhereHouse();
+//
+//        return self::$label . ' ' . $wherehouse;
+//    }
 
     public static function getPluralLabel(): string
     {
