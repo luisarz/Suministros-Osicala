@@ -64,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('web')
             ->databaseTransactions()
             ->sidebarCollapsibleOnDesktop()
-            ->maxContentWidth(MaxWidth::Full)
+//            ->maxContentWidth(MaxWidth::Full)
             ->login()
             ->colors([
                 'primary' => Color::Amber,

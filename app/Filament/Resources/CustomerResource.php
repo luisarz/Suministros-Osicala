@@ -81,6 +81,8 @@ class CustomerResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('phone')
                             ->label('Teléfono')
+                            ->mask('(999) 9999-9999')
+                            ->default(503)
                             ->tel()
                             ->maxLength(255),
                         Forms\Components\Select::make('country_id')
@@ -192,7 +194,14 @@ class CustomerResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Teléfono')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn($record) => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $record->phone), true)
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-chat-bubble-oval-left-ellipsis')
+                    ->iconColor('success')
+                    ->tooltip('Enviar mensaje a WhatsApp'),
+
+
                 Tables\Columns\TextColumn::make('country.name')
                     ->label('País')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -255,7 +264,7 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-               Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('wherehouse_id')
                     ->relationship('wherehouse', 'name')
                     ->label('Sucursal')
@@ -263,14 +272,14 @@ class CustomerResource extends Resource
                     ->multiple(),
             ])
             ->actions([
-               Tables\Actions\ActionGroup::make([
-                   Tables\Actions\EditAction::make(),
-                     Tables\Actions\ViewAction::make(),
-                   Tables\Actions\ReplicateAction::make()->label('Duplicar'),
-                   Tables\Actions\deleteAction::make(),
-                   Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ReplicateAction::make()->label('Duplicar'),
+                    Tables\Actions\deleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
 
-               ]),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

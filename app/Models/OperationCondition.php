@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PaymentMethod extends Model
+class OperationCondition extends Model
 {
+    use HasFactory;
+    use SoftDeletes;
     //
-    use softDeletes;
-    protected $fillable=[
+    protected $fillable = [
         'code',
         'name',
         'is_active'
-
     ];
-
 }
