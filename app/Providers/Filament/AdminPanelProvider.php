@@ -52,15 +52,15 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(fn() => view('logo'))
             ->brandLogoHeight('5rem')
             ->default()
-            ->sidebarWidth('20rem')
-            ->databaseNotifications()
+            ->font('popins')
+            ->sidebarWidth('18rem')
             ->id('admin')
             ->path('admin')
             ->profile(isSimple: false)
             ->authGuard('web')
-            ->databaseTransactions()
+//            ->databaseTransactions()
             ->sidebarCollapsibleOnDesktop()
-//            ->maxContentWidth(MaxWidth::Full)
+            ->databaseNotifications()
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -71,6 +71,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -87,21 +88,15 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 \Hasnayeen\Themes\Http\Middleware\SetTheme::class
-
             ])
             ->authMiddleware([
                 Authenticate::class,
-
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
-
                 GlobalSearchModalPlugin::make()
-
-//                SpotlightPlugin::make(),
             ])
-//            ->collapsedSidebarWidth('64px')
             ->collapsibleNavigationGroups()
             ->navigationGroups([
                 NavigationGroup::make()
@@ -114,7 +109,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Facturación')
-                    ->icon('heroicon-o-building-office')
+                    ->icon('heroicon-o-shopping-cart')
                     ->collapsed(),
                 NavigationGroup::make()
                     ->label('Contabilidad')

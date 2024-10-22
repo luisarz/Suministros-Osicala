@@ -38,23 +38,23 @@ class AppServiceProvider extends ServiceProvider
     {
 
 
-
-        Filament::serving(function () {
-            $user = Auth::user();
-            if ($user && $user->employee) {
-                $employee = Employee::with('wherehouse')->find($user->employee->id);
-                $sucursal = $employee->wherehouse;
-                if ($sucursal) {
-                    session(['branch_id' => $sucursal->id]);
-                    session(['branch_name' => $sucursal->name]);
-                    session(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
-
-                }
-            }
-            View::composer('*', function ($view) {
-                $view->with('branch_logo', session('branch_logo'));
-            });
-        });
+//
+//        Filament::serving(function () {
+//            $user = Auth::user();
+//            if ($user && $user->employee) {
+//                $employee = Employee::with('wherehouse')->find($user->employee->id);
+//                $sucursal = $employee->wherehouse;
+//                if ($sucursal) {
+//                    session(['branch_id' => $sucursal->id]);
+//                    session(['branch_name' => $sucursal->name]);
+//                    session(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
+//
+//                }
+//            }
+//            View::composer('*', function ($view) {
+//                $view->with('branch_logo', session('branch_logo'));
+//            });
+//        });
 
         TextInput::configureUsing(function (TextInput $textInput) {
             $textInput->inlineLabel();
@@ -71,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
                 ->paginationPageOptions([10, 25, 50, 100])
                 ->striped()
                 ->deferLoading()
-                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'bg-red-100 text-gray-500 opacity-50' : '');
+                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'border-red-500	bg-red-500 text-red opacity-50' : '');
         });
 
         Notifications::alignment(Alignment::Center);

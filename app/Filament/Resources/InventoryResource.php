@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\InventoryExporter;
 use App\Filament\Resources\InventoryResource\Pages;
 use App\Filament\Resources\InventoryResource\RelationManagers;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Tribute;
+use Filament\Actions\ExportAction;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,10 +20,6 @@ use Filament\Tables\Table;
 use Filament\Notifications\Actions\Action;
 use Filament\Tables\Actions;
 use Filament\Forms\Components\TextInput;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Exports\ExcelExport;
-// Importar correctamente el componente
 
 class InventoryResource extends Resource
 {
@@ -294,9 +293,21 @@ class InventoryResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-//                    ExportAction::make()->exports([
-//                        ExcelExport::make()->queue()
-//                    ])
+
+                    ExportAction::make()
+                        ->exporter(InventoryExporter::class)
+                        ->formats([
+                            ExportFormat::Csv,
+                        ])
+                        // or
+                        ->formats([
+                            ExportFormat::Xlsx,
+                        ])
+                        // or
+                        ->formats([
+                            ExportFormat::Xlsx,
+                            ExportFormat::Csv,
+                        ])
 
                 ]),
             ]);
