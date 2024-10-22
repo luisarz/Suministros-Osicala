@@ -49,16 +49,12 @@ class AdminPanelProvider extends PanelProvider
     {
 
         return $panel
-
-            ->brandLogo(fn () => view('logo'))
+            ->brandLogo(fn() => view('logo'))
             ->brandLogoHeight('5rem')
-//            ->brandName(fn () => auth()->check()
-//                ? 'Suc.: '. auth()->user()->employee->wherehouse->name ?? 'No hay sucursal'
-//                : asset('storage/default-logo.png'))
             ->default()
-            ->sidebarWidth('18rem')
-
-        ->id('admin')
+            ->sidebarWidth('20rem')
+            ->databaseNotifications()
+            ->id('admin')
             ->path('admin')
             ->profile(isSimple: false)
             ->authGuard('web')

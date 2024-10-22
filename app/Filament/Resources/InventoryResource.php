@@ -17,7 +17,9 @@ use Filament\Tables\Table;
 use Filament\Notifications\Actions\Action;
 use Filament\Tables\Actions;
 use Filament\Forms\Components\TextInput;
-
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 // Importar correctamente el componente
 
 class InventoryResource extends Resource
@@ -29,15 +31,15 @@ class InventoryResource extends Resource
     protected static ?string $model = Inventory::class;
     protected static ?string $navigationGroup = 'Inventario';
 
-    protected static ?string $label = 'Inventario Suc.'; // Singular
+    protected static ?string $label = 'Inventario'; // Singular
     protected static ?string $pluralLabel = null;
 
-    public static function getLabel(): string
-    {
-        $wherehouse = self::getWhereHouse();
-
-        return self::$label . ' ' . $wherehouse;
-    }
+//    public static function getLabel(): string
+//    {
+//        $wherehouse = self::getWhereHouse();
+//
+//        return self::$label . ' ' . $wherehouse;
+//    }
 
     public static function getPluralLabel(): string
     {
@@ -292,6 +294,10 @@ class InventoryResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+//                    ExportAction::make()->exports([
+//                        ExcelExport::make()->queue()
+//                    ])
+
                 ]),
             ]);
     }

@@ -20,7 +20,6 @@ class DocumentTypeResource extends Resource
 protected static ?string $label = 'Tipos de documentos';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort=7;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
