@@ -53,18 +53,18 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('5rem')
             ->default()
             ->font('popins')
-            ->sidebarWidth('18rem')
+            ->sidebarWidth('20rem')
             ->id('admin')
             ->path('admin')
             ->profile(isSimple: false)
             ->authGuard('web')
-//            ->databaseTransactions()
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
-            ->login()
+            ->login(CustomLogin::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
+
             ->spa()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

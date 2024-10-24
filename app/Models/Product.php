@@ -37,6 +37,10 @@ class Product extends Model
     {
         return $this->belongsTo(UnitMeasurement::class, 'unit_measurement_id', 'id');
     }
+    public function inventories(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
 
 
 

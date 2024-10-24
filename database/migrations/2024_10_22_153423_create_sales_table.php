@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('document_type')->constrained('document_types')->cascadeOnDelete();//factura, nota de venta, etc
+            $table->foreignId('document_type_id')->constrained('document_types')->cascadeOnDelete();//factura, nota de venta, etc
             $table->string('document_internal_number'); //Controll interno correlativos caja
             $table->foreignId('wherehouse_id')->constrained('branches')->cascadeOnDelete();//Sucursal
             $table->foreignId('seller_id')->constrained('employees')->cascadeOnDelete();//Vendedor
             $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();//Cliente
             $table->foreignId('operation_condition_id')->nullable()->constrained('operation_conditions')->cascadeOnDelete();//Condicion de operacion contado, credito
             $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->cascadeOnDelete();//Metodo de pago cheque, efectivo, tarjeta
-            $table->enum('sales_payment_status',['Pagado','Pendiente'])->nullable();
-            $table->enum('status',['Activo','Anulado'])->default('Activo');
+            $table->enum('sales_payment_status',['Pagado','Pendiente','Abono'])->nullable();
+            $table->enum('status',['Nuevo','Procesando','Cancelado','Facturado','Anulado'])->default('Nuevo');
             $table->boolean('is_taxed')->default(true);
             $table->decimal('net_amount',10,2)->default(0);
             $table->decimal('iva',10,2)->default(0);
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('sales');
     }
 };

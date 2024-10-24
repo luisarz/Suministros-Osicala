@@ -18,6 +18,8 @@ use Illuminate\Validation\ValidationException;
 
 class CustomLogin extends Login
 {
+//    protected static string $view = 'resources.views.livewire.pages.auth.login';
+
     protected function getForms(): array
     {
         return [
@@ -88,29 +90,12 @@ class CustomLogin extends Login
         if (!Filament::auth()->attempt($this->getCredentialsFromFormData($data), $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
-
         $user = Filament::auth()->user();
-
-
         if (($user instanceof FilamentUser) && (!$user->canAccessPanel(Filament::getCurrentPanel()))) {
             Filament::auth()->logout();
             $this->throwFailureValidationException();
         }
         session()->regenerate();
-//        if ($user && $user->employee) {
-//            $employee = Employee::with('wherehouse')->find($user->employee->id);
-//            $sucursal = $employee->wherehouse;
-//            if ($sucursal) {
-//                Session::put(['branch_id' => $sucursal->id]);
-//                Session::put(['branch_name' => $sucursal->name]);
-//                Session::put(['branch_logo' => $sucursal->logo]); // Guardar el logo en la sesión
-//
-//            }
-//        }
-//        dd(Session::all());  // Verifica si los datos de la sesión están presentes
-
-//        eturn redirect()->intended(Filament::getUrl());
-//        return $this->redirect('/admin');
         return app(LoginResponse::class);
     }
 
