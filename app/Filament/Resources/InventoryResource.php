@@ -25,7 +25,7 @@ class InventoryResource extends Resource
 {
     protected static function getWhereHouse(): string
     {
-        return \Auth::user()->employee->wherehouse->name?? 'N/A'; // Si no hay valor, usa 'N/A'
+        return  \Auth::user()->employee->wherehouse->name??   'N/A'; // Si no hay valor, usa 'N/A'
     }
     protected static ?string $model = Inventory::class;
     protected static ?string $navigationGroup = 'Inventario';
@@ -33,16 +33,11 @@ class InventoryResource extends Resource
     protected static ?string $label = 'Inventario'; // Singular
     protected static ?string $pluralLabel = null;
 
-//    public static function getLabel(): string
-//    {
-//        $wherehouse = self::getWhereHouse();
-//
-//        return self::$label . ' ' . $wherehouse;
-//    }
 
     public static function getPluralLabel(): string
     {
-        return self::getLabel(); // Usar la misma lógica para plural o ajustarlo según sea necesario
+        $label=self::getWhereHouse();
+        return self::getLabel().' - '.$label; // Usar la misma lógica para plural o ajustarlo según sea necesario
     }
     public static function form(Form $form): Form
     {
@@ -144,7 +139,6 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Producto')
                     ->wrap()
-                    ->html()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('product.aplications')
@@ -204,39 +198,36 @@ class InventoryResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->deferLoading()
+//            ->deferLoading()
             ->striped()
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-
-
                 Tables\Filters\SelectFilter::make('branch_id')
                     ->relationship('branch', 'name')
                     ->label('Sucursal')
                     ->preload()
                     ->placeholder('Buscar por sucursal'),
-                Tables\Filters\Filter::make('product_name') // Filtro para el nombre del producto
-                ->form([
-                    TextInput::make('product_name') // Nombre del campo del filtro
-                    ->label('Producto')
-                        ->placeholder('Enter part of the product name'),
-                ])
-                    ->query(function ($query, array $data) {
-                        // Usar la relación con la tabla de productos para buscar por nombre
-                        return $query->whereHas('product', function ($query) use ($data) {
-                            $query->where('name', 'like', '%' . $data['product_name'] . '%');
-                        });
-                    }),
-                Tables\Filters\Filter::make('description')
-                    ->form([TextInput::make('product_aplications')
-                        ->label('Aplicaciones')
-                        ->placeholder('Enter part of the product name'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        return $query->whereHas('product', function ($query) use ($data) {
-                            $query->where('aplications', 'like', '%' . $data['product_aplications'] . '%');
-                        });
-                    }),
+//                Tables\Filters\Filter::make('product_name') // Filtro para el nombre del producto
+//                ->form([
+//                    TextInput::make('product_name') // Nombre del campo del filtro
+//                    ->label('Producto')
+//                        ->placeholder('Enter part of the product name'),
+//                ])->query(function ($query, array $data) {
+//                        // Usar la relación con la tabla de productos para buscar por nombre
+//                        return $query->whereHas('product', function ($query) use ($data) {
+//                            $query->where('name', 'like', '%' . $data['product_name'] . '%');
+//                        });
+//                    }),
+//                Tables\Filters\Filter::make('product_aplications')
+//                    ->form([TextInput::make('product_aplications')
+//                        ->label('Aplicaciones')
+//                        ->placeholder('Enter part of the product name'),
+//                    ])
+//                    ->query(function ($query, array $data) {
+//                        return $query->whereHas('product', function ($query) use ($data) {
+//                            $query->where('aplications', 'like', '%' . $data['product_aplications'] . '%');
+//                        });
+//                    }),
             ])->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -256,7 +247,6 @@ class InventoryResource extends Resource
                                     ->where('product_id', $record->product_id)
                                     ->where('branch_id', $data['branch_did'])
                                     ->first();
-                                if ($existencia) {
                                     if ($existencia) {
                                         // Si el registro está eliminado
                                         if ($existencia->trashed()) {
@@ -275,7 +265,6 @@ class InventoryResource extends Resource
                                             $action->halt(); // Detener la acción si se encuentra un registro duplicado
                                         }
                                     }
-                                }
                             } catch (\Exception $e) {
                                 $action->halt(); // Detener la acción en caso de error
                             }
@@ -293,13 +282,11 @@ class InventoryResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-
                     ExportAction::make()
                         ->exporter(InventoryExporter::class)
                         ->formats([
                             ExportFormat::Csv,
                         ])
-                        // or
                         ->formats([
                             ExportFormat::Xlsx,
                         ])

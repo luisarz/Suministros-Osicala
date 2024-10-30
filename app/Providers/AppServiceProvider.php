@@ -13,6 +13,8 @@ use Filament\Pages\Page;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -37,7 +39,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-
+        DB::listen(function ($query) {
+            Log::error($query->sql);
+            Log::info($query->bindings);
+            Log::info($query->time);
+        });
 //
 //        Filament::serving(function () {
 //            $user = Auth::user();

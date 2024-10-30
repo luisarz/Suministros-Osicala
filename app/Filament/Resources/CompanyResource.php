@@ -114,6 +114,7 @@ class CompanyResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('api_key')
                             ->maxLength(255)
+                            ->password()
                             ->inlineLabel()
                             ->default(null),
                         Forms\Components\FileUpload::make('logo')

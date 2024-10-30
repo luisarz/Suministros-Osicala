@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('last_name')->nullable();
+            $table->foreignId('person_type_id')->nullable()->constrained('person_types', 'id');
+            $table->foreignId('document_type_id')->nullable()->constrained('customer_document_types', 'id');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->foreignId('country_id')->nullable()->constrained('countries', 'id');

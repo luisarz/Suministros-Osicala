@@ -18,4 +18,5 @@ class CreateSale extends CreateRecord
                 ->createAnother(false), // Desactiva "Crear otro"
         ];
     }
+
 }

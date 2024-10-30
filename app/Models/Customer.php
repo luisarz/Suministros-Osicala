@@ -33,6 +33,9 @@ class Customer extends Model
         'credit_days',
         'credit_balance',
         'last_purched',
+        'person_type_id',
+        'document_type_id'
+
     ];
     public function country()
     {
@@ -66,5 +69,13 @@ class Customer extends Model
     {
         return $this->name . ' ' . $this->last_name;
 
+    }
+    public function documenttypecustomer()
+    {
+        return $this->belongsTo(CustomerDocumentType::class, 'document_type_id');
+    }
+    public function persontype()
+    {
+        return $this->belongsTo(PersonType::class, 'person_type_id');
     }
 }

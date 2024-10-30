@@ -30,6 +30,18 @@ class CustomerResource extends Resource
                     ->description('Información personal del cliente')
                     ->icon('heroicon-o-user')
                     ->schema([
+                        Forms\Components\Select::make('person_type_id')
+                            ->relationship('persontype', 'name')
+                            ->label('Tipo de persona')
+                            ->required()
+                            ->preload()
+                            ->searchable(),
+                        Forms\Components\Select::make('document_type_id')
+                            ->relationship('documenttypecustomer', 'name')
+                            ->label('Tipo de documento')
+                            ->required()
+                            ->preload()
+                            ->searchable(),
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->label('Nombre')
@@ -275,7 +287,7 @@ class CustomerResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\ReplicateAction::make()->label('Duplicar'),
-                    Tables\Actions\deleteAction::make(),
+                    Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
 
                 ]),

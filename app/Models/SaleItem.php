@@ -2,9 +2,33 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 
 class SaleItem extends Model
 {
-    //
+
+    protected $fillable = [
+        'sale_id',
+        'inventory_id',
+        'quantity',
+        'price',
+        'discount',
+        'total',
+        'is_except',
+        'exemptSale',
+        'tributes',
+    ];
+    protected $casts = [
+        'tributes' => 'array',
+//        'price' => MoneyCast::class
+    ];
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class);
+    }
 }

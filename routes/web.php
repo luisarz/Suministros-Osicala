@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DTEController;
 use App\Http\Controllers\hoja;
 use Illuminate\Support\Facades\Route;
 
@@ -14,5 +15,5 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::get('/ejecutar', [hoja::class, 'ejecutar']);
-
+Route::get('/senDTE/{idVenta}', [DTEController::class, 'generarDTE'])->middleware(['auth'])->name('sendDTE');
 require __DIR__.'/auth.php';

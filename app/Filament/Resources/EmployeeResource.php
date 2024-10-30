@@ -34,7 +34,7 @@ class EmployeeResource extends Resource
                 Tabs::make('Empleado')
                     ->columns(1)
                     ->tabs([
-                        Tabs\tab::make('Datos Personales')
+                        Tabs\Tab::make('Datos Personales')
                             ->icon('heroicon-o-user')
                             ->columns(23)
                             ->schema([
@@ -333,7 +333,7 @@ class EmployeeResource extends Resource
 
             ])
             ->actions([
-                Tables\actions\actionGroup::make([
+                Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\ReplicateAction::make()
                     ->excludeAttributes(['email','dui','nit','photo','created_at','updated_at','deleted_at']),

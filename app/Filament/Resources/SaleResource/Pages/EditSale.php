@@ -13,7 +13,12 @@ class EditSale extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+//            Actions\DeleteAction::make()->label('Facturar'),
         ];
+    }
+    public function afterSave(): void
+    {
+//        dd($this->record);//
+//        recorrer los inventarios y descontarlos
     }
 }

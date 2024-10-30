@@ -16,10 +16,8 @@ use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-
 class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
@@ -98,6 +96,7 @@ class SaleResource extends Resource
                             ])
                             ->label('Estado de pago')
                             ->default('Pendiente')
+                            ->hidden()
                             ->disabled(),
                         Forms\Components\Select::make('status')
                             ->options([
@@ -108,9 +107,12 @@ class SaleResource extends Resource
                                 'Anulado' => 'Anulado',
                             ])
                             ->default('Nuevo')
+                            ->hidden()
                             ->required(),
                         Forms\Components\Toggle::make('is_taxed')
                             ->label('Gravado')
+                            ->hidden()
+
                             ->default(true)
                             ->required(),
                         Forms\Components\TextInput::make('net_amount')
@@ -215,8 +217,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
-                    ->searchable()
-                    ->numeric()
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cash')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -250,6 +251,17 @@ class SaleResource extends Resource
 //                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make()->label('Anular'),
+                Tables\Actions\Action::make('print')
+                    ->label('DTE')
+                    ->icon('heroicon-o-shield-exclamation')
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Está seguro de Enviar el DTE?') // Custom modal heading
+                    ->modalSubheading('Esta acción enviará el documento a Hacienda y no se puede revertir.') // Custom subheading
+                    ->color('primary')
+                    ->url(fn ($record) => route('sendDTE', ['idVenta' => $record->id])) // Use closure to pass dynamic ID
+
+
+
 
             ])
             ->bulkActions([
