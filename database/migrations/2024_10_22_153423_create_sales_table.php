@@ -31,6 +31,7 @@ return new class extends Migration
             $table->decimal('cash',10,2)->default(0);
             $table->decimal('change',10,2)->default(0);
             $table->foreignId('casher_id')->nullable()->constrained('employees')->cascadeOnDelete();//Cajero
+            $table->boolean('is_dte')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

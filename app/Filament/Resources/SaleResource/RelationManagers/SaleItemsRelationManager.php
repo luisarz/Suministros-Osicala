@@ -58,7 +58,7 @@ class SaleItemsRelationManager extends RelationManager
                                     $set('minprice', $price->inventory->cost_with_taxes);
 
                                 } else {
-                                    $set('price', $price->price);
+                                    $set('price', $price->price??0);
                                     $set('quantity', 1);
                                     $set('discount', 0);
                                 }

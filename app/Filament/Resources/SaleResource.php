@@ -4,20 +4,30 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
+use App\Http\Controllers\DTEController;
+use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\HistoryDte;
 use App\Models\Inventory;
 use App\Models\Sale;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+
 class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
@@ -31,12 +41,14 @@ class SaleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Información de la venta')
+                Section::make('')
                     ->columns([
                         'sm' => 2,
                     ])
-                    ->compact()
+//                    ->compact()
                     ->schema([
+//                        Section::make([])->columnSpan(5),
+//                        Section::make([])->columnSpan(5),
                         Forms\Components\Select::make('document_type_id')
                             ->label('Comprobante')
                             ->relationship('documenttype', 'name')
@@ -74,6 +86,23 @@ class SaleResource extends Resource
 
                         Forms\Components\Select::make('customer_id')
                             ->relationship('customer', 'name')
+                            ->options(function (callable $get) {
+                                $documentType = $get('document_type_id');
+                                if ($documentType == 2) {
+                                    $customer= Customer::whereNotNull('departamento_id')
+                                        ->whereNotNull('distrito_id')//MUnicipio
+//                                        ->whereNotNull('distrito_id')
+                                        ->whereNotNull('economicactivity_id')
+//                                        ->whereNotNull('wherehouse_id')
+//                                        ->whereNotNull('address')
+                                        ->whereNotNull('nrc')
+                                        ->whereNotNull('dui')
+                                        ->orderBy('name')
+                                        ->pluck('name', 'id');
+                                    return $customer;
+                                }
+                                return Customer::orderBy('name')->pluck('name', 'id');
+                            })
                             ->preload()
                             ->searchable()
                             ->label('Cliente')
@@ -89,30 +118,25 @@ class SaleResource extends Resource
                             ->searchable()
                             ->default(1),
                         Forms\Components\Select::make('sales_payment_status')
-                            ->options([
-                                'Pagado' => 'Pagado',
+                            ->options(['Pagado' => 'Pagado',
                                 'Pendiente' => 'Pendiente',
-                                'Abono' => 'Abono',
-                            ])
+                                'Abono' => 'Abono',])
                             ->label('Estado de pago')
                             ->default('Pendiente')
                             ->hidden()
                             ->disabled(),
                         Forms\Components\Select::make('status')
-                            ->options([
-                                'Nuevo' => 'Nuevo',
+                            ->options(['Nuevo' => 'Nuevo',
                                 'Procesando' => 'Procesando',
                                 'Cancelado' => 'Cancelado',
                                 'Facturado' => 'Facturado',
-                                'Anulado' => 'Anulado',
-                            ])
+                                'Anulado' => 'Anulado',])
                             ->default('Nuevo')
                             ->hidden()
                             ->required(),
                         Forms\Components\Toggle::make('is_taxed')
                             ->label('Gravado')
                             ->hidden()
-
                             ->default(true)
                             ->required(),
                         Forms\Components\TextInput::make('net_amount')
@@ -153,12 +177,11 @@ class SaleResource extends Resource
 //                        Forms\Components\TextInput::make('casher_id')
 //                            ->numeric()
 //                            ->default(null),
-                    ])->columns(2),
-
-            ]);
+                    ])->columns(2),]);
     }
 
-    public static function table(Table $table): Table
+    public
+    static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -168,6 +191,13 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_dte')
+                    ->boolean()
+                    ->tooltip('DTE')
+                    ->trueIcon('heroicon-o-shield-check')
+                    ->falseIcon('heroicon-o-shield-exclamation')
+                    ->label('DTE')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
@@ -248,22 +278,87 @@ class SaleResource extends Resource
                 //
             ])
             ->actions([
-//                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make()->label('Anular'),
-                Tables\Actions\Action::make('print')
-                    ->label('DTE')
-                    ->icon('heroicon-o-shield-exclamation')
-                    ->requiresConfirmation()
-                    ->modalHeading('¿Está seguro de Enviar el DTE?') // Custom modal heading
-                    ->modalSubheading('Esta acción enviará el documento a Hacienda y no se puede revertir.') // Custom subheading
-                    ->color('primary')
-                    ->url(fn ($record) => route('sendDTE', ['idVenta' => $record->id])) // Use closure to pass dynamic ID
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make()->label('Anular'),
+                    Tables\Actions\Action::make('dte')
+                        ->label('Generar DTE')
+                        ->visible(fn($record) => !$record->is_dte) // Mostrar esta acción solo si isdte es false
+                        ->icon('heroicon-o-shield-exclamation')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Está seguro de enviar el DTE?')
+                        ->color('primary')
+                        ->form([  // Formulario de opciones en el modal
+                            Select::make('tipoEnvio')
+                                ->label('Tipo de Envío')
+                                ->options([
+                                    'normal' => 'Envío Normal',
+                                ])
+                                ->default('normal')
+                                ->required(),
+                            Select::make('confirmacion')
+                                ->label('Enviar por Email')
+                                ->options([
+                                    'si' => 'Sí, deseo enviar',
+                                    'no' => 'No, no enviar',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+//                        redirect()->route('sendDTE', ['idVenta' => $record->id]);
+                            if ($data['confirmacion'] === 'si') {
+                                $dteController = new DTEController();
+                                $resultado = $dteController->generarDTE($record->id);
+                                if ($resultado['estado'] === 'EXITO') {
+                                    Notification::make()
+                                        ->title('Envío Exitoso')
+                                        ->success()
+                                        ->send();
+                                } else {
+                                    Notification::make()
+                                        ->title('Fallo en envío')
+                                        ->danger()
+                                        ->body($resultado["mensaje"]) // Concatena las observaciones con saltos de línea
+                                        ->send();
+                                }
+                            } else {
+                                Notification::make()
+                                    ->title('Se cancelo en envio')
+                                    ->warning()
+                                    ->send();
+                            }
+                        }),
+
+                    Tables\Actions\Action::make('Historial')
+                        ->label('Historial DTE')
+                        ->icon('heroicon-o-scale')
+                        ->color('success')
+//                        ->visible(fn($record) => $record->is_dte) // Show this action only if is_dte is true
+                        ->action(function ($record, $livewire) {
+                            // Retrieve the DTE history based on the record
+                            $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
+
+                            // Dispatch browser event with historial data
+                            $livewire->dispatchBrowserEvent('show-historial-modal', [
+                                'historial' => $historial->toArray(), // Convert to array for JavaScript
+                            ]);
+                        })
+                        ->modalHeading('Historial de Envío DTE')
+                        ->modalContent(function ($record) {
+                            // Pass the historial data directly to the view
+                            $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
+                            return view('DTE.historial-dte', [
+                                'record' => $record,
+                                'historial' => $historial, // Pass the historial data to the view
+                            ]);
+                        })
+                        ->modalWidth('7xl'),
 
 
+                ])->iconButton()->icon('heroicon-o-bars-3')->label('Acciones'),
 
 
-            ])
+            ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -271,14 +366,16 @@ class SaleResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    public
+    static function getRelations(): array
     {
         return [
-          RelationManagers\SaleItemsRelationManager::class,
+            RelationManagers\SaleItemsRelationManager::class,
         ];
     }
 
-    public static function getPages(): array
+    public
+    static function getPages(): array
     {
         return [
             'index' => Pages\ListSales::route('/'),
@@ -286,4 +383,6 @@ class SaleResource extends Resource
             'edit' => Pages\EditSale::route('/{record}/edit'),
         ];
     }
+
+
 }

@@ -28,18 +28,18 @@ use Psr\Container\NotFoundExceptionInterface;
 
 class AdminPanelProvider extends PanelProvider
 {
-    public function render()
-    {
-        $branchId = session('branch_id');
-        $branchName = session('branch_name');
-        $branchLogo = session('branch_logo');
-
-        return view('filament.pages.dashboard', [
-            'branchId' => $branchId,
-            'branchName' => $branchName,
-            'branchLogo' => $branchLogo,
-        ]);
-    }
+//    public function render()
+//    {
+//        $branchId = session('branch_id');
+//        $branchName = session('branch_name');
+//        $branchLogo = session('branch_logo');
+//
+//        return view('filament.pages.dashboard', [
+//            'branchId' => $branchId,
+//            'branchName' => $branchName,
+//            'branchLogo' => $branchLogo,
+//        ]);
+//    }
 
     /**
      * @throws ContainerExceptionInterface
@@ -61,15 +61,15 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->login(CustomLogin::class)
-            ->colors([
-                'primary' => Color::Amber,
-            ])
+//            ->colors([
+//                'primary' => Color::Amber,
+//            ])
 //            ->breadcrumbs(false)
 
 //            ->topbar(false);
 
 
-        ->spa()
+            ->spa()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

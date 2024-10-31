@@ -44,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
             Log::info($query->bindings);
             Log::info($query->time);
         });
+
+
 //
 //        Filament::serving(function () {
 //            $user = Auth::user();
