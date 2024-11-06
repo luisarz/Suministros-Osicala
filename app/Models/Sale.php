@@ -71,4 +71,9 @@ class Sale extends Model
     {
         return $this->belongsTo(Inventory::class);
     }
+
+    public function dteProcesado()
+    {
+        return $this->hasOne(HistoryDte::class,'sales_invoice_id');
+    }
 }

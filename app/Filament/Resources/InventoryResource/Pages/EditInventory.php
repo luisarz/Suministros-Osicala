@@ -16,4 +16,9 @@ class EditInventory extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    protected function beforeSave(): void
+    {
+       dd( $this->data );
+    }
+
 }

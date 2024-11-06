@@ -1,0 +1,205 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\KardexResource\Pages;
+use App\Filament\Resources\KardexResource\RelationManagers;
+use App\Models\Kardex;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class KardexResource extends Resource
+{
+    protected static ?string $model = Kardex::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $label = 'Kardex productos';
+    protected static ?string $navigationGroup = 'Inventario';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('branch_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\DatePicker::make('date')
+                    ->required(),
+                Forms\Components\TextInput::make('operation_type')
+                    ->maxLength(255)
+                    ->default(null),
+                Forms\Components\TextInput::make('operation_id')
+                    ->maxLength(255)
+                    ->default(null),
+//                Forms\Components\TextInput::make('operation_detail_id')
+//                    ->numeric()
+//                    ->default(null),
+                Forms\Components\TextInput::make('document_type')
+                    ->maxLength(255)
+                    ->default(null),
+                Forms\Components\TextInput::make('document_number')
+                    ->maxLength(255)
+                    ->default(null),
+                Forms\Components\TextInput::make('entity')
+                    ->maxLength(255)
+                    ->default(null),
+//                Forms\Components\TextInput::make('nationality')
+//                    ->maxLength(255)
+//                    ->default(null),
+                Forms\Components\TextInput::make('inventory_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('previous_stock')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('stock_in')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('stock_out')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('stock_actual')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('money_in')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('money_out')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('money_actual')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('sale_price')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('purchase_price')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('whereHouse.name')
+                    ->label('Sucursal')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('inventory.product.name')
+                    ->label('Producto')
+//                    ->wrap(50)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Fecha')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('operation_type')
+                    ->label('Operación')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('operation_id')
+                    ->label('#')
+                    ->searchable(),
+//                Tables\Columns\TextColumn::make('operation_detail_id')
+//                    ->label('ID')
+//                    ->numeric()
+//                    ->sortable(),
+                Tables\Columns\TextColumn::make('document_type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('document_number')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('entity')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+//                Tables\Columns\TextColumn::make('nationality')
+//                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('previous_stock')
+                    ->label('Saldo Anterior')
+//                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stock_in')
+                    ->label('Entrada')
+                    ->numeric()
+                    ->extraAttributes(['class' => 'bg-success-200']) // Agregar clases CSS para el borde
+
+            ->sortable(),
+                Tables\Columns\TextColumn::make('stock_out')
+                    ->label('Salida')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stock_actual')
+                    ->label('Stock')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('money_in')
+                    ->label('Entrada $')
+                    ->money('USD', locale: 'USD')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('money_out')
+                    ->label('Salida $')
+
+                    ->money('USD', locale: 'USD')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('money_actual')
+                    ->label('Saldo $')
+                    ->money('USD', locale: 'USD')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('sale_price')
+                    ->money('USD', locale: 'USD')
+                    ->label('Precio')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('purchase_price')
+                    ->money('USD', locale: 'USD')
+                    ->label('Costo')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+//                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListKardexes::route('/'),
+            'create' => Pages\CreateKardex::route('/create'),
+            'edit' => Pages\EditKardex::route('/{record}/edit'),
+        ];
+    }
+}

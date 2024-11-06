@@ -280,7 +280,6 @@ class SaleResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make()->label('Anular'),
                     Tables\Actions\Action::make('dte')
                         ->label('Generar DTE')
                         ->visible(fn($record) => !$record->is_dte) // Mostrar esta acción solo si isdte es false
@@ -328,30 +327,59 @@ class SaleResource extends Resource
                                     ->send();
                             }
                         }),
+                    Tables\Actions\Action::make('anularDTE')
+                        ->label('Anular DTE')
+                        ->visible(fn($record) => $record->is_dte && $record->status!='Anulado') // Mostrar esta acción solo si isdte es false
+                        ->icon('heroicon-o-shield-exclamation')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Está seguro de Anular el DTE?')
+                        ->modalDescription('Al anular el DTE no se podrá recuperar')
+                        ->color('danger')
+                        ->form([  // Formulario de opciones en el modal
+                            Select::make('ConfirmacionAnular')
+                                ->label('Confirmar')
+                                ->options([
+                                    'confirmacion' => 'Estoy seguro, si Anular',
+                                ])
+                                ->placeholder('Seleccione una opción')
+                                ->required(),
+
+                        ])
+                        ->action(function ($record, array $data) {
+//                        redirect()->route('sendDTE', ['idVenta' => $record->id]);
+                            if ($data['ConfirmacionAnular'] === 'Estoy seguro, si Anular') {
+                                $dteController = new DTEController();
+                                $resultado = $dteController->anularDTE($record->id);
+                                if ($resultado['estado'] === 'EXITO') {
+                                    Notification::make()
+                                        ->title('Anulacion Exitosa')
+                                        ->success()
+                                        ->send();
+                                } else {
+                                    Notification::make()
+                                        ->title('Fallo en envío')
+                                        ->danger()
+                                        ->body($resultado["mensaje"]) // Concatena las observaciones con saltos de línea
+                                        ->send();
+                                }
+                            }
+                        }),
 
                     Tables\Actions\Action::make('Historial')
                         ->label('Historial DTE')
                         ->icon('heroicon-o-scale')
                         ->color('success')
-//                        ->visible(fn($record) => $record->is_dte) // Show this action only if is_dte is true
                         ->action(function ($record, $livewire) {
-                            // Retrieve the DTE history based on the record
-                            $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
-
-                            // Dispatch browser event with historial data
-                            $livewire->dispatchBrowserEvent('show-historial-modal', [
-                                'historial' => $historial->toArray(), // Convert to array for JavaScript
-                            ]);
                         })
-                        ->modalHeading('Historial de Envío DTE')
+                        ->modalHeading('Bitacora procesos DTE')
                         ->modalContent(function ($record) {
-                            // Pass the historial data directly to the view
                             $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
                             return view('DTE.historial-dte', [
                                 'record' => $record,
                                 'historial' => $historial, // Pass the historial data to the view
                             ]);
                         })
+                        ->modalDescription('Historial de envío de DTEs')
                         ->modalWidth('7xl'),
 
 

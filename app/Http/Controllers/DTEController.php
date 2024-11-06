@@ -115,11 +115,7 @@ class DTEController extends Controller
             "items" => $items
         ];
 
-        return response()->json($dte);
-
-
         $responseData = $this->SendDTE($dte, $idVenta);
-//        dd($responseData["estado"]);
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
                 'estado' => 'FALLO', // o 'ERROR'
@@ -148,18 +144,18 @@ class DTEController extends Controller
         $conditionCode = $factura->salescondition->code;
         $receptor = [
             "address" => $factura->customer->address ?? null,
-            "businessName"=>null,
+            "businessName" => null,
             "codeCity" => $factura->customer->departamento->code ?? null,
             "codeMunicipality" => $factura->customer->distrito->code ?? null,
             "documentNum" => $factura->customer->dui ?? $factura->customer->nit,
             "documentType" => $factura->customer->documenttypecustomer->code ?? null,
             "economicAtivity" => $factura->customer->economicactivity->code ?? null,
 
-            "nrc" => str_replace("-","",$factura->customer->nrc) ?? null,
+            "nrc" => str_replace("-", "", $factura->customer->nrc) ?? null,
             "name" => $factura->customer->name . " " . $factura->customer->last_name ?? null,
-            "phoneNumber" =>str_replace(['-', '(', ')',' '], '', $factura->customer->phone)  ?? null,
+            "phoneNumber" => str_replace(['-', '(', ')', ' '], '', $factura->customer->phone) ?? null,
             "email" => $factura->customer->email ?? null,
-            "nit"=>str_replace("-",'',$factura->customer->dui) ?? null,
+            "nit" => str_replace("-", '', $factura->customer->dui) ?? null,
         ];
         $extencion = [
             "deliveryName" => $factura->seller->name . " " . $factura->seller->last_name ?? null,
@@ -169,7 +165,7 @@ class DTEController extends Controller
         $i = 1;
         foreach ($factura->saleDetails as $detalle) {
             $codeProduc = str_pad($detalle->inventory_id, 10, '0', STR_PAD_LEFT);
-            $tributes=["20"];
+            $tributes = ["20"];
             $items[] = [
                 "itemNum" => intval($i),
                 "itemType" => 1,
@@ -229,6 +225,7 @@ class DTEController extends Controller
             // Convert data to JSON format
             $dteJSON = json_encode($dteData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
+//            dd($dteJSON);
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlAPI,
@@ -257,16 +254,13 @@ class DTEController extends Controller
                 return $data;
             }
 
-            // Close the cURL session
             curl_close($curl);
 
             $responseData = json_decode($response, true);
-//            dd($responseData);
             $responseHacienda = (isset($responseData["estado"]) == "RECHAZADO") ? $responseData : $responseData["respuestaHacienda"];
-//            dd($responseHacienda);
             $falloDTE = new HistoryDte;
             $falloDTE->sales_invoice_id = $idVenta;
-            $falloDTE->version = $responseHacienda["version"]??null;
+            $falloDTE->version = $responseHacienda["version"] ?? null;
             $falloDTE->ambiente = $responseHacienda["ambiente"];
             $falloDTE->versionApp = $responseHacienda["versionApp"];
             $falloDTE->estado = $responseHacienda["estado"];
@@ -283,16 +277,147 @@ class DTEController extends Controller
             return $responseData;
 
         } catch (Exception $e) {
-            // Enhanced error logging
-            error_log('Caught exception: ' . $e->getMessage());
             $data = [
                 'estado' => 'RECHAZADO ',
                 'mensaje' => "Ocurrio ub¿n eror" . $e->getMessage()
             ];
             return $data;
+        }
+    }
 
-//            echo 'Error occurred while sending DTE: ' . $e->getMessage();
-//            die();
+
+    public function anularDTE($idVenta): array|\Illuminate\Http\JsonResponse
+    {
+        if ($this->getConfiguracion() == null) {
+            return response()->json(['message' => 'No se ha configurado la empresa']);
+        }
+        $venta = Sale::with([
+            'seller',
+            'dteProcesado' => function ($query) {
+                $query->where('estado', 'PROCESADO');
+            }
+        ])->find($idVenta);
+
+//        dd($venta);
+        if (!$venta) {
+            return [
+                'estado' => 'FALLO', // o 'ERROR'
+                'mensaje' => 'Venta no encontrada',
+            ];
+        }
+        if (!$venta->is_dte) {
+            return [
+                'estado' => 'FALLO', // o 'ERROR'
+                'mensaje' => 'DTE no generado aun',
+            ];
+        }
+
+        if (!$venta->status == "Anulado") {
+            return [
+                'estado' => 'FALLO', // o 'ERROR'
+                'mensaje' => 'DTE Ya fue anulado ',
+            ];
+        }
+
+        $codigoGeneracion= $venta->dteProcesado->codigoGeneracion;
+
+        $dte = [
+            "codeGeneration" => $codigoGeneracion,
+            "description" => "pruebaa de anulacion",
+            "establishmentType" => "01",
+            "type" => 2,
+            "responsibleName" => "David Antonio Castro Mendez",
+            "responsibleDocType" => "13",
+            "responsibleDocNumber" => "04775601-6",
+            "requesterName" => "Karina Cecibel Guzman Castro",
+            "requesterDocType" => "13",
+            "requesterDocNumber" => "04584850-8"
+        ];
+        return response()->json($dte);
+        $responseData = $this->SendAnularDTE($dte, $idVenta);
+
+        if (isset($responseData["estado"]) == "RECHAZADO") {
+            return [
+                'estado' => 'FALLO', // o 'ERROR'
+                'mensaje' => 'DTE falló al enviarse: ' . implode(', ', $responseData['observaciones'] ?? []), // Concatenar observaciones
+                'descripcionMsg' => $responseData["descripcionMsg"]??null ,
+                '$codigoGeneracion'=>$codigoGeneracion??null
+            ];
+        } else {
+            $venta = Sale::find($idVenta);
+            $venta->status = "Anulado";
+            $venta->save();
+            return [
+                'estado' => 'EXITO',
+                'mensaje' => 'DTE ANULADO correctamente',
+            ];
+        }
+    }
+
+    function SendAnularDTE($dteData, $idVenta) // Assuming $dteData is the data you need to send
+    {
+        try {
+            $urlAPI = 'http://api-fel-sv-dev.olintech.com/api/DTE/cancellationDTE'; // Set the correct API URL
+            $apiKey = $this->getConfiguracion()->api_key; // Assuming you retrieve the API key from your config
+
+            // Convert data to JSON format
+            $dteJSON = json_encode($dteData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $urlAPI,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $dteJSON,
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                    'apiKey: ' . $apiKey
+                ),
+            ));
+
+            $response = curl_exec($curl);
+
+            // Check for cURL errors
+            if ($response === false) {
+                $data = [
+                    'estado' => 'RECHAZADO ',
+                    'mensaje' => "Ocurrio un eror" . curl_error($curl)
+                ];
+                return $data;
+            }
+
+            curl_close($curl);
+
+            $responseData = json_decode($response, true);
+            $responseHacienda = (isset($responseData["estado"]) == "RECHAZADO") ? $responseData : $responseData["respuestaHacienda"];
+            $falloDTE = new HistoryDte;
+            $falloDTE->sales_invoice_id = $idVenta;
+            $falloDTE->version = $responseHacienda["version"] ?? null;
+            $falloDTE->ambiente = $responseHacienda["ambiente"];
+            $falloDTE->versionApp = $responseHacienda["versionApp"];
+            $falloDTE->estado = $responseHacienda["estado"];
+            $falloDTE->codigoGeneracion = $responseHacienda["codigoGeneracion"];
+            $falloDTE->selloRecibido = $responseHacienda["selloRecibido"] ?? null;
+            $fhProcesamiento = DateTime::createFromFormat('d/m/Y H:i:s', $responseHacienda["fhProcesamiento"]);
+            $falloDTE->fhProcesamiento = $fhProcesamiento ? $fhProcesamiento->format('Y-m-d H:i:s') : null;
+            $falloDTE->clasificaMsg = $responseHacienda["clasificaMsg"];
+            $falloDTE->codigoMsg = $responseHacienda["codigoMsg"];
+            $falloDTE->descripcionMsg = $responseHacienda["descripcionMsg"];
+            $falloDTE->observaciones = json_encode($responseHacienda["observaciones"]);
+            $falloDTE->dte = $responseData ?? null;
+            $falloDTE->save();
+            return $responseData;
+
+        } catch (Exception $e) {
+            $data = [
+                'estado' => 'RECHAZADO ',
+                'mensaje' => "Ocurrio un eror" . $e->getMessage()
+            ];
+            return $data;
         }
     }
 

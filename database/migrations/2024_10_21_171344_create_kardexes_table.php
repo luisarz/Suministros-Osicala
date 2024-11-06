@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('kardex', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_item_id')->nullable()->constrained('order_items')->cascadeOnDelete();
             $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete();
             $table->date('date');
             $table->string('operation_type')->nullable()    ;
+            $table->string('operation_id')->nullable();
+            $table->integer('operation_detail_id')->nullable();
             $table->string('document_type')->nullable();
             $table->string('document_number')->nullable();
             $table->string('entity')->nullable();
             $table->string('nationality')->nullable();
-            $table->foreignId('inventary_id')->constrained('inventories')->cascadeOnDelete();
+            $table->foreignId('inventory_id')->constrained('inventories')->cascadeOnDelete();
             $table->decimal('previous_stock', 10, 2);
             $table->decimal('stock_in', 10, 2);
             $table->decimal('stock_out', 10, 2);

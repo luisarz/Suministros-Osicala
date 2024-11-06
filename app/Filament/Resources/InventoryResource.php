@@ -25,8 +25,9 @@ class InventoryResource extends Resource
 {
     protected static function getWhereHouse(): string
     {
-        return  \Auth::user()->employee->wherehouse->name??   'N/A'; // Si no hay valor, usa 'N/A'
+        return \Auth::user()->employee->wherehouse->name ?? 'N/A'; // Si no hay valor, usa 'N/A'
     }
+
     protected static ?string $model = Inventory::class;
     protected static ?string $navigationGroup = 'Inventario';
 
@@ -36,9 +37,10 @@ class InventoryResource extends Resource
 
     public static function getPluralLabel(): string
     {
-        $label=self::getWhereHouse();
-        return self::getLabel().' - '.$label; // Usar la misma lógica para plural o ajustarlo según sea necesario
+        $label = self::getWhereHouse();
+        return self::getLabel() . ' - ' . $label; // Usar la misma lógica para plural o ajustarlo según sea necesario
     }
+
     public static function form(Form $form): Form
     {
         $tax = Tribute::find(1)->select('rate', 'is_percentage')->first();
@@ -78,6 +80,14 @@ class InventoryResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(0),
+                        Forms\Components\Hidden::make('stock_actual')
+                            ->default(0) // Valor predeterminado para nuevos registros
+                            ->afterStateHydrated(function (Forms\Components\Hidden $component, $state, $record) {
+                                if ($record) {
+                                    $component->state($record->stock);
+                                }
+                            }),
+
                         Forms\Components\TextInput::make('stock_min')
                             ->label('Stock Minimo')
                             ->required()
@@ -126,7 +136,7 @@ class InventoryResource extends Resource
                                     ->default(true)
                                     ->label('Activo')
                                     ->required(),
-                            ])
+                            ]) // Fin de la sección de configuración
 
                     ]),
             ]);
@@ -161,7 +171,6 @@ class InventoryResource extends Resource
                     ->label('Stock Minimo')
                     ->numeric()
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_max')
                     ->label('Stock Maximo')
@@ -169,12 +178,12 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('cost_without_taxes')
                     ->label('Costo')
                     ->numeric()
-                    ->money('USD',locale: 'en_US')
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cost_with_taxes')
                     ->label('C.+    IVA')
                     ->numeric()
-                    ->money('USD',locale: 'en_US')
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_stock_alert')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -247,24 +256,24 @@ class InventoryResource extends Resource
                                     ->where('product_id', $record->product_id)
                                     ->where('branch_id', $data['branch_did'])
                                     ->first();
-                                    if ($existencia) {
-                                        // Si el registro está eliminado
-                                        if ($existencia->trashed()) {
-                                            Notification::make('Inventario Eliminado')
-                                                ->title('Replicar Inventario')
-                                                ->danger()
-                                                ->body('El inventario ya existe en la sucursal destino, pero el estado es eliminado, restarualo para poder replicarlo')
-                                                ->send();
-                                            $action->halt(); // Detener la acción si el inventario está eliminado
-                                        } else {
-                                            // Si el registro existe y no está eliminado
-                                            Notification::make('Registro Duplicado')
-                                                ->danger()
-                                                ->body('Ya existe un registro con el producto ' . $record->product->name . ' en la sucursal ' . $record->branch->name. '.')
-                                                ->send();
-                                            $action->halt(); // Detener la acción si se encuentra un registro duplicado
-                                        }
+                                if ($existencia) {
+                                    // Si el registro está eliminado
+                                    if ($existencia->trashed()) {
+                                        Notification::make('Inventario Eliminado')
+                                            ->title('Replicar Inventario')
+                                            ->danger()
+                                            ->body('El inventario ya existe en la sucursal destino, pero el estado es eliminado, restarualo para poder replicarlo')
+                                            ->send();
+                                        $action->halt(); // Detener la acción si el inventario está eliminado
+                                    } else {
+                                        // Si el registro existe y no está eliminado
+                                        Notification::make('Registro Duplicado')
+                                            ->danger()
+                                            ->body('Ya existe un registro con el producto ' . $record->product->name . ' en la sucursal ' . $record->branch->name . '.')
+                                            ->send();
+                                        $action->halt(); // Detener la acción si se encuentra un registro duplicado
                                     }
+                                }
                             } catch (\Exception $e) {
                                 $action->halt(); // Detener la acción en caso de error
                             }
@@ -315,5 +324,16 @@ class InventoryResource extends Resource
 //            'replicate' => Pages\ReplicateInventory::route('/{record}/replicate'),
             'edit' => Pages\EditInventory::route('/{record}/edit'),
         ];
+    }
+
+    public static function afterUpdate(): void
+    {
+        dd('Hola');
+
+    }
+
+    protected function beforeSave(): void
+    {
+        dd('Hola');
     }
 }
