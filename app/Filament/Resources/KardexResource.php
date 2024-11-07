@@ -9,9 +9,13 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
+use Filament\Tables\Grouping\Group;
+
 
 class KardexResource extends Resource
 {
@@ -127,22 +131,30 @@ class KardexResource extends Resource
 //                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('previous_stock')
-                    ->label('Saldo Anterior')
-//                    ->numeric()
+                    ->label('S. Anterior')
+                    ->numeric()
+                    ->extraAttributes(['class' => ' color-success bg-success-200']) // Agregar clases CSS para el borde
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_in')
                     ->label('Entrada')
                     ->numeric()
+                    ->summarize(Sum::make()->label('Entrada'))
                     ->extraAttributes(['class' => 'bg-success-200']) // Agregar clases CSS para el borde
 
-            ->sortable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('stock_out')
                     ->label('Salida')
                     ->numeric()
+                    ->summarize(Sum::make()->label('Salida'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_actual')
                     ->label('Stock')
                     ->numeric()
+                    ->summarize(Sum::make()
+                        ->label('Stock')
+                        ->numeric()
+                        ->suffix(new HtmlString(' U'))
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('money_in')
                     ->label('Entrada $')
@@ -150,7 +162,6 @@ class KardexResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('money_out')
                     ->label('Salida $')
-
                     ->money('USD', locale: 'USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('money_actual')
@@ -173,12 +184,20 @@ class KardexResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])->groups([
+                Group::make('whereHouse.name')
+                    ->label('Sucursal'),
+                Group::make('inventory.product.name')
+                    ->label('Inventario'),
+                Group::make('date')
+                    ->date()
+                    ->label('Fecha Operación'),
             ])
             ->filters([
-                //
+             
             ])
             ->actions([
-//                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -199,7 +218,7 @@ class KardexResource extends Resource
         return [
             'index' => Pages\ListKardexes::route('/'),
             'create' => Pages\CreateKardex::route('/create'),
-            'edit' => Pages\EditKardex::route('/{record}/edit'),
+//            'edit' => Pages\EditKardex::route('/{record}/edit'),
         ];
     }
 }
