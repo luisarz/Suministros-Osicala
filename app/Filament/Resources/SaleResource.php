@@ -22,6 +22,7 @@ use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
@@ -89,7 +90,7 @@ class SaleResource extends Resource
                             ->options(function (callable $get) {
                                 $documentType = $get('document_type_id');
                                 if ($documentType == 2) {
-                                    $customer= Customer::whereNotNull('departamento_id')
+                                    $customer = Customer::whereNotNull('departamento_id')
                                         ->whereNotNull('distrito_id')//MUnicipio
 //                                        ->whereNotNull('distrito_id')
                                         ->whereNotNull('economicactivity_id')
@@ -178,6 +179,14 @@ class SaleResource extends Resource
 //                            ->numeric()
 //                            ->default(null),
                     ])->columns(2),]);
+    }
+
+    public static function getTableActions(): array
+    {
+        return [
+            // Eliminar la acción de edición
+//            EditAction::make()->hidden(),
+        ];
     }
 
     public
@@ -280,6 +289,7 @@ class SaleResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
+
                     Tables\Actions\Action::make('dte')
                         ->label('Generar DTE')
                         ->visible(fn($record) => !$record->is_dte) // Mostrar esta acción solo si isdte es false
@@ -329,7 +339,7 @@ class SaleResource extends Resource
                         }),
                     Tables\Actions\Action::make('anularDTE')
                         ->label('Anular DTE')
-                        ->visible(fn($record) => $record->is_dte && $record->status!='Anulado') // Mostrar esta acción solo si isdte es false
+                        ->visible(fn($record) => $record->is_dte && $record->status != 'Anulado') // Mostrar esta acción solo si isdte es false
                         ->icon('heroicon-o-shield-exclamation')
                         ->requiresConfirmation()
                         ->modalHeading('¿Está seguro de Anular el DTE?')
@@ -391,7 +401,9 @@ class SaleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+//            ->recordAction(Tables\Actions\ViewAction::class)
+            ->recordUrl(null);
     }
 
     public

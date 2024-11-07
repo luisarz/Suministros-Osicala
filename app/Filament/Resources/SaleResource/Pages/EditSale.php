@@ -18,7 +18,7 @@ class EditSale extends EditRecord
     }
     public function afterSave(): void
     {
-//        dd($this->record);//
-//        recorrer los inventarios y descontarlos
+        dd($this->record);//
+
     }
 }

@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -135,6 +136,7 @@ class KardexResource extends Resource
                     ->numeric()
                     ->extraAttributes(['class' => ' color-success bg-success-200']) // Agregar clases CSS para el borde
                     ->sortable(),
+                ColumnGroup::make('Existencias Fisicas', [
                 Tables\Columns\TextColumn::make('stock_in')
                     ->label('Entrada')
                     ->numeric()
@@ -156,6 +158,9 @@ class KardexResource extends Resource
                         ->suffix(new HtmlString(' U'))
                     )
                     ->sortable(),
+                ]),
+                ColumnGroup::make('Existencias Dinero', [
+
                 Tables\Columns\TextColumn::make('money_in')
                     ->label('Entrada $')
                     ->money('USD', locale: 'USD')
@@ -168,6 +173,7 @@ class KardexResource extends Resource
                     ->label('Saldo $')
                     ->money('USD', locale: 'USD')
                     ->sortable(),
+                ]),
                 Tables\Columns\TextColumn::make('sale_price')
                     ->money('USD', locale: 'USD')
                     ->label('Precio')

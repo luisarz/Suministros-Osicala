@@ -18,7 +18,7 @@ class EditInventory extends EditRecord
     }
     protected function beforeSave(): void
     {
-       dd( $this->data );
+//       dd( $this->data );
     }
 
 }
