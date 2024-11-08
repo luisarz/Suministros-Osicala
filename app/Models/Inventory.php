@@ -29,16 +29,16 @@ class Inventory extends Model
     {
         parent::booted();
         static::saved(function ($inventory) {
-            KardexHelper::createKardexFromInventory(
-                $inventory,
-                'Inventario Inicial',             // operation_type
-                'Iventario Inicial',                   // operation_id
-                0,                 // operation_detail_id
-                'Inventario Inicial',           // document_type
-                '',          // document_number
-                'Inventario Inicial',       // entity
-                'Salvadoreña'       // nationality
-            );
+//            KardexHelper::createKardexFromInventory(
+//                $inventory,
+//                'Inventario Inicial',             // operation_type
+//                'Iventario Inicial',                   // operation_id
+//                0,                 // operation_detail_id
+//                'Inventario Inicial',           // document_type
+//                '',          // document_number
+//                'Inventario Inicial',       // entity
+//                'Salvadoreña'       // nationality
+//            );
 
 
 //            $kardex = new Kardex();

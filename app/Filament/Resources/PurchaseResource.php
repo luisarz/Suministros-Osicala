@@ -88,16 +88,18 @@ class PurchaseResource extends Resource
                                         'Contado' => 'Contado',
                                         'Crédito' => 'Crédito',
                                     ])
-                                    ->default('Contado')
                                     ->required()
-                                    ->reactive() // Makes the select field reactive to detect changes
+                                    ->live() // Hace el campo reactivo para detectar cambios
                                     ->afterStateUpdated(function (callable $set, $state) {
-                                        // Set credit_days to null if purchase_condition is 'Contado'
+                                        // Cuando se selecciona "Contado", realiza los siguientes cambios:
                                         if ($state === 'Contado') {
-                                            $set('credit_days', null);
-                                            $set('paid', true);
+                                            $set('credit_days', null); // Vacia el campo de días de crédito
+                                            $set('paid', true); // Marca como pagado
+                                            $set('status', 'Finalizado'); // Establece el estado a "Finalizado"
                                         } else {
-                                            $set('paid', false);
+                                            // Cuando se selecciona "Crédito", realiza los siguientes cambios:
+                                            $set('paid', false); // Marca como no pagado
+                                            $set('status', 'Procesando'); // Establece el estado a "Procesando"
                                         }
                                     }),
 
@@ -105,18 +107,18 @@ class PurchaseResource extends Resource
                                     ->label('Días de Crédito')
                                     ->numeric()
                                     ->default(null)
-                                    ->visible(fn(callable $get) => $get('purchase_condition') === 'Crédito') // Show only when 'Crédito' is selected
-                                    ->required(fn(callable $get) => $get('purchase_condition') === 'Crédito'), // Make required only when 'Crédito' is selected
+                                    ->visible(fn(callable $get) => $get('purchase_condition') === 'Crédito') // Solo visible cuando se selecciona "Crédito"
+                                    ->required(fn(callable $get) => $get('purchase_condition') === 'Crédito'), // Obligatorio solo si "Crédito" es seleccionado
 
                                 Forms\Components\Select::make('status')
                                     ->options([
                                         'Procesando' => 'Procesando',
                                         'Finalizado' => 'Finalizado',
-                                        'Anulado' => 'Anulado'
-
+                                        'Anulado' => 'Anulado',
                                     ])
-                                    ->default('Procesando')
+                                    ->default('Procesando') // Establece "Procesando" como valor predeterminado
                                     ->required(),
+
 
 
                             ])->columnSpan(3)->columns(2),
@@ -130,22 +132,27 @@ class PurchaseResource extends Resource
                                     ->live()
                                     ->required(),
                                 Forms\Components\Placeholder::make('net_value')
-                                    ->content(fn(Purchase $record) => $record->net_value)
+                                    ->content(function(?Purchase $record) {
+                                        return $record ? ($record->net_value ?? 0) : 0;
+                                    })
                                     ->inlineLabel()
                                     ->label('Neto'),
+
                                 Forms\Components\Placeholder::make('taxe_value')
-                                    ->content(fn(Purchase $record) => $record->taxe_value)
+                                    ->content(function(?Purchase $record) {
+                                        return $record ? ($record->taxe_value ?? 0) : 0;
+                                    })
                                     ->inlineLabel()
                                     ->label('IVA'),
 
                                 Forms\Components\Placeholder::make('perception_value')
-                                    ->content(fn(Purchase $record) => $record->perception_value)
+                                    ->content(fn(?Purchase $record) => $record->perception_value??0)
                                     ->inlineLabel()
                                     ->label('Percepción:'),
 
                                 Forms\Components\Placeholder::make('purchase_total')
                                     ->label('Total')
-                                    ->content(fn(Purchase $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->purchase_total, 2) . '</span>'))
+                                    ->content(fn(?Purchase $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->purchase_total??0, 2) . '</span>'))
                                     ->inlineLabel()
                                     ->extraAttributes(['class' => 'p-0 text-lg']) // Tailwind classes for padding and font size
                                     ->columnSpan('full'),
@@ -182,7 +189,7 @@ class PurchaseResource extends Resource
                     ->label('#')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pruchase_condition')
-                    ->label('F. Compra'),
+                    ->label('Cond. Compra'),
                 Tables\Columns\TextColumn::make('credit_days')
                     ->label('Crédito')
                     ->placeholder('Contado')
@@ -230,7 +237,7 @@ class PurchaseResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('Modificar'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

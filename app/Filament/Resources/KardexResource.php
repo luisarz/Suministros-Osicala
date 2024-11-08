@@ -39,15 +39,18 @@ class KardexResource extends Resource
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('operation_id')
+                    ->label('Tipo de Operación')
                     ->maxLength(255)
                     ->default(null),
-//                Forms\Components\TextInput::make('operation_detail_id')
-//                    ->numeric()
-//                    ->default(null),
+                Forms\Components\TextInput::make('operation_detail_id')
+                    ->numeric()
+                    ->default(null),
                 Forms\Components\TextInput::make('document_type')
+                    ->label('T. Documento')
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('document_number')
+                    ->label('Número')
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('entity')
@@ -110,18 +113,20 @@ class KardexResource extends Resource
                 Tables\Columns\TextColumn::make('operation_type')
                     ->label('Operación')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('operation_id')
-                    ->label('#')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('operation_id')
+//                    ->label('ID Operacion')
+//                    ->searchable(),
 //                Tables\Columns\TextColumn::make('operation_detail_id')
 //                    ->label('ID')
 //                    ->numeric()
 //                    ->sortable(),
                 Tables\Columns\TextColumn::make('document_type')
+                    ->label('T. Documento')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('document_number')
+                    ->label('N° Documento')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -136,7 +141,7 @@ class KardexResource extends Resource
                     ->numeric()
                     ->extraAttributes(['class' => ' color-success bg-success-200']) // Agregar clases CSS para el borde
                     ->sortable(),
-                ColumnGroup::make('Existencias Fisicas', [
+                ColumnGroup::make('DETALLE DE UNIDADES ( CANT)', [
                 Tables\Columns\TextColumn::make('stock_in')
                     ->label('Entrada')
                     ->numeric()
@@ -159,18 +164,26 @@ class KardexResource extends Resource
                     )
                     ->sortable(),
                 ]),
-                ColumnGroup::make('Existencias Dinero', [
+                Tables\Columns\TextColumn::make('purchase_price')
+                    ->money('USD', locale: 'USD')
+                    ->label('Costo')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('promedio_costo')
+                    ->money('USD', locale: 'USD')
+                    ->label('Promedio')
+                    ->sortable(),
+                ColumnGroup::make('IMPORTE MONETARIO / PC', [
 
                 Tables\Columns\TextColumn::make('money_in')
-                    ->label('Entrada $')
+                    ->label('DEBE')
                     ->money('USD', locale: 'USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('money_out')
-                    ->label('Salida $')
+                    ->label('HABER')
                     ->money('USD', locale: 'USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('money_actual')
-                    ->label('Saldo $')
+                    ->label('SALDO')
                     ->money('USD', locale: 'USD')
                     ->sortable(),
                 ]),
@@ -178,10 +191,7 @@ class KardexResource extends Resource
                     ->money('USD', locale: 'USD')
                     ->label('Precio')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('purchase_price')
-                    ->money('USD', locale: 'USD')
-                    ->label('Costo')
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

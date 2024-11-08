@@ -66,12 +66,11 @@ class PurchaseItemsRelationManager extends RelationManager
                         Forms\Components\TextInput::make('quantity')
                             ->label('Cantidad')
                             ->step(1)
+                            ->live()
                             ->numeric()
                             ->debounce(300)
                             ->columnSpan(1)
                             ->required()
-                            ->live()
-                            ->extraAttributes(['onkeyup' => 'this.dispatchEvent(new Event("input"))'])
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -96,6 +95,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->live()
                             ->columnSpan(1)
                             ->required()
+                            ->default(0)
                             ->debounce(300)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
@@ -122,15 +122,6 @@ class PurchaseItemsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('inventory.product.name')
                     ->wrap()
                     ->label('Producto'),
-                Tables\Columns\BooleanColumn::make('inventory.product.is_service')
-                    ->label('Producto/Servicio')
-                    ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
-                    ->falseIcon('heroicon-o-cog-8-tooth') // Icono cuando `is_service` es false
-
-                    ->tooltip(function ($record) {
-                        return $record->inventory->product->is_service ? 'Es un servicio' : 'No es un servicio';
-                    }),
-
 
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Cantidad')
@@ -142,15 +133,13 @@ class PurchaseItemsRelationManager extends RelationManager
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
+                    ->prefix('%')
                     ->numeric()
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
-            ])
-            ->filters([
-                //
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -178,7 +167,14 @@ class PurchaseItemsRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->after(function (PurchaseItem $record,Component $livewire) {
+                            $selectedRecords = $livewire->getSelectedTableRecords();
+                            foreach ($selectedRecords as $record) {
+                                $this->updateTotalPurchase($record);
+                            }
+                        $livewire->dispatch('refreshPurchase');
+                    }),
                 ]),
             ]);
     }
@@ -210,17 +206,33 @@ class PurchaseItemsRelationManager extends RelationManager
     protected function updateTotalPurchase(PurchaseItem $record)
     {
         $purchase = Purchase::find($record->purchase_id);
-        $neto = PurchaseItem::where('purchase_id', $purchase->id)->sum('total');
-        $iva = number_format($neto * 0.13, 2);
-        $percepcion = 0;
-        if ($purchase->have_perception) {
-            $percepcion = $neto * 0.1;
+        if ($purchase) {
+            $neto = PurchaseItem::where('purchase_id', $purchase->id)->sum('total');
+            if (!is_numeric($neto)) {
+                $neto = 0;
+            }
+            $iva = number_format($neto * 0.13, 2);
+            if (!is_numeric($iva)) {
+                $iva = 0;
+            }
+            $percepcion = 0;
+            if ($purchase->have_perception) {
+                $percepcion = $neto * 0.1;
+            }
+            if (!is_numeric($percepcion)) {
+                $percepcion = 0;
+            }
+            $totalPurchase = $neto + $iva + $percepcion;
+            $total = preg_replace('/[^\d.]/', '', $totalPurchase);
+            if (!is_numeric($total)) {
+                $total = 0;  // Set to 0 if not valid
+            }
+            $purchase->net_value = $neto;
+            $purchase->taxe_value = $iva;
+            $purchase->perception_value = $percepcion;
+            $purchase->purchase_total = $total;
+            $purchase->save();
         }
-        $totalPurche = $neto + $iva + $percepcion;
-        $purchase->net_value=$neto;
-        $purchase->taxe_value=$iva;
-        $purchase->perception_value=$percepcion;
-        $purchase->purchase_total = $totalPurche;
-        $purchase->save();
+
     }
 }

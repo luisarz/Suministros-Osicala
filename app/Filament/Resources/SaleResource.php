@@ -401,9 +401,8 @@ class SaleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-//            ->recordAction(Tables\Actions\ViewAction::class)
-            ->recordUrl(null);
+            ]);
+//            ->recordUrl(null);
     }
 
     public
