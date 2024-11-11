@@ -32,6 +32,8 @@ class Sale extends Model
         'change',
         'casher_id',
         'is_dte',
+        'generationCode',
+        'jsonUrl',
 
     ];
 

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DTEController extends Controller
 {
@@ -425,11 +426,23 @@ class DTEController extends Controller
         }
     }
 
-    public function printDTE($id)
+    public function printDTE($codGeneracion)
     {
-        $responseget = $this->getDTE($id);
+        //abrir el json en DTEs
+        $fileName = "/DTEs/{$codGeneracion}.json";
 
-        return response()->json($responseget);
+        if (Storage::disk('public')->exists($fileName)) {
+            $fileContent = Storage::disk('public')->get($fileName);
+            $data = json_decode($fileContent, true); // Decodificar JSON en un array asociativo
+//            return response()->json($data);
+            $pdf = Pdf::loadView('DTE.dte-print-pdf',
+                compact('data'));
+            // Abrir el PDF en una nueva pestaña
+            return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
+        } else {
+            return response()->json(['error' => 'El archivo no existe.'], 404); // Retornar error 404
+        }
+
 
     }
 
@@ -443,7 +456,7 @@ class DTEController extends Controller
                         'generationCode' => '490C8111-5056-43BA-8686-602E216A7CDD',
                     ]);
             if ($dte) {
-                return  json_decode($dte, true);
+                return json_decode($dte, true);
             } else {
                 $data = [
                     'estado' => 'RECHAZADO ',
