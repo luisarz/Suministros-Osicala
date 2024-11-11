@@ -11,6 +11,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class DTEController extends Controller
 {
@@ -71,7 +72,7 @@ class DTEController extends Controller
             "documentNum" => null,//$factura->customer->dui ?? $factura->customer->nit,
             "nrc" => null,//str_replace("-","",$factura->customer->nrc) ?? null,
             "name" => $factura->customer->name . " " . $factura->customer->last_name ?? null,
-            "phoneNumber" => $factura->customer->phone ?? null,
+            "phoneNumber" => str_replace(["(", ")", "-", " "], "", $factura->customer->phone) ?? null,
             "email" => $factura->customer->email ?? null,
             "economicAtivity" => $factura->customer->economicactivity->code ?? null,
             "address" => $factura->customer->address ?? null,
@@ -115,18 +116,19 @@ class DTEController extends Controller
             "items" => $items
         ];
 
+//        return response()->json($dte);
         $responseData = $this->SendDTE($dte, $idVenta);
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
                 'estado' => 'FALLO', // o 'ERROR'
+                'response' => $responseData,
                 'mensaje' => 'DTE falló al enviarse: ' . implode(', ', $responseData['observaciones'] ?? []), // Concatenar observaciones
             ];
         } else {
-            $venta = Sale::find($idVenta);
-            $venta->is_dte = true;
-            $venta->save();
+            $this->saveJson($responseData, $idVenta);
             return [
                 'estado' => 'EXITO',
+                'mensaje' => 'DTE enviado correctamente',
                 'mensaje' => 'DTE enviado correctamente',
             ];
         }
@@ -199,16 +201,15 @@ class DTEController extends Controller
 
 
         $responseData = $this->SendDTE($dte, $idVenta);
-//        dd($responseData["estado"]);
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
                 'estado' => 'FALLO', // o 'ERROR'
                 'mensaje' => 'DTE falló al enviarse: ' . implode(', ', $responseData['observaciones'] ?? []), // Concatenar observaciones
             ];
         } else {
-            $venta = Sale::find($idVenta);
-            $venta->is_dte = true;
-            $venta->save();
+            $this->saveJson($responseData, $idVenta);
+
+
             return [
                 'estado' => 'EXITO',
                 'mensaje' => 'DTE enviado correctamente',
@@ -218,6 +219,7 @@ class DTEController extends Controller
 
     function SendDTE($dteData, $idVenta) // Assuming $dteData is the data you need to send
     {
+        set_time_limit(0);
         try {
             $urlAPI = 'http://api-fel-sv-dev.olintech.com/api/DTE/generateDTE'; // Set the correct API URL
             $apiKey = $this->getConfiguracion()->api_key; // Assuming you retrieve the API key from your config
@@ -248,7 +250,9 @@ class DTEController extends Controller
             // Check for cURL errors
             if ($response === false) {
                 $data = [
-                    'estado' => 'RECHAZADO ',
+                    'estado' => 'RECHAZADO',
+                    'response' => $response,
+                    'code' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
                     'mensaje' => "Ocurrio un eror" . curl_error($curl)
                 ];
                 return $data;
@@ -279,7 +283,7 @@ class DTEController extends Controller
         } catch (Exception $e) {
             $data = [
                 'estado' => 'RECHAZADO ',
-                'mensaje' => "Ocurrio ub¿n eror" . $e->getMessage()
+                'mensaje' => "Ocurrio un eror " . $e->getMessage()
             ];
             return $data;
         }
@@ -319,7 +323,7 @@ class DTEController extends Controller
             ];
         }
 
-        $codigoGeneracion= $venta->dteProcesado->codigoGeneracion;
+        $codigoGeneracion = $venta->dteProcesado->codigoGeneracion;
 
         $dte = [
             "codeGeneration" => $codigoGeneracion,
@@ -333,15 +337,15 @@ class DTEController extends Controller
             "requesterDocType" => "13",
             "requesterDocNumber" => "04584850-8"
         ];
-        return response()->json($dte);
+//        return response()->json($dte);
         $responseData = $this->SendAnularDTE($dte, $idVenta);
 
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
                 'estado' => 'FALLO', // o 'ERROR'
                 'mensaje' => 'DTE falló al enviarse: ' . implode(', ', $responseData['observaciones'] ?? []), // Concatenar observaciones
-                'descripcionMsg' => $responseData["descripcionMsg"]??null ,
-                '$codigoGeneracion'=>$codigoGeneracion??null
+                'descripcionMsg' => $responseData["descripcionMsg"] ?? null,
+                '$codigoGeneracion' => $codigoGeneracion ?? null
             ];
         } else {
             $venta = Sale::find($idVenta);
@@ -421,5 +425,54 @@ class DTEController extends Controller
         }
     }
 
+    public function printDTE($id)
+    {
+        $responseget = $this->getDTE($id);
 
+        return response()->json($responseget);
+
+    }
+
+    public function getDTE($codGeneracion)
+    {
+        try {
+            $dte = Http::asForm()
+                ->withHeaders(['accept' => '*/*', 'apiKey' => 'c561a756-f332-45d1-bff2-9d59022a6eb5',])
+                ->post('http://api-fel-sv-dev.olintech.com/api/DTE/getDTE',
+                    [
+                        'generationCode' => '490C8111-5056-43BA-8686-602E216A7CDD',
+                    ]);
+            if ($dte) {
+                return  json_decode($dte, true);
+            } else {
+                $data = [
+                    'estado' => 'RECHAZADO ',
+                    'mensaje' => "Ocurrio un eror"
+                ];
+                return $data;
+            }
+        } catch (ConnectionException $e) {
+            return $e->getMessage();
+        }
+
+
+    }
+
+    /**
+     * @param mixed $responseData
+     * @param $idVenta
+     * @return void
+     */
+    public function saveJson(mixed $responseData, $idVenta): void
+    {
+        $fileName = "DTEs/{$responseData['respuestaHacienda']['codigoGeneracion']}.json";
+        $jsonContent = json_encode($responseData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        Storage::disk('public')->put($fileName, $jsonContent);
+
+        $venta = Sale::find($idVenta);
+        $venta->is_dte = true;
+        $venta->generationCode = $responseData["respuestaHacienda"]["codigoGeneracion"] ?? null;
+        $venta->jsonUrl = $fileName;
+        $venta->save();
+    }
 }

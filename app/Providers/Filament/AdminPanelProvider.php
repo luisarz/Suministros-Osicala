@@ -21,6 +21,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Psr\Container\ContainerExceptionInterface;
@@ -52,7 +53,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(fn() => view('logo'))
             ->brandLogoHeight('5rem')
             ->default()
-            ->font('popins')
+            ->font('serif')
             ->sidebarWidth('20rem')
             ->id('admin')
             ->path('admin')

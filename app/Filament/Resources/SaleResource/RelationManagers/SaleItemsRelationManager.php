@@ -4,7 +4,10 @@ namespace App\Filament\Resources\SaleResource\RelationManagers;
 
 use App\Models\Inventory;
 use App\Models\Price;
+use App\Models\Purchase;
+use App\Models\PurchaseItem;
 use App\Models\SaleItem;
+use App\Models\Tribute;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -14,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class SaleItemsRelationManager extends RelationManager
 {
@@ -87,6 +91,7 @@ class SaleItemsRelationManager extends RelationManager
                             ->step(1)
                             ->numeric()
                             ->live()
+                            ->debounce(300)
                             ->columnSpan(1)
                             ->required()
                             ->live()
@@ -102,6 +107,8 @@ class SaleItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->live()
+                            ->debounce(300)
+
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -114,6 +121,8 @@ class SaleItemsRelationManager extends RelationManager
                             ->live()
                             ->columnSpan(1)
                             ->required()
+                            ->debounce(300)
+
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -182,57 +191,47 @@ class SaleItemsRelationManager extends RelationManager
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
-            ->filters([
-                //
-            ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a venta')
                     ->label('Agregar Producto')
-                    ->after(function () {
-                        $saleId=$this->ownerRecord->id;
-                        $totalSale=SaleItem::where('sale_id',$saleId)->sum('total');
-                        Sale::where('id',$saleId)->update(['total'=>$totalSale]);
+                    ->after(function (SaleItem $record,Component $livewire) {
+                        $this->updateTotalSale($record);
+                        $livewire->dispatch('refreshSale');
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->modalWidth('7xl')
-                    ->after(function (SaleItem $record) {
-                        $sale=Sale::find($record->sale_id);
-                        $totalSale=SaleItem::where('sale_id',$sale->id)->sum('total');
-                        $sale->total=$totalSale;
-                        $sale->save();
+                    ->after(function (SaleItem $record, Component $livewire) {
+                        $this->updateTotalSale($record);
+                        $livewire->dispatch('refreshSale');
 
                     }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Quitar')
-                    ->after(function (SaleItem $record) {
-                        $sale=Sale::find($record->sale_id);
-                        $totalSale=SaleItem::where('sale_id',$sale->id)->sum('total');
-                        $sale->total=$totalSale;
-                        $sale->save();
+                    ->after(function (SaleItem $record,Component $livewire) {
+                        $this->updateTotalSale($record);
+                        $livewire->dispatch('refreshSale');
 
                     }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->after(function (SaleItem $record,Component $livewire) {
+                        $selectedRecords = $livewire->getSelectedTableRecords();
+                        foreach ($selectedRecords as $record) {
+                            $this->updateTotalSale($record);
+                        }
+                        $livewire->dispatch('refreshSale');
+                    }),
+
                 ]),
             ]);
     }
-    public  function afterUpdate(): void
-    {
-//        dd($this->model);//
-//        $this->model->precios()->each(function ($precio) {
-//            if ($precio->is_default) {
-//                Price::where('inventory_id', $precio->inventory_id)
-//                    ->where('id', '!=', $precio->id)
-//                    ->update(['is_default' => false]);
-//            }
-//        });
-    }
+
     protected function calculateTotal(callable $get, callable $set)
     {
         $quantity = $get('quantity')??0;
@@ -249,6 +248,27 @@ class SaleItemsRelationManager extends RelationManager
         }
 
         $set('total', $total);
+    }
+    protected function updateTotalSale(SaleItem $record)
+    {
+        $sale = Sale::find($record->sale_id)->first();
+        if ($sale) {
+            $ivaRate = Tribute::where('id', 1)->value('rate') ?? 0;
+            $isrRate = Tribute::where('id', 3)->value('rate') ?? 0;
+            $ivaRate = is_numeric($ivaRate) ? $ivaRate / 100 : 0;
+            $isrRate = is_numeric($isrRate) ? $isrRate / 100 : 0;
+            $montoTotal = SaleItem::where('sale_id', $sale->id)->sum('total') ?? 0;
+            $neto = $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
+            $iva = $montoTotal - $neto;
+            $retention = $sale->have_retention ? $neto * 0.1 : 0;
+            $sale->net_amount = round($neto, 2);
+            $sale->taxe = round($iva, 2);
+            $sale->retention = round($retention, 2);
+            $sale->sale_total = round($montoTotal-$retention, 2);
+            $sale->save();
+
+
+        }
     }
 
 }

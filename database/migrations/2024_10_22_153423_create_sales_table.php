@@ -23,15 +23,18 @@ return new class extends Migration
             $table->enum('sales_payment_status',['Pagado','Pendiente','Abono'])->nullable();
             $table->enum('status',['Nuevo','Procesando','Cancelado','Facturado','Anulado'])->default('Nuevo');
             $table->boolean('is_taxed')->default(true);
+            $table->boolean('have_retention')->default(false);
             $table->decimal('net_amount',10,2)->default(0);
-            $table->decimal('iva',10,2)->default(0);
+            $table->decimal('taxe',10,2)->default(0);
             $table->decimal('discount',10,2)->default(0);
             $table->decimal('retention',10,2)->default(0);
-            $table->decimal('total',10,2)->default(0);
+            $table->decimal('sale_total',10,2)->default(0);
             $table->decimal('cash',10,2)->default(0);
             $table->decimal('change',10,2)->default(0);
             $table->foreignId('casher_id')->nullable()->constrained('employees')->cascadeOnDelete();//Cajero
             $table->boolean('is_dte')->default(false);
+            $table->string('generationCode')->nullable();
+            $table->string('jsonUrl')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

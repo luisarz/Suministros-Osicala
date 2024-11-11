@@ -11,6 +11,8 @@
 @php
     $sidebarCollapsible = $sidebarCollapsible && filament()->isSidebarCollapsibleOnDesktop();
     $hasDropdown = filled($label) && filled($icon) && $sidebarCollapsible;
+    $anyChildActive = collect($items)->contains(fn ($item) => $item->isActive() || $item->isChildItemsActive());
+
 @endphp
 
 <li
@@ -26,7 +28,7 @@
     @if ($label)
         <div
             @if ($collapsible)
-                x-on:click="$store.sidebar.toggleCollapsedGroup(label)"
+                x-on:click="$store.sidebar.toggleCollapsedGroup(label)" sd
             @endif
             @if ($sidebarCollapsible)
                 x-show="$store.sidebar.isOpen"
@@ -42,13 +44,11 @@
             @if ($icon)
                 <x-filament::icon
                     :icon="$icon"
-                    class="fi-sidebar-group-icon h-6 w-6 text-gray-400 dark:text-gray-500"
+                    :color="$active || $anyChildActive ? 'primary' : 'gray'" class="h-6 w-6 "
                 />
             @endif
 
-            <span
-                class="fi-sidebar-group-label flex-1 text-sm font-medium leading-6 text-gray-500 dark:text-gray-400"
-            >
+            <span class="fi-sidebar-group-label flex-1 text-sm font-medium leading-6 text-gray-500 dark:text-gray-400">
                 {{ $label }}
             </span>
 
@@ -90,6 +90,7 @@
                 >
                     <x-filament::icon
                         :icon="$icon"
+                        :color="$active ? 'primary' : 'gray'"
                         @class([
                             'h-6 w-6',
                             'text-gray-400 dark:text-gray-500' => ! $active,
@@ -128,8 +129,10 @@
             @endphp
 
             @if (filled($label))
-                <x-filament::dropdown.header>
-                    {{ $label }} fgdfg
+                <x-filament::dropdown.header class="bg-primary-200 rounded-[10px] color:black dark:!bg-gray-700">
+
+                    
+                    {{ $label }}
                 </x-filament::dropdown.header>
             @endif
 

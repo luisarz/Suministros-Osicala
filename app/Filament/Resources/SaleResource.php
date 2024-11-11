@@ -8,26 +8,56 @@ use App\Http\Controllers\DTEController;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\HistoryDte;
-use App\Models\Inventory;
 use App\Models\Sale;
+use App\Models\SaleItem;
+use App\Models\Tribute;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Resource;
+use Filament\Support\View\Components\Modal;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
+use Livewire\Component;
+
+
+function updateTotalSale(mixed $idItem, array $data): void
+{
+    $applyRetention = $data['have_retention'] ?? false;
+    $applyTax = $data['is_taxed'] ?? false;
+
+    $sale = Sale::find($idItem);
+
+    if ($sale) {
+        // Fetch tax rates with default values
+        $ivaRate = Tribute::where('id', 1)->value('rate') ?? 0;
+        $isrRate = Tribute::where('id', 3)->value('rate') ?? 0;
+
+        $ivaRate /= 100;
+        $isrRate /= 100;
+        // Calculate total and net amounts
+        $montoTotal = SaleItem::where('sale_id', $sale->id)->sum('total') ?? 0;
+        $neto = $applyTax && $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
+
+        // Calculate tax and retention conditionally
+        $iva = $applyTax ? $montoTotal - $neto : 0;
+        $retention = $applyRetention ? $neto * $isrRate : 0;
+
+        // Round and save calculated values
+        $sale->net_amount = round($neto, 2);
+        $sale->taxe = round($iva, 2);
+        $sale->retention = round($retention, 2);
+        $sale->sale_total = round($montoTotal - $retention, 2);
+        $sale->save();
+    }
+}
 
 class SaleResource extends Resource
 {
@@ -42,143 +72,200 @@ class SaleResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('')
-                    ->columns([
-                        'sm' => 2,
-                    ])
-//                    ->compact()
+                Section::make('Factura')
+                    ->hiddenOn('create')
+                    ->compact()
                     ->schema([
-//                        Section::make([])->columnSpan(5),
-//                        Section::make([])->columnSpan(5),
-                        Forms\Components\Select::make('document_type_id')
-                            ->label('Comprobante')
-                            ->relationship('documenttype', 'name')
-                            ->preload()
-                            ->default(1)
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\TextInput::make('document_internal_number')
-                            ->label('#   Comprobante')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('wherehouse_id')
-                            ->label('Sucursal')
-                            ->live()
-                            ->relationship('wherehouse', 'name')
-                            ->preload()
-//                            ->hidden()
-//                            ->disabled()
-                            ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
+                        Section::make('')
+                            ->compact()
+                            ->schema([
+                                Forms\Components\Toggle::make('is_taxed')
+                                    ->label('Gravado')
+                                    ->default(true)
+                                    ->onColor('danger')
+                                    ->reactive()
+                                    ->offColor('gray')
+                                    ->required(),
+                                Forms\Components\Toggle::make('have_retention')
+                                    ->label('Retención')
+                                    ->onColor('danger')
+                                    ->offColor('gray')
+                                    ->default(true)
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($set, $state, $get, Component $livewire) {
+                                        $idItem = $get('id'); // ID del item de venta
+                                        $data = [
+                                            'have_retention' => $state,
+                                            'is_taxed' => $get('is_taxed'),
+                                        ];
+                                        updateTotalSale($idItem, $data);
+                                        $livewire->dispatch('refreshSale');
+                                    }),
+                            ])->columnSpan(1)->columns(2),
+                        Section::make('')
+                            ->compact()
+                            ->schema([
+                                Forms\Components\Placeholder::make('net_amount')
+                                    ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->net_amount ?? 0, 2) . '</span>'))
+                                    ->inlineLabel()
+                                    ->label('Neto'),
 
-                        Forms\Components\Select::make('seller_id')
-                            ->label('Vendedor')
-                            ->preload()
-                            ->searchable()
-                            ->live()
-                            ->options(function (callable $get) {
-                                $wherehouse = $get('wherehouse_id');
-                                if ($wherehouse) {
-                                    return Employee::where('branch_id', $wherehouse)->pluck('name', 'id');
-                                }
-                                return []; // Return an empty array if no wherehouse selected
-                            })
-                            ->required()
-                            ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
+                                Forms\Components\Placeholder::make('taxe')
+                                    ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->taxe ?? 0, 2) . '</span>'))
+                                    ->inlineLabel()
+                                    ->label('IVA'),
 
-                        Forms\Components\Select::make('customer_id')
-                            ->relationship('customer', 'name')
-                            ->options(function (callable $get) {
-                                $documentType = $get('document_type_id');
-                                if ($documentType == 2) {
-                                    $customer = Customer::whereNotNull('departamento_id')
-                                        ->whereNotNull('distrito_id')//MUnicipio
-//                                        ->whereNotNull('distrito_id')
-                                        ->whereNotNull('economicactivity_id')
-//                                        ->whereNotNull('wherehouse_id')
-//                                        ->whereNotNull('address')
-                                        ->whereNotNull('nrc')
-                                        ->whereNotNull('dui')
-                                        ->orderBy('name')
-                                        ->pluck('name', 'id');
-                                    return $customer;
-                                }
-                                return Customer::orderBy('name')->pluck('name', 'id');
-                            })
-                            ->preload()
-                            ->searchable()
-                            ->label('Cliente')
-                        ,
-                        Forms\Components\Select::make('operation_condition_id')
-                            ->relationship('salescondition', 'name')
-                            ->label('Condición de venta')
-                            ->default(1),
-                        Forms\Components\Select::make('payment_method_id')
-                            ->label('Método de pago')
-                            ->relationship('paymentmethod', 'name')
-                            ->preload()
-                            ->searchable()
-                            ->default(1),
-                        Forms\Components\Select::make('sales_payment_status')
-                            ->options(['Pagado' => 'Pagado',
-                                'Pendiente' => 'Pendiente',
-                                'Abono' => 'Abono',])
-                            ->label('Estado de pago')
-                            ->default('Pendiente')
-                            ->hidden()
-                            ->disabled(),
-                        Forms\Components\Select::make('status')
-                            ->options(['Nuevo' => 'Nuevo',
-                                'Procesando' => 'Procesando',
-                                'Cancelado' => 'Cancelado',
-                                'Facturado' => 'Facturado',
-                                'Anulado' => 'Anulado',])
-                            ->default('Nuevo')
-                            ->hidden()
-                            ->required(),
-                        Forms\Components\Toggle::make('is_taxed')
-                            ->label('Gravado')
-                            ->hidden()
-                            ->default(true)
-                            ->required(),
-                        Forms\Components\TextInput::make('net_amount')
-                            ->hidden()
-                            ->required()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('iva')
-                            ->required()
-                            ->hidden()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('discount')
-                            ->required()
-                            ->hidden()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('retention')
-                            ->required()
-                            ->hidden()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('total')
-                            ->required()
-                            ->hidden()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('cash')
-                            ->required()
-                            ->hidden()
-                            ->numeric()
-                            ->default(0.00),
-                        Forms\Components\TextInput::make('change')
-                            ->hidden()
-                            ->required()
-                            ->numeric()
-                            ->default(0.00),
-//                        Forms\Components\TextInput::make('casher_id')
-//                            ->numeric()
-//                            ->default(null),
-                    ])->columns(2),]);
+                                Forms\Components\Placeholder::make('retention')
+                                    ->content(fn(?Sale $record) => $record->retention ?? 0)
+                                    ->inlineLabel()
+                                    ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->retention ?? 0, 2) . '</span>'))
+                                    ->label('ISR -1%'),
+                                Forms\Components\Placeholder::make('total')
+                                    ->label('Total')
+                                    ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->sale_total ?? 0, 2) . '</span>'))
+                                    ->inlineLabel()
+                                    ->extraAttributes(['class' => 'p-0 text-lg']) // Tailwind classes for padding and font size
+//                                    ->columnSpan('full'),
+                            ])->columnSpan(2)->columns(4),
+
+
+                    ])->columnSpanFull()->columns(3),
+                Forms\Components\Section::make('')
+                    ->schema([
+
+                        Section::make('Venta')
+                            ->icon('heroicon-o-user')
+                            ->iconColor('success')
+                            ->compact()
+                            ->schema([
+                                Forms\Components\Select::make('wherehouse_id')
+                                    ->label('Sucursal')
+                                    ->live()
+                                    ->relationship('wherehouse', 'name')
+                                    ->preload()
+//                                    ->disabled()
+                                    ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
+                                Forms\Components\Select::make('document_type_id')
+                                    ->label('Comprobante')
+                                    ->relationship('documenttype', 'name')
+                                    ->preload()
+                                    ->default(1)
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\TextInput::make('document_internal_number')
+                                    ->label('#   Comprobante')
+                                    ->required()
+                                    ->maxLength(255),
+
+
+                                Forms\Components\Select::make('seller_id')
+                                    ->label('Vendedor')
+                                    ->preload()
+                                    ->searchable()
+                                    ->live()
+                                    ->options(function (callable $get) {
+                                        $wherehouse = $get('wherehouse_id');
+                                        if ($wherehouse) {
+                                            return Employee::where('branch_id', $wherehouse)->pluck('name', 'id');
+                                        }
+                                        return []; // Return an empty array if no wherehouse selected
+                                    })
+                                    ->required()
+                                    ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
+
+                                Forms\Components\Select::make('customer_id')
+                                    ->relationship('customer', 'name')
+                                    ->options(function (callable $get) {
+                                        $documentType = $get('document_type_id');
+                                        if ($documentType == 2) {
+                                            return Customer::whereNotNull('departamento_id')
+                                                ->whereNotNull('distrito_id')//MUnicipio
+                                                ->whereNotNull('economicactivity_id')
+                                                ->whereNotNull('nrc')
+                                                ->whereNotNull('dui')
+                                                ->orderBy('name')
+                                                ->pluck('name', 'id');
+                                        }
+                                        return Customer::orderBy('name')->pluck('name', 'id');
+                                    })
+                                    ->preload()
+                                    ->searchable()
+                                    ->label('Cliente')
+                                    ->createOptionForm([
+
+
+                                        Section::make('Nuevo Cliente')
+                                            ->schema([
+                                                Select::make('wherehouse_id')
+                                                    ->label('Sucursal')
+                                                    ->inlineLabel(false)
+                                                    ->relationship('wherehouse', 'name')
+                                                    ->preload()
+                                                    ->default(fn() => optional(Auth::user()->employee)->branch_id)
+                                                    ->columnSpanFull(),
+
+
+                                                // Null-safe check
+                                                Forms\Components\TextInput::make('name')
+                                                    ->required()
+                                                    ->label('Nombre'),
+                                                Forms\Components\TextInput::make('last_name')
+                                                    ->required()
+                                                    ->label('Apellido'),
+                                            ])->columns(2),
+                                    ])
+                                ,
+
+                                Forms\Components\Select::make('sales_payment_status')
+                                    ->options(['Pagado' => 'Pagado',
+                                        'Pendiente' => 'Pendiente',
+                                        'Abono' => 'Abono',])
+                                    ->label('Estado de pago')
+                                    ->default('Pendiente')
+                                    ->hidden()
+                                    ->disabled(),
+                                Forms\Components\Select::make('status')
+                                    ->options(['Nuevo' => 'Nuevo',
+                                        'Procesando' => 'Procesando',
+                                        'Cancelado' => 'Cancelado',
+                                        'Facturado' => 'Facturado',
+                                        'Anulado' => 'Anulado',])
+                                    ->default('Nuevo')
+                                    ->hidden()
+                                    ->required(),
+                            ])->columnSpan(3)->columns(2),
+
+                        Forms\Components\Section::make('Caja')
+                            ->compact()
+                            ->icon('heroicon-o-currency-dollar')
+                            ->iconColor('success')
+                            ->schema([
+                                Section::make('')
+                                    ->compact()
+                                    ->schema([
+                                        Forms\Components\Select::make('operation_condition_id')
+                                            ->relationship('salescondition', 'name')
+                                            ->label('Condición de venta')
+                                            ->default(1),
+                                        Forms\Components\Select::make('payment_method_id')
+                                            ->label('Método de pago')
+                                            ->relationship('paymentmethod', 'name')
+                                            ->preload()
+                                            ->searchable()
+                                            ->default(1),
+                                        Forms\Components\TextInput::make('cash')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(0.00),
+                                        Forms\Components\TextInput::make('change')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(0.00),
+                                    ])->columnSpan(1)->columns(2),
+                            ])->columnSpan(3)->columns(1),
+                    ])->columns(6),
+            ]);
     }
 
     public static function getTableActions(): array
@@ -194,6 +281,7 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('documenttype.name')
                     ->label('Comprobante')
                     ->sortable(),
@@ -236,25 +324,25 @@ class SaleResource extends Resource
                     ->boolean(),
                 Tables\Columns\TextColumn::make('net_amount')
                     ->label('Neto')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->numeric()
+                    ->toggleable()
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('iva')
+                Tables\Columns\TextColumn::make('taxe')
                     ->label('IVA')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->numeric()
+                    ->toggleable()
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->numeric()
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('retention')
                     ->label('Retención')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->numeric()
+                    ->toggleable()
+                    ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total')
+                Tables\Columns\TextColumn::make('sale_total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
@@ -289,6 +377,16 @@ class SaleResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('pdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-printer')
+                        ->visible(fn($record) => $record->is_dte) // Mostrar esta acción solo si isdte es false
+                        ->color('primary')
+                        ->action(function ($record) {
+                            return redirect()->route('printDTE', ['idVenta' => $record->generationCode]);
+                        }),
+
+                    EditAction::make(),
 
                     Tables\Actions\Action::make('dte')
                         ->label('Generar DTE')
@@ -314,7 +412,7 @@ class SaleResource extends Resource
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
-//                        redirect()->route('sendDTE', ['idVenta' => $record->id]);
+//                            redirect()->route('sendDTE', ['idVenta' => $record->id]);
                             if ($data['confirmacion'] === 'si') {
                                 $dteController = new DTEController();
                                 $resultado = $dteController->generarDTE($record->id);
@@ -399,7 +497,7 @@ class SaleResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+//                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
 //            ->recordUrl(null);

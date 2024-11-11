@@ -11,22 +11,32 @@ use App\Models\PurchaseItem;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use http\Client;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Request;
+use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Session;
 
 class EditSale extends EditRecord
 {
     protected static string $resource = SaleResource::class;
-
-    protected function getHeaderActions(): array
+    public function getTitle(): string|Htmlable
     {
-        return [
-//            Actions\DeleteAction::make()->label('Facturar'),
-        ];
+        return '';
     }
 
-    public function aftersave()
+    #[On('refreshSale')]
+    public function refresh(): void
     {
+    }
+
+
+
+    public function aftersave()//Disminuir el inventario
+    {
+
         $id_sale = $this->record->id; // Obtener el registro de la compra
         $sale = Sale::with('documenttype', 'customer', 'customer.country')->find($id_sale);
         $salesItem = SaleItem::where('sale_id', $sale->id)->get();
