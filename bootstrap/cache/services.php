@@ -48,10 +48,11 @@
     44 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     45 => 'Termwind\\Laravel\\TermwindServiceProvider',
     46 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    47 => 'Spatie\\Permission\\PermissionServiceProvider',
-    48 => 'App\\Providers\\AppServiceProvider',
-    49 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    50 => 'App\\Providers\\VoltServiceProvider',
+    47 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
+    48 => 'Spatie\\Permission\\PermissionServiceProvider',
+    49 => 'App\\Providers\\AppServiceProvider',
+    50 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    51 => 'App\\Providers\\VoltServiceProvider',
   ),
   'eager' => 
   array (
@@ -86,10 +87,11 @@
     28 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     29 => 'Termwind\\Laravel\\TermwindServiceProvider',
     30 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    31 => 'Spatie\\Permission\\PermissionServiceProvider',
-    32 => 'App\\Providers\\AppServiceProvider',
-    33 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    34 => 'App\\Providers\\VoltServiceProvider',
+    31 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
+    32 => 'Spatie\\Permission\\PermissionServiceProvider',
+    33 => 'App\\Providers\\AppServiceProvider',
+    34 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    35 => 'App\\Providers\\VoltServiceProvider',
   ),
   'deferred' => 
   array (

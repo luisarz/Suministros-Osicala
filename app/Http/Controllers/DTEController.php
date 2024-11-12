@@ -10,9 +10,11 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DTEController extends Controller
 {
@@ -433,11 +435,42 @@ class DTEController extends Controller
 
         if (Storage::disk('public')->exists($fileName)) {
             $fileContent = Storage::disk('public')->get($fileName);
-            $data = json_decode($fileContent, true); // Decodificar JSON en un array asociativo
-//            return response()->json($data);
-            $pdf = Pdf::loadView('DTE.dte-print-pdf',
-                compact('data'));
-            // Abrir el PDF en una nueva pestaña
+            $DTE = json_decode($fileContent, true); // Decodificar JSON en un array asociativo
+            $tipoDocumento = $DTE['identificacion']['tipoDte'] ?? 'DESCONOCIDO';
+            $logo = auth()->user()->employee->wherehouse->logo;
+            $tiposDTE = [
+                '03' => 'COMPROBANTE DE CREDITO  FISCAL',
+                '01' => 'FACTURA',
+                '02' => 'NOTA DE DEBITO',
+                '04' => 'NOTA DE CREDITO',
+                '05' => 'LIQUIDACION DE FACTURA',
+                '06' => 'LIQUIDACION DE FACTURA SIMPLIFICADA'
+            ];
+            $tipoDocumento = $this->searchInArray($tipoDocumento, $tiposDTE);
+            $contenidoQR = "https://admin.factura.gob.sv/consultaPublica?ambiente=00&codGen=" . $DTE['identificacion']['codigoGeneracion'] . "&fechaEmi=" . $DTE['identificacion']['fecEmi'];
+
+            $datos = [
+                'empresa' => $DTE["emisor"], // O la función correspondiente para cargar datos globales de la empresa.
+                'DTE' => $DTE,
+                'tipoDocumento' => $tipoDocumento,
+                'logo' => Storage::url($logo),
+            ];
+            $directory = storage_path('app/public/QR');
+
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true); // Create the directory with proper permissions
+            }
+            $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.png';
+            QrCode::size(300)->generate($contenidoQR, $path);
+
+            $qr=Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
+
+
+
+            $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
+
+
+            $empresa = $this->getConfiguracion();
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {
             return response()->json(['error' => 'El archivo no existe.'], 404); // Retornar error 404
@@ -487,5 +520,14 @@ class DTEController extends Controller
         $venta->generationCode = $responseData["respuestaHacienda"]["codigoGeneracion"] ?? null;
         $venta->jsonUrl = $fileName;
         $venta->save();
+    }
+
+    function searchInArray($clave, $array)
+    {
+        if (array_key_exists($clave, $array)) {
+            return $array[$clave];
+        } else {
+            return 'Clave no encontrada';
+        }
     }
 }
