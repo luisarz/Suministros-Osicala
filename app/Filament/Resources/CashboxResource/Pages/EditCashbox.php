@@ -16,4 +16,9 @@ class EditCashbox extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    public function beforeSave()
+    {
+        $this->redirect(static::getResource()::getUrl('index'));
+    }
+
 }

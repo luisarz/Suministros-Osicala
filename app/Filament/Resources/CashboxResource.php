@@ -56,12 +56,14 @@ class CashboxResource extends Resource
                 Tables\Columns\TextColumn::make('balance')
                    ->money('USD', locale: 'en_US')
                     ->label('Saldo')
+                    ->badge(fn ($record) => $record->balance < 100 ? 'danger' : 'success')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Activa')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_open')
                     ->label('Abierta')
+
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -72,11 +74,15 @@ class CashboxResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(null)
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->visible(function ($record) {
+                    return !$record->is_open;
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

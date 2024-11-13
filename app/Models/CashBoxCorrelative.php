@@ -15,4 +15,13 @@ class CashBoxCorrelative extends Model
        'current_number',
        'is_active',
    ];
+   public function cashBox()
+   {
+       return $this->belongsTo(CashBox::class);
+   }
+   public function document_type()
+   {
+         return $this->belongsTo(DocumentType::class);
+
+   }
 }
