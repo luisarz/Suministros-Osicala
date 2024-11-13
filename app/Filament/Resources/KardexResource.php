@@ -12,8 +12,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Grouping\Group;
 
@@ -22,7 +20,6 @@ class KardexResource extends Resource
 {
     protected static ?string $model = Kardex::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $label = 'Kardex productos';
     protected static ?string $navigationGroup = 'Inventario';
 

@@ -16,11 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CustomerDocumentTypeResource extends Resource
 {
     protected static ?string $model = CustomerDocumentType::class;
-    protected static ?string $label = 'Tipo  D. Cliente';
+    protected static ?string $label = 'Tipo  Documento Cliente';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 100;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+//    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {

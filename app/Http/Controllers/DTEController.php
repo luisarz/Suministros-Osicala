@@ -8,9 +8,6 @@ use App\Models\Sale;
 use DateTime;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Env;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -65,9 +62,6 @@ class DTEController extends Controller
         $factura = Sale::with('wherehouse.stablishmenttype', 'documenttype', 'seller', 'customer', 'customer.economicactivity', 'customer.departamento', 'customer.documenttypecustomer', 'salescondition', 'paymentmethod', 'saleDetails', 'saleDetails.inventory.product')->find($idVenta);
 
 
-        $documentTYPE = $factura->documenttype->code;
-        $establishmentType = $factura->wherehouse->stablishmenttype->code;
-        $conditionCode = $factura->salescondition->code;
         $establishmentType = $factura->wherehouse->stablishmenttype->code;
         $conditionCode = $factura->salescondition->code;
         $receptor = [
@@ -91,7 +85,7 @@ class DTEController extends Controller
         foreach ($factura->saleDetails as $detalle) {
             $codeProduc = str_pad($detalle->inventory_id, 10, '0', STR_PAD_LEFT);
             $items[] = [
-                "itemNum" => intval($i),
+                "itemNum" => $i,
                 "itemType" => 1,
                 "docNum" => null,
                 "code" => $codeProduc,
@@ -132,7 +126,6 @@ class DTEController extends Controller
             return [
                 'estado' => 'EXITO',
                 'mensaje' => 'DTE enviado correctamente',
-                'mensaje' => 'DTE enviado correctamente',
             ];
         }
     }
@@ -142,9 +135,6 @@ class DTEController extends Controller
         $factura = Sale::with('wherehouse.stablishmenttype', 'documenttype', 'seller', 'customer', 'customer.economicactivity', 'customer.departamento', 'customer.documenttypecustomer', 'salescondition', 'paymentmethod', 'saleDetails', 'saleDetails.inventory.product')->find($idVenta);
 
 
-        $documentTYPE = $factura->documenttype->code;
-        $establishmentType = $factura->wherehouse->stablishmenttype->code;
-        $conditionCode = $factura->salescondition->code;
         $establishmentType = $factura->wherehouse->stablishmenttype->code;
         $conditionCode = $factura->salescondition->code;
         $receptor = [
@@ -252,13 +242,12 @@ class DTEController extends Controller
 
             // Check for cURL errors
             if ($response === false) {
-                $data = [
+                return [
                     'estado' => 'RECHAZADO',
-                    'response' => $response,
+                    'response' => false,
                     'code' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
                     'mensaje' => "Ocurrio un eror" . curl_error($curl)
                 ];
-                return $data;
             }
 
             curl_close($curl);
@@ -465,10 +454,7 @@ class DTEController extends Controller
 
             $qr=Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
 
-
-
             $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
-
 
             $empresa = $this->getConfiguracion();
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña

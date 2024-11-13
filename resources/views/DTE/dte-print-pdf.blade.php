@@ -86,7 +86,6 @@
                     <h3>DOCUMENTO TRIBUTARIO ELECTRÓNICO</h3>
 
 
-
                     <h3>{{ $datos["tipoDocumento"] }}</h3>
                 </div>
 
@@ -125,32 +124,29 @@
 
 <!-- Info Documento -->
 
-
 <!-- Info Cliente -->
 <div class="cliente-info">
-   <table>
-       <tr>
-           <td>
-               <img src="{{ public_path($qr ) }}" alt="Logo Empresa" width="100px">
-           </td>
-           <td>
-               <p>Razón Social: {{ $datos["DTE"]['receptor']['nombre'] }}<br>
-               Documento: {{ $datos["DTE"]['receptor']['numDocumento'] }}<br>
-               Actividad: {{ $datos["DTE"]['receptor']['codActividad'] }} - {{  $datos["DTE"]['receptor']['descActividad'] }}
-               <br>
-               Dirección: {{ $datos["DTE"]['receptor']['direccion']['complemento'] }}<br>
-               Teléfono: {{ $datos["DTE"]['receptor']['telefono'] }} | Correo: {{  $datos["DTE"]['receptor']['correo'] }}</p>
+    <table>
+        <tr>
+
+            <td>
+                <p>Razón Social: {{ $datos["DTE"]['receptor']['nombre'] }}<br>
+                    Documento: {{ $datos["DTE"]['receptor']['numDocumento'] }}<br>
+                    Actividad: {{ $datos["DTE"]['receptor']['codActividad'] }}
+                    - {{  $datos["DTE"]['receptor']['descActividad'] }}
+                    <br>
+                    Dirección: {{ $datos["DTE"]['receptor']['direccion']['complemento'] }}<br>
+                    Teléfono: {{ $datos["DTE"]['receptor']['telefono'] }} |
+                    Correo: {{  $datos["DTE"]['receptor']['correo'] }}</p>
 
 
-           </td>
-       </tr>
-   </table>
-    <p>Razón Social: {{ $datos["DTE"]['receptor']['nombre'] }}<br>
-        Documento: {{ $datos["DTE"]['receptor']['numDocumento'] }}<br>
-        Actividad: {{ $datos["DTE"]['receptor']['codActividad'] }} - {{  $datos["DTE"]['receptor']['descActividad'] }}
-        <br>
-        Dirección: {{ $datos["DTE"]['receptor']['direccion']['complemento'] }}<br>
-        Teléfono: {{ $datos["DTE"]['receptor']['telefono'] }} | Correo: {{  $datos["DTE"]['receptor']['correo'] }}</p>
+            </td>
+            <td style="align-items: end;">
+                <img src="{{ public_path($qr ) }}" alt="Logo Empresa" width="100px">
+            </td>
+        </tr>
+    </table>
+
 </div>
 
 <!-- Tabla Productos -->

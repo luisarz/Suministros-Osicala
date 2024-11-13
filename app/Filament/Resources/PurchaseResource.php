@@ -11,9 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use PHPUnit\Metadata\Group;
 use Illuminate\Support\HtmlString;
 
 class PurchaseResource extends Resource
@@ -22,7 +19,7 @@ class PurchaseResource extends Resource
     protected static ?string $label = 'Compras';
     protected static ?string $navigationGroup = 'Inventario';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+//    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {

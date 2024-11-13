@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class HistoryDte extends Model
 {
     use SoftDeletes;
+
+    public mixed $sales_invoice_id;
     protected $fillable = [
         'sales_invoice_id',
         'version',

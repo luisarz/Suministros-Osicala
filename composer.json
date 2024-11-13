@@ -19,7 +19,8 @@
     "livewire/livewire": "^3.4",
     "livewire/volt": "^1.0",
     "psr/simple-cache": "2.0",
-    "simplesoftwareio/simple-qrcode": "^4.2"
+    "simplesoftwareio/simple-qrcode": "^4.2",
+    "ext-curl": "*"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",
