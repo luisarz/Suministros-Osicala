@@ -17,9 +17,9 @@ class PaymentMethodResource extends Resource
 {
     protected static ?string $model = PaymentMethod::class;
 
-    protected static ?string $label = 'Métodos de pago';
+    protected static ?string $label = 'Cat-017 Métodos de pago';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 17;
 
     public static function form(Form $form): Form
     {
@@ -97,8 +97,8 @@ class PaymentMethodResource extends Resource
     {
         return [
             'index' => Pages\ListPaymentMethods::route('/'),
-            'create' => Pages\CreatePaymentMethod::route('/create'),
-            'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
+//            'create' => Pages\CreatePaymentMethod::route('/create'),
+//            'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
         ];
     }
 }

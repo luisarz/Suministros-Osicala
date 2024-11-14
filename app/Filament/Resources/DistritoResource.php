@@ -19,10 +19,10 @@ class DistritoResource extends Resource
 {
     protected static ?string $model = Distrito::class;
 
-    protected static  ?string $label= 'Municipios';
+    protected static  ?string $label= 'Cat-013 Municipios';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 13;
     public static function form(Form $form): Form
     {
         return $form
@@ -104,8 +104,8 @@ class DistritoResource extends Resource
     {
         return [
             'index' => Pages\ListDistritos::route('/'),
-            'create' => Pages\CreateDistrito::route('/create'),
-            'edit' => Pages\EditDistrito::route('/{record}/edit'),
+//            'create' => Pages\CreateDistrito::route('/create'),
+//            'edit' => Pages\EditDistrito::route('/{record}/edit'),
         ];
     }
 }

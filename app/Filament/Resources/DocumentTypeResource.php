@@ -17,9 +17,9 @@ use mysql_xdevapi\Schema;
 class DocumentTypeResource extends Resource
 {
     protected static ?string $model = DocumentType::class;
-protected static ?string $label = 'Tipos de documentos';
+protected static ?string $label = 'Cat-002 T. D. Tributario';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort=7;
+    protected static ?int $navigationSort=2;
 
     public static function form(Form $form): Form
     {
@@ -36,6 +36,8 @@ protected static ?string $label = 'Tipos de documentos';
                         ->required()
                         ->maxLength(255),
                     Forms\Components\Toggle::make('is_active')
+                        ->label('Activo')
+                        ->default(true)
                         ->required(),
                 ])
 
@@ -47,6 +49,7 @@ protected static ?string $label = 'Tipos de documentos';
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -89,8 +92,8 @@ protected static ?string $label = 'Tipos de documentos';
     {
         return [
             'index' => Pages\ListDocumentTypes::route('/'),
-            'create' => Pages\CreateDocumentType::route('/create'),
-            'edit' => Pages\EditDocumentType::route('/{record}/edit'),
+//            'create' => Pages\CreateDocumentType::route('/create'),
+//            'edit' => Pages\EditDocumentType::route('/{record}/edit'),
         ];
     }
 }

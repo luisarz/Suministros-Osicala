@@ -19,9 +19,9 @@ class OperationConditionResource extends Resource
 {
     protected static ?string $model = OperationCondition::class;
 
-    protected static ?string $label = 'Condiciones de operacióne';
+    protected static ?string $label = 'Cat-016 Condiciones de operacióne';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 16;
     public static function getNavigationLabel(): string
     {
         return substr(static::$label, 0, -1);

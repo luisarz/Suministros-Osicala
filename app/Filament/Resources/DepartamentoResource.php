@@ -17,10 +17,10 @@ use Filament\Forms\Components\MarkdownEditor;
 class DepartamentoResource extends Resource
 {
     protected static ?string $model = Departamento::class;
-    protected static  ?string $label= 'Departamentos';
+    protected static  ?string $label= 'Cat-012 Departamentos';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-protected static ?int $navigationSort = 2;
+protected static ?int $navigationSort = 12;
 
     public static function form(Form $form): Form
     {
@@ -33,6 +33,7 @@ protected static ?int $navigationSort = 2;
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_active')
+                    ->default(true)
                     ->required(),
             ]);
     }

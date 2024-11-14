@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PersonTypeResource extends Resource
 {
     protected static ?string $model = PersonType::class;
-    protected static ?string $label = 'Tipo Cliente';
-    protected static ?int $navigationSort = 101;
+    protected static ?string $label = 'Cat-029 Tipo Persona';
+    protected static ?int $navigationSort = 29;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
 
 

@@ -16,9 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class StablishmentTypeResource extends Resource
 {
     protected static ?string $model = StablishmentType::class;
-    protected static ?string $label = 'Tipos de Establecimiento';
+    protected static ?string $label = 'Cat-009 Tipos de Establecimiento';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort=7;
+    protected static ?int $navigationSort=9;
 
     public static function form(Form $form): Form
     {
@@ -27,7 +27,7 @@ class StablishmentTypeResource extends Resource
 
                 Forms\Components\Section::make('Información Tipo de Establecimiento')
                 ->compact()
-                    ->columns(2)
+                    ->columns(1)
                 ->schema([
 
                     Forms\Components\TextInput::make('code')
@@ -100,8 +100,8 @@ class StablishmentTypeResource extends Resource
     {
         return [
             'index' => Pages\ListStablishmentTypes::route('/'),
-            'create' => Pages\CreateStablishmentType::route('/create'),
-            'edit' => Pages\EditStablishmentType::route('/{record}/edit'),
+//            'create' => Pages\CreateStablishmentType::route('/create'),
+//            'edit' => Pages\EditStablishmentType::route('/{record}/edit'),
         ];
     }
 }

@@ -17,10 +17,10 @@ class UnitMeasurementResource extends Resource
 {
     protected static ?string $model = UnitMeasurement::class;
 
-    protected static  ?string $label= 'U. Medida';
+    protected static  ?string $label= 'Cat-014 U. Medida';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 14;
 
     public static function form(Form $form): Form
     {

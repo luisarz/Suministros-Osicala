@@ -33,11 +33,11 @@ class MunicipalityResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nombre')  // Etiqueta opcional
+                            ->label('Distrito')  // Etiqueta opcional
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('distrito_id')
-                            ->label('Distrito')  // Etiqueta opcional
+                            ->label('Municipio')  // Etiqueta opcional
                             ->relationship('distrito', 'name')  // Relación con el modelo 'distrito'
                             ->preload()  // Pre-carga las opciones para optimizar
                             ->searchable()  // Permite búsqueda en el select
@@ -114,8 +114,8 @@ class MunicipalityResource extends Resource
     {
         return [
             'index' => Pages\ListMunicipalities::route('/'),
-            'create' => Pages\CreateMunicipality::route('/create'),
-            'edit' => Pages\EditMunicipality::route('/{record}/edit'),
+//            'create' => Pages\CreateMunicipality::route('/create'),
+//            'edit' => Pages\EditMunicipality::route('/{record}/edit'),
         ];
     }
 }

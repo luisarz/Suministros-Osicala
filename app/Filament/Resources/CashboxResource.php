@@ -38,7 +38,9 @@ class CashboxResource extends Resource
                     Forms\Components\TextInput::make('balance')
                         ->required()
                         ->numeric(),
-                    Forms\Components\Toggle::make('is_active'),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Activa')
+                        ->default(true),
                 ])->columns(2),
             ]);
     }

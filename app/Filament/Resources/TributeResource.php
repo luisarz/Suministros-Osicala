@@ -17,10 +17,10 @@ class TributeResource extends Resource
 {
     protected static ?string $model = Tribute::class;
 
-    protected static  ?string $label= 'Impuestos';
+    protected static  ?string $label= 'Cat-015 Impuestos';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 15;
 
     public static function form(Form $form): Form
     {
@@ -111,8 +111,8 @@ class TributeResource extends Resource
     {
         return [
             'index' => Pages\ListTributes::route('/'),
-            'create' => Pages\CreateTribute::route('/create'),
-            'edit' => Pages\EditTribute::route('/{record}/edit'),
+//            'create' => Pages\CreateTribute::route('/create'),
+//            'edit' => Pages\EditTribute::route('/{record}/edit'),
         ];
     }
 }

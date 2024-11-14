@@ -17,22 +17,28 @@ class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
-    protected static  ?string $label= 'Paises';
+    protected static  ?string $label= 'Cat-020 Paises';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 20;
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+               Forms\Components\Section::make('')
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label('Código')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nombre país')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Activo')
+                        ->required(),
+                ])
             ]);
     }
 
@@ -79,8 +85,8 @@ class CountryResource extends Resource
     {
         return [
             'index' => Pages\ListCountries::route('/'),
-            'create' => Pages\CreateCountry::route('/create'),
-            'edit' => Pages\EditCountry::route('/{record}/edit'),
+//            'create' => Pages\CreateCountry::route('/create'),
+//            'edit' => Pages\EditCountry::route('/{record}/edit'),
         ];
     }
 }

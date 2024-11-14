@@ -23,17 +23,18 @@ protected static ?string $navigationGroup = 'Configuración';
     {
         return $form
             ->schema([
-        Forms\Components\Section::make('Información del cargo laboral')
-            ->columns(2)
+        Forms\Components\Section::make('')
+            ->columns(1)
                 ->schema([
-                    Forms\Components\TextInput::make('code')
-                        ->label('Código')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('name')
-                        ->label('Cargo')
-                        ->required()
-                        ->maxLength(255),
+
+                        Forms\Components\TextInput::make('code')
+                            ->label('Código')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Cargo')
+                            ->required()
+                            ->maxLength(255),
                 ])
 
             ]);
@@ -88,8 +89,8 @@ protected static ?string $navigationGroup = 'Configuración';
     {
         return [
             'index' => Pages\ListJobTitles::route('/'),
-            'create' => Pages\CreateJobTitle::route('/create'),
-            'edit' => Pages\EditJobTitle::route('/{record}/edit'),
+//            'create' => Pages\CreateJobTitle::route('/create'),
+//            'edit' => Pages\EditJobTitle::route('/{record}/edit'),
         ];
     }
 }

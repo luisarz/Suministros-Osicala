@@ -16,22 +16,27 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class EconomicActivityResource extends Resource
 {
     protected static ?string $model = EconomicActivity::class;
-    protected static ?string $label = 'Actividades Económicas';
+    protected static ?string $label = 'Cat-019 Actividades Económicas';
     protected static string $icon = 'heroicon-o-collection';
     protected static $softDelete = true;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 19;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('')
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label('Código')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('description')
+                        ->label('Actividad económica')
+                        ->required()
+                        ->maxLength(255),
+                ])
             ]);
     }
 
@@ -76,8 +81,8 @@ class EconomicActivityResource extends Resource
     {
         return [
             'index' => Pages\ListEconomicActivities::route('/'),
-            'create' => Pages\CreateEconomicActivity::route('/create'),
-            'edit' => Pages\EditEconomicActivity::route('/{record}/edit'),
+//            'create' => Pages\CreateEconomicActivity::route('/create'),
+//            'edit' => Pages\EditEconomicActivity::route('/{record}/edit'),
         ];
     }
 }
