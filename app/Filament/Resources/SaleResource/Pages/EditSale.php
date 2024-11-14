@@ -11,13 +11,12 @@ use App\Models\PurchaseItem;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Filament\Actions;
-use Filament\Facades\Filament;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use http\Client;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Request;
 use Livewire\Attributes\On;
-use Illuminate\Support\Facades\Session;
 
 class EditSale extends EditRecord
 {
@@ -25,6 +24,44 @@ class EditSale extends EditRecord
     public function getTitle(): string|Htmlable
     {
         return '';
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Finalizar Venta')
+                ->color('primary')
+                ->icon('heroicon-o-check')
+                ->action('save')
+                ->extraAttributes([
+                    'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
+
+                ]),
+
+            Action::make('cancelSale')
+                ->label('Cancelar venta')
+                ->icon('heroicon-o-no-symbol')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Confirmación!!')
+                ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
+                ->modalButton('Sí, cancelar venta')
+                ->action(function (Actions\DeleteAction $delete) {
+                    if($this->record->is_dte)
+                    {
+                        Notification::make('No se puede cancelar una venta con DTE')
+                            ->title('Error al anular venta')
+                        ->body('No se puede cancelar una venta con DTE')
+                        ->danger()
+                        ->send();
+                        return;
+                    }
+                    $this->record->delete();
+                    SaleItem::where('sale_id', $this->record->id)->delete();
+                    $this->redirect(static::getResource()::getUrl('index'));
+                }),
+        ];
     }
 
     #[On('refreshSale')]
