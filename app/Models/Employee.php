@@ -37,7 +37,7 @@ class Employee extends Model
     protected $casts = [
         'photo' => 'array',
     ];
-    public function fullName()
+    public function getFullNameAttribute()
     {
         return $this->name . ' ' . $this->lastname;
     }

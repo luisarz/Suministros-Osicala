@@ -77,26 +77,34 @@ class SmallCashBoxOperationResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('voucher')
                     ->circular()
-                    ->openUrlInNewTab()
+                    ->label('Comprobante')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cashBoxOpen.cashbox.description')
+                    ->label('Caja')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('employee.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('employee.full_name')
+                    ->label('Empleado')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('operation'),
+                Tables\Columns\TextColumn::make('operation')
+                ->label('Operación')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->numeric()
+                    ->label('Monto')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('concept')
+                    ->label('Concepto')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('status')
+                    ->label('Activa')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Archivada')
+                    ->placeholder('Activa')
+                    ->sortable(),
+//                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -137,57 +145,57 @@ class SmallCashBoxOperationResource extends Resource
                     }),
 
 
-        Tables\Filters\SelectFilter::make('operation')
-            ->options([
-                'Ingreso' => 'Ingreso',
-                'Egreso' => 'Egreso',
-            ]),
+                Tables\Filters\SelectFilter::make('operation')
+                    ->options([
+                        'Ingreso' => 'Ingreso',
+                        'Egreso' => 'Egreso',
+                    ]),
                 Tables\Filters\TrashedFilter::make('dele')
                     ->label('Ver eliminados'),
 
             ])
             ->actions([
-        Tables\Actions\ViewAction::make()->label(''),
+                Tables\Actions\ViewAction::make()->label(''),
 //                Tables\Actions\EditAction::make()->label(''),
-        Tables\Actions\DeleteAction::make()->label('')
-            ->before(function ($record) {
-                $operationType = $record->operation;
-                $amount = $record->amount;
-                $caja = SmallCashBoxOperation::with('cashBoxOpen')
-                    ->where('id', $record->id)->first();
-                if (!$caja) {
-                    Notification::make()
-                        ->title('No hay caja abierta')
-                        ->body('No se puede realizar la operación')
-                        ->danger()
-                        ->icon('x-circle')
-                        ->send();
-                    $this->halt()->stop();
-                }
-                $cashBox = $caja->cashBoxOpen->cashbox;
-                if ($operationType === 'Egreso') {
-                    if ($cashBox->balance < $amount) {
-                        Notification::make()
-                            ->title('Fondos insuficientes')
-                            ->body('No se puede realizar la operación')
-                            ->danger()
-                            ->iconColor('danger')
-                            ->icon('heroicon-o-x-circle')
-                            ->send();
-                        $this->halt()->stop();
-                    }
-                    $cashBox->balance += $amount;
-                } elseif ($operationType === 'Ingreso') {
-                    $cashBox->balance -= $amount;
-                }
-                // Guardar el nuevo balance
-                $cashBox->save();
-            })])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
+                Tables\Actions\DeleteAction::make()->label('')
+                    ->before(function ($record) {
+                        $operationType = $record->operation;
+                        $amount = $record->amount;
+                        $caja = SmallCashBoxOperation::with('cashBoxOpen')
+                            ->where('id', $record->id)->first();
+                        if (!$caja) {
+                            Notification::make()
+                                ->title('No hay caja abierta')
+                                ->body('No se puede realizar la operación')
+                                ->danger()
+                                ->icon('x-circle')
+                                ->send();
+                            $this->halt()->stop();
+                        }
+                        $cashBox = $caja->cashBoxOpen->cashbox;
+                        if ($operationType === 'Egreso') {
+                            if ($cashBox->balance < $amount) {
+                                Notification::make()
+                                    ->title('Fondos insuficientes')
+                                    ->body('No se puede realizar la operación')
+                                    ->danger()
+                                    ->iconColor('danger')
+                                    ->icon('heroicon-o-x-circle')
+                                    ->send();
+                                $this->halt()->stop();
+                            }
+                            $cashBox->balance += $amount;
+                        } elseif ($operationType === 'Ingreso') {
+                            $cashBox->balance -= $amount;
+                        }
+                        // Guardar el nuevo balance
+                        $cashBox->save();
+                    })])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array
