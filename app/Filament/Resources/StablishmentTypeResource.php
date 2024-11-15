@@ -25,6 +25,7 @@ class StablishmentTypeResource extends Resource
         return $form
             ->schema([
 
+
                 Forms\Components\Section::make('Información Tipo de Establecimiento')
                 ->compact()
                     ->columns(1)
@@ -44,7 +45,7 @@ class StablishmentTypeResource extends Resource
                         ->required(),
                 ])
 
-            ]);
+            ])->extraAttributes(['class' => 'text-center']);
     }
 
     public static function table(Table $table): Table

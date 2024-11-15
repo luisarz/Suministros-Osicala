@@ -26,14 +26,21 @@ class UnitMeasurementResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
+               Forms\Components\Section::make('')
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label('Código')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('description')
+                        ->label('Descripción')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Activo')
+                        ->default(true)
+                        ->required(),
+                ])->columns(2)
             ]);
     }
 
@@ -80,8 +87,8 @@ class UnitMeasurementResource extends Resource
     {
         return [
             'index' => Pages\ListUnitMeasurements::route('/'),
-            'create' => Pages\CreateUnitMeasurement::route('/create'),
-            'edit' => Pages\EditUnitMeasurement::route('/{record}/edit'),
+//            'create' => Pages\CreateUnitMeasurement::route('/create'),
+//            'edit' => Pages\EditUnitMeasurement::route('/{record}/edit'),
         ];
     }
 }

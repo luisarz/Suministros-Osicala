@@ -33,11 +33,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        DB::listen(function ($query) {
-            Log::error($query->sql);
-            Log::info($query->bindings);
-            Log::info($query->time);
-        });
+//        DB::listen(function ($query) {
+//            Log::error($query->sql);
+////            Log::info($query->bindings);
+////            Log::info($query->time);
+//        });
 
 
         TextInput::configureUsing(function (TextInput $textInput) {
@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
                 ->paginationPageOptions([10, 25, 50, 100])
                 ->striped()
                 ->deferLoading()
-                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'border-red-500	bg-red-500 text-red opacity-50' : '');
+                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'border-red-500	text-danger bg-red-500 text-red opacity-50' : '');
         });
 
         Notifications::alignment(Alignment::Center);

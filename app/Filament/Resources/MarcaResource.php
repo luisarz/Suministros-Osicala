@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MarcaResource\Pages;
 use App\Filament\Resources\MarcaResource\RelationManagers;
 use App\Models\Marca;
+use CharrafiMed\GlobalSearchModal\Customization\Position;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -48,7 +49,11 @@ class MarcaResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('nombre')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('descripcion')
                     ->searchable(),
@@ -71,8 +76,9 @@ class MarcaResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\EditAction::make()->label(''),
+                Tables\Actions\DeleteAction::make()->label(''),
+            ],position: Tables\Enums\ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -91,8 +97,8 @@ class MarcaResource extends Resource
     {
         return [
             'index' => Pages\ListMarcas::route('/'),
-            'create' => Pages\CreateMarca::route('/create'),
-            'edit' => Pages\EditMarca::route('/{record}/edit'),
+//            'create' => Pages\CreateMarca::route('/create'),
+//            'edit' => Pages\EditMarca::route('/{record}/edit'),
         ];
     }
 }

@@ -31,12 +31,12 @@ class hoja extends Controller
                 $nuevo->is_taxed = true;
                 $nuevo->images = null;
                 $nuevo->is_active = true;
-                $nuevo->save();
+//                $nuevo->save();
 
                 //llenar el inventario
                 $inventario = new Inventory();
                 $inventario->product_id = $nuevo->id;
-                $inventario->branch_id = 1;
+                $inventario->branch_id = 3;
                 $inventario->cost_without_taxes = $producto->Costo;
                 $inventario->cost_with_taxes = $producto->CostoIVA;
                 $inventario->stock = $producto->Existencia;
@@ -45,7 +45,7 @@ class hoja extends Controller
                 $inventario->is_stock_alert =true;
                 $inventario->is_expiration_date = false;
                 $inventario->is_active = true;
-                $inventario->save();
+//                $inventario->save();
                 //llenar los precios
                 $precio = new Price();
                 $precio->inventory_id = $inventario->id;
@@ -53,11 +53,10 @@ class hoja extends Controller
                 $precio->price = $producto->PrecioIVA;
                 $precio->is_default = true;
                 $precio->is_active = true;
-                $precio->save();
+//                $precio->save();
 
             } catch (\Exception $e) {
                 $items[] = $producto->id; // Use the actual product ID for tracking failures
-                // Log the error message for further analysis
                 Log::error("Failed to save product ID {$producto->id}: " . $e->getMessage());
             }
         }

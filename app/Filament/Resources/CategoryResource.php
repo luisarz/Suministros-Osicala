@@ -3,12 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
+use CharrafiMed\GlobalSearchModal\Customization\Position;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 
 class CategoryResource extends Resource
@@ -49,6 +50,10 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Código')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Categoría de producto') // Corregido el acento en "producto"
                     ->searchable(),
@@ -71,12 +76,13 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-               Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
-            ])
+//               Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()->color('primary')->label('')->extraAttributes([
+                        'class' => 'text-2xl', // Clase de Tailwind para tamaño del icono
+                    ]),
+                    Tables\Actions\DeleteAction::make()->color('danger')->label(''),
+//                ]),
+            ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -95,8 +101,8 @@ class CategoryResource extends Resource
     {
         return [
             'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+//            'create' => Pages\CreateCategory::route('/create'),
+//            'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
 }
