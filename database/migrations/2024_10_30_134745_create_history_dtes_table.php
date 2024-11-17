@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('history_dtes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sales_invoice_id')->constrained('sales')->cascadeOnDelete();
+            $table->foreignId('sales_invoice_id')->nullable()->constrained('sales')->cascadeOnDelete();
             $table->string('version');
             $table->string('ambiente');
             $table->string('versionApp');

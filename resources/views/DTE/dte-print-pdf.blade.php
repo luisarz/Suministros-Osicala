@@ -61,7 +61,7 @@
                 <table style="text-align: left; border: black solid 1px; border-radius: 10px; row-span: inherit">
                     <tr>
                         <td style="width: 5%">
-                            <img src="{{ public_path($datos["logo"]) }}" alt="Logo Empresa">
+                            <img src="{{ public_path($datos["logo"]??'') }}" alt="Logo Empresa">
                         </td>
                         <td style="width: 95%"><h3>{{ $datos["empresa"]['nombre'] }}</h3>
                             <p style=" font-family: Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 12px; line-height: 1;">

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Http\Controllers\DTEController;
+use App\Http\Controllers\SenEmailDTEController;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\HistoryDte;
@@ -90,7 +91,7 @@ class SaleResource extends Resource
                                             ->live()
                                             ->relationship('wherehouse', 'name')
                                             ->preload()
-                                    ->disabled()
+                                            ->disabled()
                                             ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
                                         Forms\Components\Select::make('document_type_id')
                                             ->label('Comprobante')
@@ -380,6 +381,35 @@ class SaleResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('send')
+                        ->label('Enviar')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->visible(fn($record) => $record->is_dte) // Mostrar esta acción solo si isdte es false
+                        ->color('primary')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Está seguro de enviar el DTE?')
+                        ->modalDescription('Al enviar el DTE, se enviara al correo del cliente!')
+                        ->action(function ($record) {
+//                            return redirect()->route('sendDTE', ['idVenta' => $record->id]);
+                            $responseSendEmail = new SenEmailDTEController();
+                            $response = $responseSendEmail->SenEmailDTEController($record->id);
+
+                            $responseData = $response->getData(true);
+                            if ($responseData['status']) {
+                                Notification::make()
+                                    ->title('Envío Exitoso')
+                                    ->body($responseData['message'])
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Fallo en envío')
+                                    ->body($responseData['message'])
+                                    ->danger()
+                                    ->send();
+                            }
+
+                        }),
                     Tables\Actions\Action::make('pdf')
                         ->label('PDF')
                         ->icon('heroicon-o-printer')

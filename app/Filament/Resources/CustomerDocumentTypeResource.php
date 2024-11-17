@@ -74,6 +74,7 @@ class CustomerDocumentTypeResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -94,8 +95,8 @@ class CustomerDocumentTypeResource extends Resource
     {
         return [
             'index' => Pages\ListCustomerDocumentTypes::route('/'),
-            'create' => Pages\CreateCustomerDocumentType::route('/create'),
-            'edit' => Pages\EditCustomerDocumentType::route('/{record}/edit'),
+//            'create' => Pages\CreateCustomerDocumentType::route('/create'),
+//            'edit' => Pages\EditCustomerDocumentType::route('/{record}/edit'),
         ];
     }
 }

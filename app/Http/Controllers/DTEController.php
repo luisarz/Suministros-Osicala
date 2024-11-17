@@ -255,7 +255,8 @@ class DTEController extends Controller
             $responseData = json_decode($response, true);
             $responseHacienda = (isset($responseData["estado"]) == "RECHAZADO") ? $responseData : $responseData["respuestaHacienda"];
             $falloDTE = new HistoryDte;
-            $falloDTE->sales_invoice_id = $idVenta;
+            $ventaID = intval($idVenta);
+            $falloDTE->sales_invoice_id = $ventaID;
             $falloDTE->version = $responseHacienda["version"] ?? null;
             $falloDTE->ambiente = $responseHacienda["ambiente"];
             $falloDTE->versionApp = $responseHacienda["versionApp"];
@@ -450,13 +451,22 @@ class DTEController extends Controller
                 mkdir($directory, 0755, true); // Create the directory with proper permissions
             }
             $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.png';
+
             QrCode::size(300)->generate($contenidoQR, $path);
 
-            $qr=Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
+            $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
 
             $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
+            $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
+            if (file_exists($path)) {
+                return response()->file($path);
+            } else {
+                $pdf->save($path);
+            }
 
             $empresa = $this->getConfiguracion();
+//            $pdf->save(storage_path("app/public/DTEs/{$codGeneracion}.pdf"));
+
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {
             return response()->json(['error' => 'El archivo no existe.'], 404); // Retornar error 404

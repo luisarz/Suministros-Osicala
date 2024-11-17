@@ -80,6 +80,10 @@ class SmallCashBoxOperationResource extends Resource
                     ->label('Comprobante')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha')
+                    ->dateTime()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('cashBoxOpen.cashbox.description')
                     ->label('Caja')
                     ->searchable()
@@ -105,10 +109,8 @@ class SmallCashBoxOperationResource extends Resource
                     ->placeholder('Activa')
                     ->sortable(),
 //                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
+//                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

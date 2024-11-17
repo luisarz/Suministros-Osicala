@@ -9,7 +9,6 @@ class HistoryDte extends Model
 {
     use SoftDeletes;
 
-    public mixed $sales_invoice_id;
     protected $fillable = [
         'sales_invoice_id',
         'version',
@@ -30,6 +29,6 @@ class HistoryDte extends Model
     ];
     public function salesInvoice()
     {
-        return $this->belongsTo(Sale::class);
+        return $this->belongsTo(Sale::class,'sales_invoice_id','id');
     }
 }
