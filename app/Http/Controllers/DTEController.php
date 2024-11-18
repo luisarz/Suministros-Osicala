@@ -113,7 +113,9 @@ class DTEController extends Controller
             "items" => $items
         ];
 
+//        $dteJSON = json_encode($dte, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 //        return response()->json($dte);
+
         $responseData = $this->SendDTE($dte, $idVenta);
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
@@ -138,19 +140,18 @@ class DTEController extends Controller
         $establishmentType = $factura->wherehouse->stablishmenttype->code;
         $conditionCode = $factura->salescondition->code;
         $receptor = [
-            "address" => $factura->customer->address ?? null,
-            "businessName" => null,
-            "codeCity" => $factura->customer->departamento->code ?? null,
-            "codeMunicipality" => $factura->customer->distrito->code ?? null,
-            "documentNum" => $factura->customer->dui ?? $factura->customer->nit,
             "documentType" => $factura->customer->documenttypecustomer->code ?? null,
-            "economicAtivity" => $factura->customer->economicactivity->code ?? null,
-
+            "documentNum" => $factura->customer->dui ?? $factura->customer->nit,
+            "nit" => str_replace("-", '', $factura->customer->dui) ?? null,
             "nrc" => str_replace("-", "", $factura->customer->nrc) ?? null,
             "name" => $factura->customer->name . " " . $factura->customer->last_name ?? null,
             "phoneNumber" => str_replace(['-', '(', ')', ' '], '', $factura->customer->phone) ?? null,
             "email" => $factura->customer->email ?? null,
-            "nit" => str_replace("-", '', $factura->customer->dui) ?? null,
+            "address" => $factura->customer->address ?? null,
+            "businessName" => null,
+            "codeCity" => $factura->customer->departamento->code ?? null,
+            "codeMunicipality" => $factura->customer->distrito->code ?? null,
+            "economicAtivity" => $factura->customer->economicactivity->code ?? null,
         ];
         $extencion = [
             "deliveryName" => $factura->seller->name . " " . $factura->seller->last_name ?? null,
@@ -220,7 +221,6 @@ class DTEController extends Controller
             // Convert data to JSON format
             $dteJSON = json_encode($dteData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-//            dd($dteJSON);
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlAPI,
@@ -458,11 +458,11 @@ class DTEController extends Controller
 
             $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
             $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
-            if (file_exists($path)) {
-                return response()->file($path);
-            } else {
-                $pdf->save($path);
-            }
+//            if (file_exists($path)) {
+//                return response()->file($path);
+//            } else {
+//                $pdf->save($path);
+//            }
 
             $empresa = $this->getConfiguracion();
 //            $pdf->save(storage_path("app/public/DTEs/{$codGeneracion}.pdf"));

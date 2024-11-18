@@ -8,5 +8,6 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateRetentionTaxe extends CreateRecord
 {
+
     protected static string $resource = RetentionTaxeResource::class;
 }

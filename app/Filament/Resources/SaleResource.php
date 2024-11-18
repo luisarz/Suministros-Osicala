@@ -12,6 +12,7 @@ use App\Models\HistoryDte;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Tribute;
+use App\Tables\Actions\dteActions;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Support\View\Components\Modal;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
@@ -29,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
+use Filament\Infolists\Components\IconEntry;
 
 
 function updateTotalSale(mixed $idItem, array $data): void
@@ -86,6 +89,11 @@ class SaleResource extends Resource
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
+                                        Forms\Components\DatePicker::make('operation_date')
+                                            ->label('Fecha')
+                                            ->required()
+                                            ->inlineLabel(true)
+                                            ->default(now()),
                                         Forms\Components\Select::make('wherehouse_id')
                                             ->label('Sucursal')
                                             ->live()
@@ -379,154 +387,11 @@ class SaleResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\Action::make('send')
-                        ->label('Enviar')
-                        ->icon('heroicon-o-paper-airplane')
-                        ->visible(fn($record) => $record->is_dte) // Mostrar esta acción solo si isdte es false
-                        ->color('primary')
-                        ->requiresConfirmation()
-                        ->modalHeading('¿Está seguro de enviar el DTE?')
-                        ->modalDescription('Al enviar el DTE, se enviara al correo del cliente!')
-                        ->action(function ($record) {
-//                            return redirect()->route('sendDTE', ['idVenta' => $record->id]);
-                            $responseSendEmail = new SenEmailDTEController();
-                            $response = $responseSendEmail->SenEmailDTEController($record->id);
-
-                            $responseData = $response->getData(true);
-                            if ($responseData['status']) {
-                                Notification::make()
-                                    ->title('Envío Exitoso')
-                                    ->body($responseData['message'])
-                                    ->success()
-                                    ->send();
-                            } else {
-                                Notification::make()
-                                    ->title('Fallo en envío')
-                                    ->body($responseData['message'])
-                                    ->danger()
-                                    ->send();
-                            }
-
-                        }),
-                    Tables\Actions\Action::make('pdf')
-                        ->label('PDF')
-                        ->icon('heroicon-o-printer')
-                        ->visible(fn($record) => $record->is_dte) // Mostrar esta acción solo si isdte es false
-                        ->color('primary')
-                        ->action(function ($record) {
-                            return redirect()->route('printDTE', ['idVenta' => $record->generationCode]);
-                        }),
-
-//                    EditAction::make(),
-
-                    Tables\Actions\Action::make('dte')
-                        ->label('Generar DTE')
-                        ->visible(fn($record) => !$record->is_dte) // Mostrar esta acción solo si isdte es false
-                        ->icon('heroicon-o-shield-exclamation')
-                        ->requiresConfirmation()
-                        ->modalHeading('¿Está seguro de enviar el DTE?')
-                        ->color('primary')
-                        ->form([  // Formulario de opciones en el modal
-                            Select::make('tipoEnvio')
-                                ->label('Tipo de Envío')
-                                ->options([
-                                    'normal' => 'Envío Normal',
-                                ])
-                                ->default('normal')
-                                ->required(),
-                            Select::make('confirmacion')
-                                ->label('Enviar por Email')
-                                ->options([
-                                    'si' => 'Sí, deseo enviar',
-                                    'no' => 'No, no enviar',
-                                ])
-                                ->required(),
-                        ])
-                        ->action(function ($record, array $data) {
-//                            redirect()->route('sendDTE', ['idVenta' => $record->id]);
-                            if ($data['confirmacion'] === 'si') {
-                                $dteController = new DTEController();
-                                $resultado = $dteController->generarDTE($record->id);
-                                if ($resultado['estado'] === 'EXITO') {
-                                    Notification::make()
-                                        ->title('Envío Exitoso')
-                                        ->success()
-                                        ->send();
-                                } else {
-                                    Notification::make()
-                                        ->title('Fallo en envío')
-                                        ->danger()
-                                        ->body($resultado["mensaje"]) // Concatena las observaciones con saltos de línea
-                                        ->send();
-                                }
-                            } else {
-                                Notification::make()
-                                    ->title('Se cancelo en envio')
-                                    ->warning()
-                                    ->send();
-                            }
-                        }),
-                    Tables\Actions\Action::make('anularDTE')
-                        ->label('Anular DTE')
-                        ->visible(fn($record) => $record->is_dte && $record->status != 'Anulado') // Mostrar esta acción solo si isdte es false
-                        ->icon('heroicon-o-shield-exclamation')
-                        ->requiresConfirmation()
-                        ->modalHeading('¿Está seguro de Anular el DTE?')
-                        ->modalDescription('Al anular el DTE no se podrá recuperar')
-                        ->color('danger')
-                        ->form([  // Formulario de opciones en el modal
-                            Select::make('ConfirmacionAnular')
-                                ->label('Confirmar')
-                                ->options([
-                                    'confirmacion' => 'Estoy seguro, si Anular',
-                                ])
-                                ->placeholder('Seleccione una opción')
-                                ->required(),
-
-                        ])
-                        ->action(function ($record, array $data) {
-//                        redirect()->route('sendDTE', ['idVenta' => $record->id]);
-                            if ($data['ConfirmacionAnular'] === 'Estoy seguro, si Anular') {
-                                $dteController = new DTEController();
-                                $resultado = $dteController->anularDTE($record->id);
-                                if ($resultado['estado'] === 'EXITO') {
-                                    Notification::make()
-                                        ->title('Anulacion Exitosa')
-                                        ->success()
-                                        ->send();
-                                } else {
-                                    Notification::make()
-                                        ->title('Fallo en envío')
-                                        ->danger()
-                                        ->body($resultado["mensaje"]) // Concatena las observaciones con saltos de línea
-                                        ->send();
-                                }
-                            }
-                        }),
-
-                    Tables\Actions\Action::make('Historial')
-                        ->label('Historial DTE')
-                        ->icon('heroicon-o-scale')
-                        ->color('success')
-                        ->action(function ($record, $livewire) {
-                        })
-                        ->modalHeading('Bitacora procesos DTE')
-                        ->modalContent(function ($record) {
-                            $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
-                            return view('DTE.historial-dte', [
-                                'record' => $record,
-                                'historial' => $historial, // Pass the historial data to the view
-                            ]);
-                        })
-                        ->modalDescription('Historial de envío de DTEs')
-                        ->modalWidth('7xl'),
-
-
-                ])->iconButton()->icon('heroicon-o-bars-3')->label('Acciones'),
-
-
+                dteActions::generarDTE(),
+                dteActions::imprimirDTE(),
+                dteActions::enviarDTE(),
+                dteActions::anularDTE(),
+                dteActions::historialDTE(),
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

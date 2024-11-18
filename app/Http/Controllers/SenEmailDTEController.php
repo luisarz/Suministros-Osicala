@@ -10,7 +10,7 @@ class SenEmailDTEController extends Controller
 {
     public function SenEmailDTEController($idVenta): \Illuminate\Http\JsonResponse
     {
-        $sale = Sale::with('customer')->find($idVenta);
+        $sale = Sale::with('customer','wherehouse','wherehouse.company')->find($idVenta);
         if (!$sale) {
             return response()->json([
                 'status' => false,
@@ -29,6 +29,7 @@ class SenEmailDTEController extends Controller
         $data = [
             'status' => false,
             'message' => 'No se encontraron los archivos',
+            'body' => 'Por favor gnere el PDF del cliente antes de enviar el correo',
         ];
         if (file_exists($JsonPath) && file_exists($PdfPath)) {
             try {
@@ -37,11 +38,14 @@ class SenEmailDTEController extends Controller
                 $data = [
                     'status' => true,
                     'message' => 'Email enviado exitosamente',
+                    'body' => 'Correo enviado a ' . $sale->customer->email,
+
                 ];
             } catch (\Exception $e) {
                 $data = [
                     'status' => false,
                     'message' => 'Error al enviar el correo: ' . $e->getMessage(),
+                    'body' => 'Error al enviar el correo a ' . $sale->customer->email,
                 ];
             }
         }

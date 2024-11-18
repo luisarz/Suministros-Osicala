@@ -13,6 +13,7 @@ class Sale extends Model
     use softDeletes;
 
     protected $fillable = [
+        'operation_date',
         'document_type_id',
         'document_internal_number',
         'wherehouse_id',

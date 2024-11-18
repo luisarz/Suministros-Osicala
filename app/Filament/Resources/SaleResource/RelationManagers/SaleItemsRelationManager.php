@@ -6,6 +6,7 @@ use App\Models\Inventory;
 use App\Models\Price;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
+use App\Models\RetentionTaxe;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use Filament\Forms;
@@ -251,21 +252,31 @@ class SaleItemsRelationManager extends RelationManager
     }
     protected function updateTotalSale(SaleItem $record)
     {
-        $sale = Sale::find($record->sale_id)->first();
+        $idSale=$record->sale_id;
+        $sale = Sale::where('id',$idSale)->first();
+
+//        dd($sale);
         if ($sale) {
-            $ivaRate = Tribute::where('id', 1)->value('rate') ?? 0;
-            $isrRate = Tribute::where('id', 3)->value('rate') ?? 0;
-            $ivaRate = is_numeric($ivaRate) ? $ivaRate / 100 : 0;
-            $isrRate = is_numeric($isrRate) ? $isrRate / 100 : 0;
-            $montoTotal = SaleItem::where('sale_id', $sale->id)->sum('total') ?? 0;
-            $neto = $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
-            $iva = $montoTotal - $neto;
-            $retention = $sale->have_retention ? $neto * 0.1 : 0;
-            $sale->net_amount = round($neto, 2);
-            $sale->taxe = round($iva, 2);
-            $sale->retention = round($retention, 2);
-            $sale->sale_total = round($montoTotal-$retention, 2);
-            $sale->save();
+            try {
+                $ivaRate = Tribute::where('code', 20)->value('rate') ?? 0;
+                $isrRate = RetentionTaxe::where('code', 22)->value('rate') ?? 0;
+
+                $ivaRate = is_numeric($ivaRate) ? $ivaRate / 100 : 0;
+                $isrRate = is_numeric($isrRate) ? $isrRate / 100 : 0;
+                $montoTotal = SaleItem::where('sale_id', $sale->id)->sum('total') ?? 0;
+//            dd($montoTotal);
+                $neto = $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
+                $iva = $montoTotal - $neto;
+                $retention = $sale->have_retention ? $neto * 0.1 : 0;
+                $sale->net_amount = round($neto, 2);
+                $sale->taxe = round($iva, 2);
+                $sale->retention = round($retention, 2);
+                $sale->sale_total = round($montoTotal-$retention, 2);
+                $sale->save();
+            }
+            catch (\Exception $e){
+                Log::error($e->getMessage());
+            }
 
 
         }

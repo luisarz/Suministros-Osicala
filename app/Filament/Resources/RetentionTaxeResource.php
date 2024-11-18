@@ -24,12 +24,35 @@ protected static ?int $navigationSort = 6;
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Información del impuesto')
+                    ->compact()
+                    ->schema([
+                        Forms\Components\TextInput::make('code')
+                            ->required()
+                            ->label('Código del impuesto')
+                            ->inlineLabel()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nombre del impuesto')
+                            ->inlineLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('is_percentage')
+                            ->label('Es Porcentaje')
+                            ->inlineLabel()
+                            ->required()
+                            ->reactive(),
+                        Forms\Components\TextInput::make('rate')
+                            ->label('Valor del impuesto')
+                            ->prefix(fn (callable $get) => $get('is_percentage') ? '%' : '$')
+                            ->inlineLabel()
+                            ->required()
+                            ->numeric()
+                            ->default(0.00),
+                        Forms\Components\Toggle::make('is_active')
+                            ->default(true)
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
 
@@ -38,9 +61,22 @@ protected static ?int $navigationSort = 6;
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label('Código')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_percentage')
+                    ->label('Es Porcentaje')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('rate')
+                    ->label('Valor')
+                    ->suffix(fn ($state, $record) => $record->is_percentage ?' %' :' $' )
+                    ->color('danger')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Activo')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
