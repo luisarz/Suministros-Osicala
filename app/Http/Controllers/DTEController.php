@@ -458,14 +458,13 @@ class DTEController extends Controller
 
             $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
             $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
-//            if (file_exists($path)) {
-//                return response()->file($path);
-//            } else {
-//                $pdf->save($path);
-//            }
+            if (file_exists($path)) {
+                return response()->file($path);
+            } else {
+                $pdf->save($path);
+            }
 
             $empresa = $this->getConfiguracion();
-//            $pdf->save(storage_path("app/public/DTEs/{$codGeneracion}.pdf"));
 
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {

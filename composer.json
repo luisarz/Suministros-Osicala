@@ -9,6 +9,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
+    "ext-curl": "*",
     "barryvdh/laravel-dompdf": "^3.0",
     "bezhansalleh/filament-shield": "^3.2",
     "charrafimed/global-search-modal": "^3.4",
@@ -19,8 +20,8 @@
     "livewire/livewire": "^3.4",
     "livewire/volt": "^1.0",
     "psr/simple-cache": "2.0",
-    "simplesoftwareio/simple-qrcode": "^4.2",
-    "ext-curl": "*"
+    "pxlrbt/filament-excel": "^2.3",
+    "simplesoftwareio/simple-qrcode": "^4.2"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",

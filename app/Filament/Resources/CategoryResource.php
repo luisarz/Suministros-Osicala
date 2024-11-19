@@ -8,6 +8,7 @@ use CharrafiMed\GlobalSearchModal\Customization\Position;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
@@ -15,7 +16,7 @@ use Filament\Tables\Table;
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
-    protected static  ?string $label= 'Categorías';
+    protected static ?string $label = 'Categorías';
     protected static ?bool $softDelete = true;
     protected static ?string $navigationGroup = 'Almacén';
     protected static ?string $recordTitleAttribute = 'name';
@@ -76,12 +77,14 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-//               Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make()->color('primary')->label('')->extraAttributes([
-                        'class' => 'text-2xl', // Clase de Tailwind para tamaño del icono
-                    ]),
-                    Tables\Actions\DeleteAction::make()->color('danger')->label(''),
-//                ]),
+                Tables\Actions\EditAction::make()
+                    ->color('primary')
+                    ->label('')
+                    ->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()
+                    ->color('danger')
+                    ->label('')
+                    ->iconSize(IconSize::Medium),
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

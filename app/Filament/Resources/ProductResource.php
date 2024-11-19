@@ -44,8 +44,13 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nombre')
                             ->required()
+                            ->inlineLabel(false)
+//                            ->columnSpanFull()
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('aplications')
+                        Forms\Components\TextInput::make('aplications')
+                            ->placeholder('Separar con punto y comas (;)')
+//                            ->columnSpanFull()
+                            ->inlineLabel(false)
                             ->label('Aplicaciones'),
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
@@ -122,11 +127,15 @@ class ProductResource extends Resource
                     ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? "<span style='text-decoration: line-through; color: red;'>$state</span>" :$state)
                     ->html()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('aplications')
+                    ->label('Aplicaión')
+                    ->badge()
+                    ->separator(';')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
                     ->copyable()
                     ->copyMessage('SKU  copied')
-
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('bar_code')
@@ -200,8 +209,8 @@ class ProductResource extends Resource
                     Tables\Actions\ReplicateAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
-                ])
-            ])
+                ]),
+            ],position: Tables\Enums\ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
