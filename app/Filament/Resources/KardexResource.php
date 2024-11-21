@@ -14,6 +14,9 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Grouping\Group;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 
 class KardexResource extends Resource
@@ -30,6 +33,7 @@ class KardexResource extends Resource
                 Forms\Components\TextInput::make('branch_id')
                     ->required()
                     ->numeric(),
+
                 Forms\Components\DatePicker::make('date')
                     ->required(),
                 Forms\Components\TextInput::make('operation_type')
@@ -95,6 +99,10 @@ class KardexResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('whereHouse.name')
                     ->label('Sucursal')
                     ->sortable(),
@@ -139,27 +147,28 @@ class KardexResource extends Resource
                     ->extraAttributes(['class' => ' color-success bg-success-200']) // Agregar clases CSS para el borde
                     ->sortable(),
                 ColumnGroup::make('DETALLE DE UNIDADES ( CANT)', [
-                Tables\Columns\TextColumn::make('stock_in')
-                    ->label('Entrada')
-                    ->numeric()
-                    ->summarize(Sum::make()->label('Entrada'))
-                    ->extraAttributes(['class' => 'bg-success-200']) // Agregar clases CSS para el borde
-
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock_out')
-                    ->label('Salida')
-                    ->numeric()
-                    ->summarize(Sum::make()->label('Salida'))
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock_actual')
-                    ->label('Stock')
-                    ->numeric()
-                    ->summarize(Sum::make()
-                        ->label('Stock')
+                    Tables\Columns\TextColumn::make('stock_in')
+                        ->label('Entrada')
                         ->numeric()
-                        ->suffix(new HtmlString(' U'))
-                    )
-                    ->sortable(),
+                        ->summarize(Sum::make()
+                            ->label('Entrada'))
+                        ->extraAttributes(['class' => 'bg-success-200']) // Agregar clases CSS para el borde
+
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('stock_out')
+                        ->label('Salida')
+                        ->numeric()
+                        ->summarize(Sum::make()->label('Salida'))
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('stock_actual')
+                        ->label('Existencia')
+                        ->numeric()
+                        ->summarize(Sum::make()
+                            ->label('Existencia')
+                            ->numeric()
+                            ->suffix(new HtmlString(' U'))
+                        )
+                        ->sortable(),
                 ]),
                 Tables\Columns\TextColumn::make('purchase_price')
                     ->money('USD', locale: 'USD')
@@ -171,18 +180,18 @@ class KardexResource extends Resource
                     ->sortable(),
                 ColumnGroup::make('IMPORTE MONETARIO / PC', [
 
-                Tables\Columns\TextColumn::make('money_in')
-                    ->label('DEBE')
-                    ->money('USD', locale: 'USD')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('money_out')
-                    ->label('HABER')
-                    ->money('USD', locale: 'USD')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('money_actual')
-                    ->label('SALDO')
-                    ->money('USD', locale: 'USD')
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('money_in')
+                        ->label('DEBE')
+                        ->money('USD', locale: 'USD')
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('money_out')
+                        ->label('HABER')
+                        ->money('USD', locale: 'USD')
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('money_actual')
+                        ->label('SALDO')
+                        ->money('USD', locale: 'USD')
+                        ->sortable(),
                 ]),
                 Tables\Columns\TextColumn::make('sale_price')
                     ->money('USD', locale: 'USD')
@@ -207,14 +216,25 @@ class KardexResource extends Resource
                     ->label('Fecha Operación'),
             ])
             ->filters([
-             
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+//                    Tables\Actions\DeleteBulkAction::make(),
+                    ExportAction::make()
+                        ->exports([
+                            ExcelExport::make()
+                                ->fromTable()
+                                ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
+                                ->withWriterType(\Maatwebsite\Excel\Excel::XLSX)
+                                ->withColumns([
+                                    Column::make('updated_at'),
+                                ]),
+
+                        ]),
                 ]),
             ]);
     }

@@ -5,16 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
-use Filament\Actions\RestoreAction;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -130,6 +130,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('aplications')
                     ->label('Aplicaión')
                     ->badge()
+                    ->sortable()
                     ->separator(';')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
@@ -215,7 +216,8 @@ class ProductResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                ]),
+//                    ExportAction::make(),
+                ])
             ]);
     }
 

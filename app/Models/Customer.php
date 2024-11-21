@@ -76,6 +76,6 @@ class Customer extends Model
     }
     public function persontype()
     {
-        return $this->belongsTo(PersonType::class, 'person_type_id');
+        return $this->belongsTo(personType::class, 'person_type_id');
     }
 }

@@ -79,7 +79,7 @@ class PurchaseResource extends Resource
                                     ->maxLength(255),
 
 
-                                Forms\Components\Select::make('purchase_condition')
+                                Forms\Components\Select::make('pruchase_condition')
                                     ->label('Condición')
                                     ->options([
                                         'Contado' => 'Contado',
