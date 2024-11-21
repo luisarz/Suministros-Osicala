@@ -21,6 +21,7 @@
     "livewire/volt": "^1.0",
     "psr/simple-cache": "2.0",
     "pxlrbt/filament-excel": "^2.3",
+    "rmsramos/activitylog": "^1.0",
     "simplesoftwareio/simple-qrcode": "^4.2"
   },
   "require-dev": {

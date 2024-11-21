@@ -198,6 +198,17 @@
       0 => 'pxlrbt\\FilamentExcel\\FilamentExcelServiceProvider',
     ),
   ),
+  'rmsramos/activitylog' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Rmsramos\\Activitylog\\ActivitylogServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Activitylog' => 'Rmsramos\\Activitylog\\Facades\\Activitylog',
+    ),
+  ),
   'ryangjchandler/blade-capture-directive' => 
   array (
     'providers' => 
@@ -218,6 +229,13 @@
     'aliases' => 
     array (
       'QrCode' => 'SimpleSoftwareIO\\QrCode\\Facades\\QrCode',
+    ),
+  ),
+  'spatie/laravel-activitylog' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 

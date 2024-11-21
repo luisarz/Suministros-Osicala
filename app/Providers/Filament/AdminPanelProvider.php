@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\CustomLogin;
+use App\Filament\Resources\LogResource;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -26,6 +27,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -93,7 +95,9 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
-                GlobalSearchModalPlugin::make()
+                GlobalSearchModalPlugin::make(),
+                ActivitylogPlugin::make()->resource(LogResource::class),
+
             ])
             ->collapsibleNavigationGroups()
             ->navigationGroups([

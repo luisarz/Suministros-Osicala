@@ -8,6 +8,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
@@ -16,6 +17,7 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory, Notifiable;
     use HasRoles;
     use HasPanelShield;
+    use \Spatie\Activitylog\Traits\LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +30,11 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
     ];
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'parent_id']);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
