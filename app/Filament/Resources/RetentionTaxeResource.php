@@ -8,6 +8,7 @@ use App\Models\RetentionTaxe;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -50,9 +51,10 @@ protected static ?int $navigationSort = 6;
                             ->numeric()
                             ->default(0.00),
                         Forms\Components\Toggle::make('is_active')
+                            ->label('Activo')
                             ->default(true)
                             ->required(),
-                    ])->columns(2),
+                    ])->columns(1),
             ]);
     }
 
@@ -90,8 +92,10 @@ protected static ?int $navigationSort = 6;
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -110,8 +114,8 @@ protected static ?int $navigationSort = 6;
     {
         return [
             'index' => Pages\ListRetentionTaxes::route('/'),
-            'create' => Pages\CreateRetentionTaxe::route('/create'),
-            'edit' => Pages\EditRetentionTaxe::route('/{record}/edit'),
+//            'create' => Pages\CreateRetentionTaxe::route('/create'),
+//            'edit' => Pages\EditRetentionTaxe::route('/{record}/edit'),
         ];
     }
 }

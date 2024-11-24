@@ -8,6 +8,7 @@ use App\Models\Distrito;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,13 +80,13 @@ class DistritoResource extends Resource
                     ->default(''),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
-            ])
+//                Tables\Actions\ActionGroup::make([
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+//                ]),
+//                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

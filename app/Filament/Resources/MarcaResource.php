@@ -31,8 +31,11 @@ class MarcaResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('nombre')
                             ->required()
+                            ->inlineLabel(false)
                             ->maxLength(255),
                         Forms\Components\TextInput::make('descripcion')
+                            ->inlineLabel(false)
+
                             ->required()
                             ->maxLength(255),
                         Forms\Components\FileUpload::make('imagen')
@@ -40,9 +43,10 @@ class MarcaResource extends Resource
                             ->directory('marcas'),
 
                         Forms\Components\Toggle::make('estado')
+                            ->label('Activo')
                             ->default(true)
                             ->required(),
-                    ])->columns(2),
+                    ])->columns(1),
             ]);
     }
 
@@ -79,7 +83,7 @@ class MarcaResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
                 Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeCells)
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

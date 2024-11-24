@@ -55,7 +55,10 @@ return [
         'pages' => true,
         'widgets' => true,
         'resources' => true,
-        'custom_permissions' => false,
+//        'custom_permissions' => false,
+        'grouped'=>[
+            'Catalogos Hacienda'=>['Country','CustomerDocumentType','PersonType','TaxRegime','TaxRegimeType','TaxType'],
+        ]
     ],
 
     'generator' => [

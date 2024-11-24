@@ -8,6 +8,7 @@ use App\Models\CustomerDocumentType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,16 +28,19 @@ class CustomerDocumentTypeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Información de Tipo de Documento del Cliente')
-                ->columns(3)
+                ->columns(1)
                     ->compact()
                     ->schema([
                     Forms\Components\TextInput::make('code')
+                        ->label('Código')
                         ->required()
                         ->maxLength(5),
                     Forms\Components\TextInput::make('name')
+                        ->label('Nombre')
                         ->required()
                         ->maxLength(150),
                     Forms\Components\Toggle::make('is_active')
+                        ->label('Activo')
                         ->default(true)
                         ->required(),
                 ]),
@@ -50,6 +54,8 @@ class CustomerDocumentTypeResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Código')
+                    ->badge()
+                    ->color('danger')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
@@ -74,9 +80,10 @@ class CustomerDocumentTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
+//                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

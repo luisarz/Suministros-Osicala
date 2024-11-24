@@ -8,6 +8,7 @@ use App\Models\Municipality;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -89,13 +90,14 @@ class MunicipalityResource extends Resource
 
             ])
             ->actions([
-               Tables\actions\actiongroup::make([
-                   Tables\Actions\EditAction::make(),
-                   Tables\Actions\DeleteAction::make(),
-                   Tables\Actions\ViewAction::make(),
-                   Tables\Actions\restoreAction::make(),
-                ]),
-            ])
+//               Tables\actions\actiongroup::make([
+                   Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Ver'),
+                   Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Duplicar')->color('success'),
+                   Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Editar'),
+                   Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Eliminar'),
+                   Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Restaurar'),
+//                ]),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

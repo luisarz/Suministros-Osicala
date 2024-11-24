@@ -8,6 +8,7 @@ use App\Models\Country;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,7 @@ class CountryResource extends Resource
                Forms\Components\Section::make('')
                 ->schema([
                     Forms\Components\TextInput::make('code')
+
                         ->label('Código')
                         ->required()
                         ->maxLength(255),
@@ -47,10 +49,13 @@ class CountryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label('Código')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre país')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label('Activo')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -65,7 +70,8 @@ class CountryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

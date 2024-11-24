@@ -8,6 +8,7 @@ use App\Models\PersonType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,7 +27,6 @@ class PersonTypeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Información Tipo Cliente')
-                ->columns(3)
                 ->compact()
                 ->schema([
                     Forms\Components\TextInput::make('code')
@@ -69,8 +69,10 @@ class PersonTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+//                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -89,8 +91,8 @@ class PersonTypeResource extends Resource
     {
         return [
             'index' => Pages\ListPersonTypes::route('/'),
-            'create' => Pages\CreatePersonType::route('/create'),
-            'edit' => Pages\EditPersonType::route('/{record}/edit'),
+//            'create' => Pages\CreatePersonType::route('/create'),
+//            'edit' => Pages\EditPersonType::route('/{record}/edit'),
         ];
     }
 }

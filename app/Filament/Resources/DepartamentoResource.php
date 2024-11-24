@@ -8,6 +8,7 @@ use App\Models\Departamento;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,15 +27,21 @@ protected static ?int $navigationSort = 12;
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_active')
-                    ->default(true)
-                    ->required(),
+                Forms\Components\Section::make('')
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label('Código')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nombre')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Activo')
+                        ->default(true)
+                        ->required(),
+                ])
             ]);
     }
 
@@ -61,13 +68,13 @@ protected static ?int $navigationSort = 12;
                 //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
-            ])
+//                Tables\Actions\ActionGroup::make([
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
+//                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+//                ]),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

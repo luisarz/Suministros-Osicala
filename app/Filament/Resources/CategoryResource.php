@@ -77,15 +77,10 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->color('primary')
-                    ->label('')
-                    ->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()
-                    ->color('danger')
-                    ->label('')
-                    ->iconSize(IconSize::Medium),
-            ], position: ActionsPosition::BeforeCells)
+                Tables\Actions\EditAction::make()->color('primary')->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\ReplicateAction::make()->color('success')->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->color('danger')->label('')->iconSize(IconSize::Medium),
+            ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

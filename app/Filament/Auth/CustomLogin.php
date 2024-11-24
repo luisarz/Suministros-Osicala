@@ -91,6 +91,13 @@ class CustomLogin extends Login
             $this->throwFailureValidationException();
         }
         $user = Filament::auth()->user();
+        activity()
+            ->causedBy(auth()->user())
+            ->event('login')
+            ->performedOn($user)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Inicio de session del usuario.' . $user->email);
+
         if (($user instanceof FilamentUser) && (!$user->canAccessPanel(Filament::getCurrentPanel()))) {
             Filament::auth()->logout();
             $this->throwFailureValidationException();

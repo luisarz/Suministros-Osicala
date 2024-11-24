@@ -8,6 +8,7 @@ use App\Models\StablishmentType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,7 +19,7 @@ class StablishmentTypeResource extends Resource
     protected static ?string $model = StablishmentType::class;
     protected static ?string $label = 'Cat-009 Tipos de Establecimiento';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort=9;
+    protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form
     {
@@ -27,23 +28,23 @@ class StablishmentTypeResource extends Resource
 
 
                 Forms\Components\Section::make('Información Tipo de Establecimiento')
-                ->compact()
+                    ->compact()
                     ->columns(1)
-                ->schema([
+                    ->schema([
 
-                    Forms\Components\TextInput::make('code')
-                        ->label('Código')
-                        ->maxLength(255)
-                        ->default(null),
-                    Forms\Components\TextInput::make('name')
-                        ->label('Tipo de establecimiento')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('is_active')
-                        ->label('Activo')
-                        ->default(true)
-                        ->required(),
-                ])
+                        Forms\Components\TextInput::make('code')
+                            ->label('Código')
+                            ->maxLength(255)
+                            ->default(null),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Tipo de establecimiento')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Activo')
+                            ->default(true)
+                            ->required(),
+                    ])
 
             ])->extraAttributes(['class' => 'text-center']);
     }
@@ -75,19 +76,18 @@ class StablishmentTypeResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make( [
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
-                ]),
-            ])
+//                Tables\Actions\ActionGroup::make( [
+                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+        Tables\Actions\BulkActionGroup::make([
+            Tables\Actions\DeleteBulkAction::make(),
+        ]),
+    ]);
     }
 
     public static function getRelations(): array

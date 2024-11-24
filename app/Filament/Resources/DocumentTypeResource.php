@@ -8,6 +8,7 @@ use App\Models\DocumentType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,12 +28,16 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
             ->schema([
                 Forms\Components\Section::make('Información del tipo de documento')
                 ->compact()
-                    ->columns(2)
                     ->schema([
                     Forms\Components\TextInput::make('code')
+                        ->label('Código')
+                        ->inlineLabel(false)
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('name')
+                        ->label('Nombre')
+                        ->inlineLabel(false)
+
                         ->required()
                         ->maxLength(255),
                     Forms\Components\Toggle::make('is_active')
@@ -72,8 +77,10 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

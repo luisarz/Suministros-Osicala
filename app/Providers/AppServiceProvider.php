@@ -11,11 +11,14 @@ use Filament\Pages\Page;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Table;
 use Illuminate\Validation\ValidationException;
+use App\Policies\ActivityPolice;
+use Spatie\Activitylog\Models\Activity;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Activity::class, ActivityPolicy::class);
+
 
 //        DB::listen(function ($query) {
 //            Log::error($query->sql);

@@ -22,12 +22,12 @@ class LogResource extends ActivitylogResource
     {
         return $table
             ->columns([
-                static::getLogNameColumnCompoment(),
-                static::getEventColumnCompoment(),
-                static::getSubjectTypeColumnCompoment(),
-                static::getCauserNameColumnCompoment(),
-                static::getPropertiesColumnCompoment(),
-                static::getCreatedAtColumnCompoment(),
+                static::getLogNameColumnCompoment()??'',
+                static::getEventColumnCompoment()??'',
+                static::getSubjectTypeColumnCompoment()??'',
+                static::getCauserNameColumnCompoment()??'',
+                static::getPropertiesColumnCompoment()??'',
+                static::getCreatedAtColumnCompoment()??'',
             ])
             ->defaultSort(config('filament-activitylog.resources.default_sort_column', 'created_at'), config('filament-activitylog.resources.default_sort_direction', 'asc'))
             ->filters([

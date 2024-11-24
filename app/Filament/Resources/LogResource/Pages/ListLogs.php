@@ -10,5 +10,4 @@ class ListLogs extends ListRecords
 {
     protected static string $resource = LogResource::class;
 
-
 }
