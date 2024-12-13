@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->date('operation_date')->default(now());
-            $table->foreignId('document_type_id')->constrained('document_types')->cascadeOnDelete();//factura, nota de venta, etc
-            $table->string('document_internal_number'); //Controll interno correlativos caja
+            $table->foreignId('document_type_id')->nullable()->constrained('document_types')->cascadeOnDelete();//factura, nota de venta, etc
+            $table->string('document_internal_number')->nullable(); //Controll interno correlativos caja
             $table->foreignId('wherehouse_id')->constrained('branches')->cascadeOnDelete();//Sucursal
             $table->foreignId('seller_id')->constrained('employees')->cascadeOnDelete();//Vendedor
             $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();//Cliente
@@ -37,6 +37,9 @@ return new class extends Migration
             $table->string('generationCode')->nullable();
             $table->string('receiptStamp')->nullable();
             $table->string('jsonUrl')->nullable();
+            $table->boolean('is_order')->default(false);
+            $table->boolean('is_invoiced_order')->default(false);
+            $table->string('order_number')->nullable();//NUmero de la orden es difernte en cada sucrusal
             $table->softDeletes();
             $table->timestamps();
         });

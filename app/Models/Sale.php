@@ -35,6 +35,9 @@ class Sale extends Model
         'is_dte',
         'generationCode',
         'jsonUrl',
+        'is_order',
+        'is_invoiced_order',
+        'order_number',
 
     ];
 

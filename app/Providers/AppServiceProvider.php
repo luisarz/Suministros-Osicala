@@ -57,28 +57,26 @@ class AppServiceProvider extends ServiceProvider
 
         Table::configureUsing(function (Table $table) {
             $table
-                ->paginationPageOptions([10, 25, 50, 100])
+                ->paginationPageOptions([5,10, 25, 50, 100])
                 ->striped()
                 ->deferLoading()
-                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'border-red-500	text-danger bg-red-500 text-red opacity-50' : '');
+//                ->recordClasses(fn(Model $record) => $record->deleted_at ? 'border-red-500	text-danger bg-red-500 text-red opacity-50' : '');
+                ->recordClasses(fn (Model $record) => match (true) {
+                    $record->deleted_at !== null => 'border-s-2 border-orange-600 dark:border-orange-300 opacity-50', // Tachado y con menor opacidad
+
+                    default => null,
+                });
+
         });
 
         Notifications::alignment(Alignment::Center);
-//        Validaciones
         Page::$reportValidationErrorUsing = function (ValidationException $exception) {
             Notification::make()
                 ->title($exception->getMessage())
                 ->danger()
                 ->send();
         };
-// Check session data route
-        Route::get('/check-session', function () {
-            return [
-                'branch_id' => session('branch_id'),
-                'branch_name' => session('branch_name'),
-                'branch_logo' => session('branch_logo'),
-            ];
-        });
+
 
     }
 }

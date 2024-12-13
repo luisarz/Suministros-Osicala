@@ -137,10 +137,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Seguridad')
                     ->icon('heroicon-o-shield-check')
                     ->collapsed(),
-            ])
-            ->bootUsing(function (Panel $panel) {
-                // ...
-//                dd(session::get('branch_id'));
-            });
+            ]);
+
     }
 }

@@ -17,7 +17,7 @@ class ListSales extends ListRecords
             Actions\CreateAction::make()
                 ->label('Nueva Venta')
                 ->icon('heroicon-o-shopping-cart')
-                ->color('primary')
+                ->color('success')
                 ->visible(function () {
                     $whereHouse = auth()->user()->employee->branch_id ?? null;
 

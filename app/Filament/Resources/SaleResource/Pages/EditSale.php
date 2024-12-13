@@ -42,7 +42,7 @@ class EditSale extends EditRecord
             Action::make('cancelSale')
                 ->label('Cancelar venta')
                 ->icon('heroicon-o-no-symbol')
-                ->color('danger')
+                ->color('warning')
                 ->requiresConfirmation()
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')

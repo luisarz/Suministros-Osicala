@@ -338,20 +338,28 @@ class SaleResource extends Resource
                     ->label('Neto')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxe')
                     ->label('IVA')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('retention')
                     ->label('Retención')
                     ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sale_total')
@@ -383,6 +391,9 @@ class SaleResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->modifyQueryUsing(function ($query) {
+                $query->where('is_invoiced_order', true);
+            })
             ->filters([
                 //
             ])
