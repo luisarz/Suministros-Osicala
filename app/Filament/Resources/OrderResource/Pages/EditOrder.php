@@ -21,11 +21,19 @@ class EditOrder extends EditRecord
     {
         return '';
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('Volver'),
+        ];
+    }
+
     protected function getFormActions(): array
     {
         return [
             Action::make('save')
-                ->label('Finalizar Orden')
+                ->label('Enviar Orden')
                 ->color('success')
                 ->icon('heroicon-o-check')
                 ->action('save')
@@ -35,9 +43,9 @@ class EditOrder extends EditRecord
                 ]),
 
             Action::make('cancelSale')
-                ->label('Cancelar Orden')
+                ->label('Eliminar Orden')
                 ->icon('heroicon-o-no-symbol')
-                ->color('warning')
+                ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
@@ -64,7 +72,15 @@ class EditOrder extends EditRecord
     {
     }
 
-
+    protected function afterSave(): void
+    {
+        Notification::make('Orden enviada')
+            ->title('Orden enviada')
+            ->body('La orden ha sido enviada correctamente')
+            ->success()
+            ->send();
+        $this->redirect(static::getResource()::getUrl('index'));
+    }
 
 
 }

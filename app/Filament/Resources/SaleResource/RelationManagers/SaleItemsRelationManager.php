@@ -79,17 +79,19 @@ class SaleItemsRelationManager extends RelationManager
                                     $set('quantity', 1);
                                     $set('discount', 0);
                                     $set('minprice', $price->inventory->cost_with_taxes);
-
+                                    $this->calculateTotal($get, $set);
                                 } else {
                                     $set('price', $price->price??0);
                                     $set('quantity', 1);
                                     $set('discount', 0);
+                                    $this->calculateTotal($get, $set);
                                 }
                             }),
 
                         Forms\Components\TextInput::make('quantity')
                             ->label('Cantidad')
                             ->step(1)
+
                             ->numeric()
                             ->live()
                             ->debounce(300)
@@ -144,6 +146,7 @@ class SaleItemsRelationManager extends RelationManager
                             }),
                         Forms\Components\TextInput::make('minprice')
                             ->label('Tributos')
+                            ->hidden(true)
                             ->columnSpan(3)
                             ->afterStateUpdated(function (callable $get, callable $set) {
 
@@ -235,20 +238,32 @@ class SaleItemsRelationManager extends RelationManager
 
     protected function calculateTotal(callable $get, callable $set)
     {
-        $quantity = $get('quantity')??0;
-        $price = $get('price')??0;
-        $discount = $get('discount') / 100 ??0;
-        $is_except = $get('is_except');
+        try {
+            $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
+            $price = ($get('price') !== "" && $get('price') !== null) ? $get('price') : 0;
+            $discount = $get('discount') / 100 ?? 0;
+            $is_except = $get('is_except');
 
-        $total = $quantity * $price;
-        if ($discount > 0) {
-            $total -= $total * $discount;
-        }
-        if ($is_except) {
-            $total -= ($total * 0.13);
+            $total = $quantity * $price;
+
+            if ($discount > 0) {
+                $total -= $total * $discount;
+            }
+            if ($is_except) {
+                $total -= ($total * 0.13);
+            }
+
+            // Formatear precio y total a dos decimales
+            $price = round($price, 2);
+            $total = round($total, 2);
+
+            $set('price', $price);
+            $set('total', $total);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
 
-        $set('total', $total);
+
     }
     protected function updateTotalSale(SaleItem $record)
     {
