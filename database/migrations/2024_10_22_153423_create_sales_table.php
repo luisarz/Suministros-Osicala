@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('receiptStamp')->nullable();
             $table->string('jsonUrl')->nullable();
             $table->boolean('is_order')->default(false);
+            $table->boolean('is_order_closed_without_invoiced')->default(false);
             $table->boolean('is_invoiced_order')->default(false);
             $table->string('order_number')->nullable();//NUmero de la orden es difernte en cada sucrusal
             $table->softDeletes();

@@ -31,4 +31,9 @@ class SaleItem extends Model
     {
         return $this->belongsTo(Inventory::class);
     }
+    public function whereHouse()
+    {
+        return $this->belongsTo(Branch::class, 'wherehouse_id','id');
+
+    }
 }

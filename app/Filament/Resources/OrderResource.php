@@ -9,12 +9,14 @@ use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Sale;
 use App\Tables\Actions\dteActions;
+use App\Tables\Actions\orderActions;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
@@ -25,6 +27,7 @@ use Livewire\Component;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
+
 class OrderResource extends Resource
 {
     protected static ?string $model = Sale::class;
@@ -33,7 +36,6 @@ class OrderResource extends Resource
     protected static ?string $navigationGroup = 'Facturación';
 
     protected static bool $softDelete = true;
-
 
 
     public static function form(Form $form): Form
@@ -112,7 +114,6 @@ class OrderResource extends Resource
                                                     ->schema([
 
 
-
                                                         // Null-safe check
                                                         Forms\Components\TextInput::make('name')
                                                             ->required()
@@ -141,7 +142,7 @@ class OrderResource extends Resource
 
 
 //                                Section::make('Orden Total' . ($this->getOrderNumber() ?? 'Sin número'))
-                                    Section::make('')
+                                Section::make('')
                                     ->compact()
                                     ->schema([
                                         Forms\Components\Placeholder::make('Orden')
@@ -176,13 +177,6 @@ class OrderResource extends Resource
             ]);
     }
 
-    public static function getTableActions(): array
-    {
-        return [
-            // Eliminar la acción de edición
-//            EditAction::make()->hidden(),
-        ];
-    }
 
     public
     static function table(Table $table): Table
@@ -190,17 +184,28 @@ class OrderResource extends Resource
         return $table
             ->columns([
 
-                Tables\Columns\TextColumn::make('documenttype.name')
-                    ->label('Comprobante')
+
+                Tables\Columns\TextColumn::make('order_number')
+                    ->label('Orden')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('document_internal_number')
-                    ->label('#')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_invoiced_order')
+                Tables\Columns\TextColumn::make('wherehouse.name')
+                    ->label('Sucursal')
+                    ->numeric()
+                    ->searchable()
+//                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\columns\TextColumn::make('operation_date')
+                    ->label('Fecha')
+                    ->date()
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_order_closed_without_invoiced')
                     ->boolean()
                     ->tooltip('Facturada')
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-shield-exclamation')
+                    ->trueIcon('heroicon-o-lock-closed')
+                    ->falseIcon('heroicon-o-lock-open')
                     ->label('Procesada')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
@@ -225,7 +230,6 @@ class OrderResource extends Resource
                     ->label('Retención')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sale_total')
@@ -257,15 +261,20 @@ class OrderResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->where('is_order', true);
             })
+            ->recordUrl(null)
             ->filters([
                 //
             ])
             ->actions([
-//                dteActions::generarDTE(),
-//                dteActions::imprimirDTE(),
-//                dteActions::enviarDTE(),
-//                dteActions::anularDTE(),
-//                dteActions::historialDTE(),
+                orderActions::printOrder(),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
+                    ->visible(function ($record) {
+                        return $record->status != 'Finalizado' && $record->status != 'Anulado';
+                    }),
+                orderActions::closeOrder(),
+//                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
+                orderActions::cancelOrder(),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
