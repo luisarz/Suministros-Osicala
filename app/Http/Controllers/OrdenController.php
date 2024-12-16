@@ -20,18 +20,19 @@ class OrdenController extends Controller
             return null;
         }
     }
-    public function  generarPdf($idVenta)
+
+    public function generarPdf($idVenta)
     {
         //abrir el json en DTEs
-        $datos=Sale::with('customer','saleDetails','whereHouse','saleDetails.inventory','saleDetails.inventory.product','documenttype','seller')->find($idVenta);
+        $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller')->find($idVenta);
         $empresa = $this->getConfiguracion();
 
         $formatter = new NumeroALetras();
         $montoLetras = $formatter->toInvoice($datos->sale_total, 2, 'DoLARES');
-            $pdf = Pdf::loadView('order.order-print-pdf', compact('datos','empresa','montoLetras')); // Cargar vista y pasar datos
+        $pdf = Pdf::loadView('order.order-print-pdf', compact('datos', 'empresa', 'montoLetras')); // Cargar vista y pasar datos
 
 
-            return $pdf->stream("{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña
+        return $pdf->stream("Orden-ventas-.{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña
 
     }
 }

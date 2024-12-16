@@ -201,7 +201,7 @@ class OrderResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_order_closed_without_invoiced')
+                Tables\Columns\IconColumn::make('is_invoiced_order')
                     ->boolean()
                     ->tooltip('Facturada')
                     ->trueIcon('heroicon-o-lock-closed')
@@ -272,6 +272,7 @@ class OrderResource extends Resource
                         return $record->status != 'Finalizado' && $record->status != 'Anulado';
                     }),
                 orderActions::closeOrder(),
+                orderActions::billingOrden(),
 //                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
                 orderActions::cancelOrder(),
                 Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),

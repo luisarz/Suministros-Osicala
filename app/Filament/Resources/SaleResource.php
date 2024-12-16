@@ -394,6 +394,7 @@ class SaleResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->where('is_invoiced_order', true);
             })
+            ->recordUrl(null)
             ->filters([
                 //
             ])

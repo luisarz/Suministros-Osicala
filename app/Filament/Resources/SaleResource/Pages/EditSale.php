@@ -123,6 +123,7 @@ class EditSale extends EditRecord
             }
         }
 
+        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
         // Redirigir después de completar el proceso
         $this->redirect(static::getResource()::getUrl('index'));
     }

@@ -13,6 +13,7 @@ use Filament\Support\Enums\IconSize;
 use Filament\Tables\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
 {
     $id_sale = $record->id; // Obtener el registro de la venta
@@ -44,7 +45,7 @@ function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
             $kardex = KardexHelper::createKardexFromInventory(
                 $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
                 $sale->created_at, // Fecha
-                $operation.' Orden ' . $sale->order_number, // Tipo de operación
+                $operation . ' Orden ' . $sale->order_number, // Tipo de operación
                 $sale->id, // operation_id
                 $item->id, // operation_detail_id
                 $documnetType, // document_type
@@ -83,12 +84,22 @@ class orderActions
             ->icon('heroicon-o-printer')
             ->iconSize(IconSize::Large)
             ->color('primary')
-            ->action(function ($record) {
-                //abrir el json en DTEs
-                $datos=Sale::with('customer','saleDetails','saleDetails.inventory','documenttype','seller')->find($record->id);
-                $configuracion = Company::find(1);
-                $pdf = PDF::loadView('order.order-print-pdf', ['datos' => $datos, 'empresa' => $configuracion]);
-                return $pdf->download('order.pdf');
+            ->url(fn($record) => route('ordenGenerarPdf', ['idVenta' => $record->id]))
+            ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
+
+    }
+    public static function billingOrden(): Action
+    {
+        return Action::make('billingOrder')
+            ->label('Facturar')
+            ->icon('heroicon-o-arrow-up-on-square-stack')
+            ->iconSize(IconSize::Large)
+            ->visible(function ($record) {
+                return $record->status != 'Finalizado' && $record->status != 'Anulado';
+            })
+            ->color('primary')
+            ->action(function ($record){
+               redirect()->route('billingOrder', ['idVenta' => $record->id]);
             });
 
     }
@@ -118,7 +129,7 @@ class orderActions
                     return;
                 }
 
-                if (OrderCloseKardex($record,false,'')) {
+                if (OrderCloseKardex($record, false, '')) {
                     Notification::make('Orden cerrada')
                         ->title('Orden cerrada')
                         ->body('La orden ha sido cerrada correctamente')
@@ -150,15 +161,14 @@ class orderActions
 
 
             ->visible(function ($record) {
-                return  $record->status == 'Finalizado';
+                return $record->status == 'Finalizado' && $record->is_invoiced_order == false;
             })
-
             ->modalHeading('Confirmación!!')
             ->modalSubheading('¿Estás seguro de que deseas cerrar esta orden? Esta acción no se puede deshacer.')
             ->action(function ($record) {
                 //Descargar el inventario antes de procesar la orden
                 // revisar que este finalizada
-                if (OrderCloseKardex($record,true,'Anulacion')) {
+                if (OrderCloseKardex($record, true, 'Anulacion')) {
                     Notification::make('Orden cerrada')
                         ->title('Orden cerrada')
                         ->body('La orden ha sido cerrada correctamente')

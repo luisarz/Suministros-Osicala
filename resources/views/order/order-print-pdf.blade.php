@@ -53,9 +53,9 @@
             padding: 5px;
         }
 
-        .tabla-productos th {
-            background-color: #f2f2f2;
-        }
+        /*.tabla-productos th {*/
+        /*    background-color: #f2f2f2;*/
+        /*}*/
 
         .resumen p {
             margin: 5px 0;
@@ -66,12 +66,24 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .tabla-productos-anulado::before {
+            content: "ANULADO";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 100px; /* Tamaño grande para el texto */
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.05); /* Negro con baja opacidad para efecto de marca de agua */
+            z-index: 0;
+            pointer-events: none; /* No afecta la interacción con la tabla */
+        }
     </style>
 </head>
 <body>
 <!-- Header Empresa -->
 <div class="header">
-    <table style="text-align: left; border: black solid 1px; border-radius: 10px; width: 100%;">
+    <table     style="text-align: left; border: black solid 1px; border-radius: 10px; width: 100%;">
         <tr>
 
             <td colspan="5" style="text-align: center;">
@@ -89,14 +101,15 @@
             <td>Vendedor:{{$datos->seller->name??''}} {{$datos->seller->last_name??''}} </td>
         </tr>
         <tr>
-            <td>Estado: {{$datos->status??''}}</td>
+            <td>Estado: <b>{{$datos->status??''}}</b></td>
             <td colspan="4">Destino/Cliente: {{$datos->customer->name??'' ." ". $datos->customer->last_name??''}} // {{$datos->customer->address??''}}</td>
         </tr>
 
     </table>
     <!-- Tabla Productos -->
-    <table class="tabla-productos" width="100%" border="1" cellspacing="0" cellpadding="5">
-        <thead>
+    <table class="tabla-productos{{ $datos->status == 'Anulado' ? '-anulado' : '' }}" width="100%" border="1" cellspacing="0" cellpadding="5">
+
+    <thead>
         <tr>
             <th>No</th>
             <th>Cant</th>
@@ -131,7 +144,7 @@
                 <td style="width: 85%">
                     <table style="width: 100%">
                         <tr>
-                            <td colspan="2"><b>VALOR EN LETRAS:</b> {{ $montoLetras ??''}} 
+                            <td colspan="2"><b>VALOR EN LETRAS:</b> {{ $montoLetras ??''}}
                             </td>
                         </tr>
                         <tr>
@@ -164,21 +177,21 @@
                         </tr>
                         <tr>
                             <td>Total Exento:</td>
-                            <td>${{ number_format($datos['DTE']['resumen']['totalExenta']??0, 2) }}</td>
+                            <td>${{ number_format(0, 2) }}</td>
                         </tr>
                         <tr>
                             <td>Total Gravadas:</td>
-                            <td>${{ number_format($datos['DTE']['resumen']['totalGravada']??0, 2) }}</td>
+                            <td>${{ number_format($datos->sale_total, 2) }}</td>
                         </tr>
                         <tr>
                             <td>Subtotal:</td>
-                            <td>${{ number_format($datos['DTE']['resumen']['subTotal']??0, 2) }}</td>
+                            <td>${{ number_format($datos->sale_total, 2) }}</td>
                         </tr>
 
                         <tr style="background-color: #57595B; color: white;">
                             <td>
                                 <b>TOTAL A PAGAR:</b></td>
-                            <td> ${{number_format($datos['DTE']['resumen']['totalPagar']??0, 2)}}
+                            <td> ${{number_format($datos->sale_total, 2)}}
                             </td>
                         </tr>
                     </table>
