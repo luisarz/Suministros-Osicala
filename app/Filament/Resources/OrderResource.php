@@ -27,6 +27,7 @@ use Livewire\Component;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class OrderResource extends Resource
 {
@@ -263,7 +264,13 @@ class OrderResource extends Resource
             })
             ->recordUrl(null)
             ->filters([
-                //
+                DateRangeFilter::make('created_at')->timePicker24()
+                    ->label('Fecha de venta')
+                    ->default([
+                        'start' => now()->subDays(30)->format('Y-m-d'),
+                        'end' => now()->format('Y-m-d'),
+                    ]),
+
             ])
             ->actions([
                 orderActions::printOrder(),

@@ -21,6 +21,7 @@ class CreateSale extends CreateRecord
     }
 
     protected static bool $canCreateAnother = false;
+
     public function mutateFormDataBeforeCreate(array $data): array
     {
         $data['wherehouse_id'] = auth()->user()->employee->branch_id;
@@ -29,6 +30,7 @@ class CreateSale extends CreateRecord
         return $data;
 
     }
+
     protected function getFormActions(): array
     {
         return [
@@ -51,17 +53,27 @@ class CreateSale extends CreateRecord
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
                 ->action(function (Actions\DeleteAction $delete) {
-                    if ($this->record->is_dte) {
-                        Notification::make('No se puede cancelar una venta con DTE')
+                    if (!$this->record) {
+                        $this->redirect(static::getResource()::getUrl('index'));
+                        return;
+                    }
+
+                    if ($this->record->is_order) {
+                        Notification::make()
                             ->title('Error al anular venta')
-                            ->body('No se puede cancelar una venta con DTE')
+                            ->body('No se puede cancelar una orden')
                             ->danger()
                             ->send();
                         return;
                     }
-                    $this->record->delete();
+
+// Elimina la venta y los elementos relacionados
                     SaleItem::where('sale_id', $this->record->id)->delete();
+                    $this->record->delete();
+
+// Redirige al índice
                     $this->redirect(static::getResource()::getUrl('index'));
+
                 }),
         ];
     }

@@ -20,9 +20,6 @@ class ListSales extends ListRecords
                 ->color('success')
                 ->visible(function () {
                     $whereHouse = auth()->user()->employee->branch_id ?? null;
-
-                    $whereHouse = auth()->user()->employee->branch_id ?? null;
-
                     if ($whereHouse) {
                         $cashBoxOpened = CashBoxOpen::with('cashbox')
                             ->where('status', 'open')

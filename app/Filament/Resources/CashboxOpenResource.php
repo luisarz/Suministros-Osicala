@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CashboxOpenResource extends Resource
 {
-    protected static ?string $model = CashboxOpen::class;
+    protected static ?string $model = CashBoxOpen::class;
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     public static ?string $label = "Apertura de Cajas";

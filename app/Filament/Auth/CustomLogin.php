@@ -18,7 +18,6 @@ use Illuminate\Validation\ValidationException;
 
 class CustomLogin extends Login
 {
-//    protected static string $view = 'resources.views.livewire.pages.auth.login';
 
     protected function getForms(): array
     {

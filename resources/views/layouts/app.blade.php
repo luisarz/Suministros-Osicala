@@ -33,13 +33,6 @@
             </main>
         </div>
     </body>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            window.addEventListener('open-new-tab', function (event) {
-                const url = event.detail.url;
-                window.open(url, '_blank'); // Abre la URL en una nueva pestaña
-            });
-        });
-    </script>
+
 
 </html>

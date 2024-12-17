@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PersonTypeResource\Pages;
 use App\Filament\Resources\PersonTypeResource\RelationManagers;
-use App\Models\PersonType;
+use App\Models\personType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PersonTypeResource extends Resource
 {
-    protected static ?string $model = PersonType::class;
+    protected static ?string $model = personType::class;
     protected static ?string $label = 'Cat-029 Tipo Persona';
     protected static ?int $navigationSort = 29;
     protected static ?string $navigationGroup = 'Catálogos Hacienda';

@@ -170,6 +170,17 @@
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
     ),
   ),
+  'malzariey/filament-daterangepicker-filter' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentDaterangepickerFilter' => 'Malzariey\\FilamentDaterangepickerFilter\\Facades\\FilamentDaterangepickerFilter',
+    ),
+    'providers' => 
+    array (
+      0 => 'Malzariey\\FilamentDaterangepickerFilter\\FilamentDaterangepickerFilterServiceProvider',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 

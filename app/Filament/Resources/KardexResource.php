@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\KardexResource\Pages;
-use App\Filament\Resources\KardexResource\RelationManagers;
 use App\Models\Kardex;
 use Filament\Forms;
 use Filament\Forms\Form;

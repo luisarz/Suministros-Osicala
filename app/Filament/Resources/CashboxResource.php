@@ -5,7 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CashboxResource\Pages;
 use App\Filament\Resources\CashboxResource\RelationManagers;
 use App\Filament\Resources\CashBoxResource\RelationManagers\CorrelativesRelationManager;
-use App\Models\Cashbox;
+use App\Models\CashBox;
+use App\Models\CashBoxOpen;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,7 +15,7 @@ use Filament\Tables\Table;
 
 class CashboxResource extends Resource
 {
-    protected static ?string $model = Cashbox::class;
+    protected static ?string $model = CashBox::class;
 
     protected static ?string $label = 'Cajas';
     protected static  ?string $navigationGroup="Configuración";

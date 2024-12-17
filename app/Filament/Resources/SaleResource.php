@@ -13,6 +13,8 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use App\Tables\Actions\dteActions;
+use DeepCopy\TypeFilter\Date\DatePeriodFilter;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -32,7 +34,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Filament\Infolists\Components\IconEntry;
-
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 function updateTotalSale(mixed $idItem, array $data): void
 {
@@ -293,7 +299,12 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha de venta')
+                    ->dateTime()
+//                    ->since()                 // Muestra el tiempo transcurrido (opcional)
+                    ->timezone('America/El_Salvador') // Zona horaria (opcional)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('documenttype.name')
                     ->label('Comprobante')
                     ->sortable(),
@@ -382,10 +393,8 @@ class SaleResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
+//                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -396,7 +405,13 @@ class SaleResource extends Resource
             })
             ->recordUrl(null)
             ->filters([
-                //
+                DateRangeFilter::make('created_at')->timePicker24()
+                    ->label('Fecha de venta')
+                    ->default([
+                        'start' => now()->subDays(30)->format('Y-m-d'),
+                        'end' => now()->format('Y-m-d'),
+                    ]),
+
             ])
             ->actions([
                 dteActions::generarDTE(),
@@ -407,6 +422,17 @@ class SaleResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ExportAction::make()
+                        ->exports([
+                            ExcelExport::make()
+                                ->fromTable()
+                                ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
+                                ->withWriterType(\Maatwebsite\Excel\Excel::CSV)
+                                ->withColumns([
+                                    Column::make('created_at'),
+                                ]),
+
+                        ]),
                 ]),
             ]);
     }

@@ -17,7 +17,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::get('/ejecutar', [hoja::class, 'ejecutar']);
-Route::get('/generarDTE/{idVenta}', [DTEController::class, 'generarDTE'])->middleware(['auth'])->name('sendDTE');
+Route::get('/generarDTE/{idVenta}', [DTEController::class, 'generarDTE'])->middleware(['auth'])->name('generarDTE');
 Route::get('/sendAnularDTE/{idVenta}', [DTEController::class, 'anularDTE'])->middleware(['auth'])->name('sendAnularDTE');
 Route::get('/printDTE/{idVenta}', [DTEController::class, 'printDTE'])->middleware(['auth'])->name('printDTE');
 Route::get('/sendDTE/{idVenta}', [SenEmailDTEController::class, 'SenEmailDTEController'])->middleware(['auth'])->name('sendDTE');
