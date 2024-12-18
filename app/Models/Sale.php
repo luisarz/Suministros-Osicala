@@ -38,6 +38,11 @@ class Sale extends Model
         'is_order',
         'is_invoiced_order',
         'order_number',
+        'cashbox_open_id',
+        'discount_percentage',
+        'discount_money',
+        'total_order_after_discount',
+
 
     ];
 

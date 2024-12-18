@@ -8,11 +8,18 @@ use App\Models\Company;
 use App\Models\Inventory;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\HtmlString;
+use PhpParser\Node\Stmt\Label;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Service\GetCashBoxOpenedService;
 
 function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
 {
@@ -77,6 +84,7 @@ function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
 
 class orderActions
 {
+
     public static function printOrder(): Action
     {
         return Action::make('printOrder')
@@ -88,6 +96,7 @@ class orderActions
             ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
 
     }
+
     public static function billingOrden(): Action
     {
         return Action::make('billingOrder')
@@ -98,8 +107,8 @@ class orderActions
                 return $record->status != 'Finalizado' && $record->status != 'Anulado';
             })
             ->color('primary')
-            ->action(function ($record){
-               redirect()->route('billingOrder', ['idVenta' => $record->id]);
+            ->action(function ($record) {
+                redirect()->route('billingOrder', ['idVenta' => $record->id]);
             });
 
     }
@@ -113,15 +122,64 @@ class orderActions
             ->iconSize(IconSize::Large)
             ->color('info')
             ->requiresConfirmation() // Solicita confirmación antes de ejecutar la acción
+            ->form([
+                Section::make('Cerrar orden')
+                    ->columns(1)
+                    ->schema([
+                        Placeholder::make('total_order')
+                            ->label('Total')
+                            ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->sale_total ?? 0, 2) . '</span>'))
+                            ->inlineLabel()
+                            ->extraAttributes(['class' => 'p-0 text-lg']),
+
+                        Select::make('descuento')
+                            ->label('Descuento')
+                            ->placeholder('Descuento')
+                            ->options(function () {
+                                return collect(range(0, 25))->mapWithKeys(fn($value) => [$value => "$value%"]);
+                            })
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function (?Sale $recod, $state, callable $set, callable $get) {
+                                $saleTotal = $recod->sale_total ?? 0;
+                                $discountedTotal = $saleTotal - ($saleTotal * $state / 100);
+                                $set('total_a_cancelar', number_format($discountedTotal, 2));
+
+                            }),
+
+                        TextInput::make('total_a_cancelar')
+                            ->label('Total a cancelar')
+                            ->prefix('$')
+                            ->numeric()
+                            ->placeholder('Total')
+                            ->required()
+                            ->readOnly()
+                            ->default(fn($record) => $record?->sale_total),
+
+                    ]),
+
+            ])
             ->visible(function ($record) {
                 return $record->status != 'Finalizado' && $record->status != 'Anulado';
             })
             ->modalHeading('Confirmación!!')
             ->modalSubheading('¿Estás seguro de que deseas cerrar esta orden? Esta acción no se puede deshacer.')
-            ->action(function ($record) {
-                //Descargar el inventario antes de procesar la orden
+            ->action(function ($record, array $data) {
+                $openedCahBox = new GetCashBoxOpenedService();
+                $idCashBoxOpened = $openedCahBox->getOpenCashBoxId();
+                if ($idCashBoxOpened == 0) {
+                    Notification::make('')
+                        ->title('Error al procesar Orden')
+                        ->body('No hay ninguna caja aperturada, por favor aperturar una caja para poder procesar la orden')
+                        ->icon('heroicon-o-archive-box-x-mark')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+
+
                 if ($record->status == 'Finalizado') {
-                    Notification::make('No se puede cerrar una orden cerrada')
+                    Notification::make('errorCloseOrder')
                         ->title('Error al cerrar orden')
                         ->body('No se puede cerrar una orden cerrada')
                         ->danger()
@@ -130,12 +188,25 @@ class orderActions
                 }
 
                 if (OrderCloseKardex($record, false, '')) {
+                    $saleTotal = $record->sale_total ?? 0;
+                    $discountedTotal = $saleTotal - ($saleTotal * $data['descuento'] / 100);
+                    $descuentoMoney = number_format($saleTotal-$discountedTotal, 2, '.', '');
+                    $record->update(
+                        [
+                            'cashbox_open_id' => $idCashBoxOpened,
+                            'is_order' => true,
+                            'is_order_closed_without_invoiced' => true,
+                            'status' => 'Finalizado',
+                            'discount_percentage' => $data['descuento'],
+                            'discount_money' => $descuentoMoney,
+                            'total_order_after_discount' => $data['total_a_cancelar']
+                        ]);
+
                     Notification::make('Orden cerrada')
                         ->title('Orden cerrada')
                         ->body('La orden ha sido cerrada correctamente')
                         ->success()
                         ->send();
-                    $record->update(['is_order' => true, 'is_order_closed_without_invoiced' => true, 'status' => 'Finalizado']);
                     return;
                 }
 

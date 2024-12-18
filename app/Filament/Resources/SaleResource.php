@@ -299,12 +299,16 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('operation_date')
                     ->label('Fecha de venta')
-                    ->dateTime()
-//                    ->since()                 // Muestra el tiempo transcurrido (opcional)
+                    ->date()
                     ->timezone('America/El_Salvador') // Zona horaria (opcional)
                     ->sortable(),
+//                Tables\Columns\TextColumn::make('created_at')
+//                    ->label('Hora Registro')
+//                    ->dateTime('H:i:s A')
+//                    ->timezone('America/El_Salvador') // Zona horaria (opcional)
+//                    ->sortable(),
                 Tables\Columns\TextColumn::make('documenttype.name')
                     ->label('Comprobante')
                     ->sortable(),
@@ -405,7 +409,7 @@ class SaleResource extends Resource
             })
             ->recordUrl(null)
             ->filters([
-                DateRangeFilter::make('created_at')->timePicker24()
+                DateRangeFilter::make('operation_date')->timePicker24()
                     ->label('Fecha de venta')
                     ->default([
                         'start' => now()->subDays(30)->format('Y-m-d'),

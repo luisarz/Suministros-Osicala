@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cashbox_open_id')->nullable()->constrained('cash_box_opens')->cascadeOnDelete();//Apertura de caja
             $table->date('operation_date')->default(now());
             $table->foreignId('document_type_id')->nullable()->constrained('document_types')->cascadeOnDelete();//factura, nota de venta, etc
             $table->string('document_internal_number')->nullable(); //Controll interno correlativos caja
@@ -41,6 +42,9 @@ return new class extends Migration
             $table->boolean('is_order_closed_without_invoiced')->default(false);
             $table->boolean('is_invoiced_order')->default(false);
             $table->string('order_number')->nullable();//NUmero de la orden es difernte en cada sucrusal
+            $table->decimal('discount_percentage',10,2)->default(0);
+            $table->decimal('discount_money',10,2)->default(0);
+            $table->decimal('total_order_after_discount',10,2)->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

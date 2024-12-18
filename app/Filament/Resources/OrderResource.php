@@ -237,6 +237,18 @@ class OrderResource extends Resource
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('discount_percentage')
+                    ->label('Descuento')
+                    ->suffix('%')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('discount_money')
+                    ->label('Taller')
+                    ->money('USD', locale: 'en_US')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_order_after_discount')
+                    ->label('Total Orden')
+                    ->money('USD', locale: 'en_US')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('cash')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
