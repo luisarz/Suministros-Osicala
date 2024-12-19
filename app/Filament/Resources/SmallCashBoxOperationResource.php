@@ -34,7 +34,7 @@ class SmallCashBoxOperationResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('cash_box_open_id') // Este es el campo relacionado en tu modelo
                         ->relationship('cashBoxOpen', 'name', function ($query) {
-                            $query->with('cashbox');
+                            $query->with('cashbox')->where('status','open');
                         })
                             ->getOptionLabelFromRecordUsing(fn($record) => $record->cashbox->description ?? '') // Mostrar el nombre de la caja
                             ->required(),
@@ -158,9 +158,9 @@ class SmallCashBoxOperationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label(''),
-//                Tables\Actions\EditAction::make()->label(''),
+//                Tables\Actions\RestoreAction::make('restore'),
                 Tables\Actions\DeleteAction::make()->label('')
-                    ->before(function ($record) {
+                        ->before(function ($record,Tables\Actions\DeleteAction $action) {
                         $operationType = $record->operation;
                         $amount = $record->amount;
                         $caja = SmallCashBoxOperation::with('cashBoxOpen')
@@ -172,10 +172,14 @@ class SmallCashBoxOperationResource extends Resource
                                 ->danger()
                                 ->icon('x-circle')
                                 ->send();
-                            $this->halt()->stop();
+//                            $this->halt()->stop();
+                            $action->cancel();
                         }
                         $cashBox = $caja->cashBoxOpen->cashbox;
                         if ($operationType === 'Egreso') {
+
+                            $cashBox->balance += $amount;
+                        } elseif ($operationType === 'Ingreso') {
                             if ($cashBox->balance < $amount) {
                                 Notification::make()
                                     ->title('Fondos insuficientes')
@@ -184,10 +188,10 @@ class SmallCashBoxOperationResource extends Resource
                                     ->iconColor('danger')
                                     ->icon('heroicon-o-x-circle')
                                     ->send();
-                                $this->halt()->stop();
+//                                $this->halt()->stop();
+                                $action->cancel();
+
                             }
-                            $cashBox->balance += $amount;
-                        } elseif ($operationType === 'Ingreso') {
                             $cashBox->balance -= $amount;
                         }
                         // Guardar el nuevo balance

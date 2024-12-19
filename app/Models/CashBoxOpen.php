@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CashBoxOpen extends Model
 {
-      protected $fillable = [
+    protected $fillable = [
           'cashbox_id',
           'open_employee_id',
           'opened_at',

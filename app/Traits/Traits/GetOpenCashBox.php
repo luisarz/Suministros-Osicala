@@ -4,6 +4,7 @@ namespace App\Traits\Traits;
 
 use App\Models\CashBoxOpen;
 use App\Models\Sale;
+use App\Models\SmallCashBoxOperation;
 
 trait GetOpenCashBox
 {
@@ -41,23 +42,16 @@ trait GetOpenCashBox
         return $query->sum($column);
     }
 
-//    public static function salesTotal(): float
-//    {
-//        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
-//        return Sale::where('cashbox_open_id', $idCashBoxOpened)
-//            ->where('status','Finalizado')
-//            ->where('is_order',false)
-//            ->sum('sale_total');
-//    }
-//    public static function orderTotal(): float
-//    {
-//        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
-//        return Sale::where('cashbox_open_id', $idCashBoxOpened)
-//            ->where('status','Finalizado')
-//            ->where('is_order',true)
-//            ->where('is_order_closed_without_invoiced',true)
-//            ->sum('total_order_after_discount');
-//    }
+    public static function minimalCashBoxTotal(?string $operationType ): float
+    {
+        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
+        return SmallCashBoxOperation::where('cash_box_open_id', $idCashBoxOpened)
+            ->where('operation', $operationType)
+//            ->where('status', 'Finalizado')
+            ->whereNull('deleted_at') // Exclude soft-deleted records
+            ->sum('amount');
+    }
+
 
 
 }
