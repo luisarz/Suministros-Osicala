@@ -105,14 +105,17 @@ class CashboxOpenResource extends Resource
                                             ->label('Facturación')
                                             ->inlineLabel(true)
                                             ->content(function () {
-                                                $openedCashBox = (new GetCashBoxOpenedService())->salesTotal();
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(false);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($openedCashBox, 2) . '</span>');
                                             }),
-                                        Forms\Components\TextInput::make('ordered_amount')
-                                            ->label('Ordenes')
-                                            ->required()
-                                            ->numeric()
-                                            ->readOnly(fn($record) => $record && $record->status === 'closed'),
+                                        Forms\Components\Placeholder::make('ordered_amount')
+                                            ->label('Facturación')
+                                            ->inlineLabel(true)
+                                            ->content(function () {
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(true, true);
+                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($openedCashBox, 2) . '</span>');
+                                            }),
+
                                         Forms\Components\TextInput::make('in_cash_amount')
                                             ->label('Caja Chica')
                                             ->required()
