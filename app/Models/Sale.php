@@ -13,6 +13,7 @@ class Sale extends Model
     use softDeletes;
 
     protected $fillable = [
+        'cashbox_open_id',
         'operation_date',
         'document_type_id',
         'document_internal_number',
@@ -24,27 +25,28 @@ class Sale extends Model
         'sales_payment_status',
         'status',
         'is_taxed',
+        'have_retention',
         'net_amount',
-        'iva',
+        'taxe',
         'discount',
         'retention',
-        'total',
+        'sale_total',
         'cash',
         'change',
         'casher_id',
         'is_dte',
         'generationCode',
+        'receiptStamp',
         'jsonUrl',
         'is_order',
+        'is_order_closed_without_invoiced',
         'is_invoiced_order',
         'order_number',
-        'cashbox_open_id',
         'discount_percentage',
         'discount_money',
         'total_order_after_discount',
-
-
     ];
+
 
     public function wherehouse(): BelongsTo
     {

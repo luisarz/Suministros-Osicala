@@ -29,5 +29,7 @@ class EditCashboxOpen extends EditRecord
             $cashbox=CashBox::find($cashboxOpen->cashbox_id);
             $cashbox->is_open=0;
             $cashbox->save();
+        $this->redirect(static::getResource()::getUrl('index'));
+
     }
 }

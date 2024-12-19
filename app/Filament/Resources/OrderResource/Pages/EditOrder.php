@@ -51,15 +51,7 @@ class EditOrder extends EditRecord
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
                 ->action(function (Actions\DeleteAction $delete) {
-//                    if($this->record->is_dte)
-//                    {
-//                        Notification::make('No se puede cancelar una venta con DTE')
-//                            ->title('Error al anular venta')
-//                            ->body('No se puede cancelar una venta con DTE')
-//                            ->danger()
-//                            ->send();
-//                        return;
-//                    }
+//
                     $this->record->delete();
                     SaleItem::where('sale_id', $this->record->id)->delete();
                     $this->redirect(static::getResource()::getUrl('index'));

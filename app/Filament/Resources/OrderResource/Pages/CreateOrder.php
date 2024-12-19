@@ -19,6 +19,7 @@ class CreateOrder extends CreateRecord
     {
         return '';
     }
+
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -69,21 +70,19 @@ class CreateOrder extends CreateRecord
                 }),
         ];
     }
-protected function mutateFormDataBeforeCreate(array $data): array
-{
-    $data['is_order'] = true;
-    $data['is_invoiced_order'] = false;
-$whereHouse = auth()->user()->employee->branch_id ?? null;
-    $lastOrder = \App\Models\Sale::where('wherehouse_id',$whereHouse)
-        ->max('order_number');
 
-    $nextNumber = $lastOrder ? intval(preg_replace('/[^0-9]/', '', $lastOrder)) + 1 : 1;
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['is_order'] = true;
+        $data['is_invoiced_order'] = false;
+        $whereHouse = auth()->user()->employee->branch_id ?? null;
+        $lastOrder = \App\Models\Sale::where('wherehouse_id', $whereHouse)
+            ->max('order_number');
+        $nextNumber = $lastOrder ? intval(preg_replace('/[^0-9]/', '', $lastOrder)) + 1 : 1;
+        $data['order_number'] = str_pad($nextNumber, 9, '0', STR_PAD_LEFT);
+        return $data; // Devuelve los datos modificados
 
-    $data['order_number'] =str_pad($nextNumber, 9, '0', STR_PAD_LEFT);
-    return $data; // Devuelve los datos modificados
-
-}
-
+    }
 
 
 }

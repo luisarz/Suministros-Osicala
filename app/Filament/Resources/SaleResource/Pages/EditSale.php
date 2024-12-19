@@ -10,6 +10,7 @@ use App\Models\Provider;
 use App\Models\PurchaseItem;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Service\GetCashBoxOpenedService;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -73,6 +74,15 @@ class EditSale extends EditRecord
 
     public function aftersave()//Disminuir el inventario
     {
+        $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(false);
+        if (!$openedCashBox) {
+            Notification::make('No se puede finalizar la venta')
+                ->title('Caja cerrada')
+                ->body('No se puede finalizar la venta porque no hay caja abierta')
+                ->danger()
+                ->send();
+            return;
+        }
 
         $id_sale = $this->record->id; // Obtener el registro de la compra
         $sale = Sale::with('documenttype', 'customer', 'customer.country')->find($id_sale);
@@ -123,7 +133,12 @@ class EditSale extends EditRecord
             }
         }
 
-        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
+//        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
+        $sale->update([
+            'cashbox_open_id' => $openedCashBox,
+            'is_invoiced_order' => true,
+            'status' => 'Finalizado',
+        ]);
         // Redirigir después de completar el proceso
         $this->redirect(static::getResource()::getUrl('index'));
     }

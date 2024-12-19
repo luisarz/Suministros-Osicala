@@ -259,6 +259,7 @@ class SaleResource extends Resource
                                         Forms\Components\Select::make('operation_condition_id')
                                             ->relationship('salescondition', 'name')
                                             ->label('Condición')
+                                            ->required()
                                             ->default(1),
                                         Forms\Components\Select::make('payment_method_id')
                                             ->label('Pago')

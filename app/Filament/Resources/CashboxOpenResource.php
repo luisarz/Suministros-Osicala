@@ -5,13 +5,19 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CashboxOpenResource\Pages;
 use App\Filament\Resources\CashboxOpenResource\RelationManagers;
 use App\Models\CashboxOpen;
+use App\Models\Sale;
+use App\Service\GetCashBoxOpenedService;
+use App\Traits\Traits\GetOpenCashBox;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class CashboxOpenResource extends Resource
 {
@@ -30,89 +36,136 @@ class CashboxOpenResource extends Resource
                     ->columnSpan(2)
                     ->label('Administracion Aperturas de caja')
                     ->schema([
-                        Forms\Components\Select::make('cashbox_id')
-                            ->relationship('cashbox', 'description')
-                            ->options(function () {
-                                $whereHouse = auth()->user()->employee->branch_id;
-                                $cashBoxes = \App\Models\CashBox::where('branch_id', $whereHouse)
-                                    ->where('is_open', '0')
-                                    ->get()
-                                    ->pluck('description', 'id');
+                        Forms\Components\Section::make('Datos de apertura')
+                            ->compact()
+                            ->icon('heroicon-o-shopping-cart')
+                            ->iconColor('success')
+                            ->schema([
+                                Select::make('cashbox_id')
+                                    ->relationship('cashbox', 'description')
+                                    ->options(function () {
+                                        $whereHouse = auth()->user()->employee->branch_id;
+                                        return \App\Models\CashBox::where('branch_id', $whereHouse)
+                                            ->where('is_open', '0')
+                                            ->get()
+                                            ->pluck('description', 'id');
+                                    })
+                                    ->disabled(function (?CashBoxOpen $record) {
+                                        return $record !== null;
+                                    })
+                                    ->label('Caja')
+                                    ->preload()
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::class::make('open_employee_id')
+                                    ->relationship('openEmployee', 'name', function ($query) {
+                                        $whereHouse = auth()->user()->employee->branch_id;
+                                        $query->where('branch_id', $whereHouse);
+                                    })
+                                    ->default(auth()->user()->employee->id)
+                                    ->visible(function (CashBoxOpen $record = null) {
+                                        return $record === null;
 
-                                return $cashBoxes;
-                            })
-                            ->visible(function (CashBoxOpen $record = null) {
-                                if ($record === null) {
-                                    return true;
-                                }
-                            })
-                            ->label('Caja')
-                            ->preload()
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\Select::class::make('open_employee_id')
-                            ->relationship('openEmployee', 'name', function ($query) {
-                                $whereHouse = auth()->user()->employee->branch_id;
-                                $query->where('branch_id', $whereHouse);
-                            })
-                            ->visible(function (CashBoxOpen $record = null) {
-                                if ($record === null) {
-                                    return true;
-                                }
-                            })
-                            ->label('Empleado Apertura')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                        Forms\Components\DateTimePicker::make('opened_at')
-                            ->label('Fecha de apertura')
-                            ->inlineLabel(true)
-                            ->default(now())
-                            ->visible(function (CashBoxOpen $record = null) {
-                                if ($record === null) {
-                                    return true;
-                                }
-                            })
-                            ->required(),
-                        Forms\Components\TextInput::make('amount')
-                            ->label('Monto Apertura')
-                            ->required()
-                            ->numeric()
-                            ->readOnly(fn($record) => $record && $record->status === 'closed'),
+                                    })
+                                    ->label('Empleado Apertura')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Forms\Components\DateTimePicker::make('opened_at')
+                                    ->label('Fecha de apertura')
+                                    ->inlineLabel(true)
+                                    ->default(now())
+                                    ->visible(function (CashBoxOpen $record = null) {
+                                        return $record === null;
 
-                        Forms\Components\DateTimePicker::make('closed_at')
-                            ->label('Fecha de cierre')
-                            ->default(now())
+                                    })
+                                    ->required(),
+                                TextInput::make('open_amount')
+                                    ->label('Monto Apertura')
+                                    ->required()
+                                    ->numeric()
+                                    ->disabled(function (?CashBoxOpen $record) {
+                                        // If a record exists, disable the field
+                                        return $record !== null;
+                                    })
+                                    ->label('Monto Apertura'),
+                            ])->columns(2)
+                        ,
+                        Forms\Components\Section::make('')
                             ->hidden(function (CashBoxOpen $record = null) {
                                 if ($record === null) {
                                     return true;
                                 }
                             })
-                            ->inlineLabel(true),
-                        Forms\Components\TextInput::make('closed_amount')
-                            ->hidden(function (CashBoxOpen $record = null) {
-                                if ($record === null) {
-                                    return true;
-                                }
-                            }),
-                        Forms\Components\Select::make('close_employee_id')
-                            ->relationship('closeEmployee', 'name', function ($query) {
-                                $whereHouse = auth()->user()->employee->branch_id;
-                                $query->where('branch_id', $whereHouse);
-                            })
-                            ->label('Empleado Cierra')
-                            ->hidden(function (CashBoxOpen $record = null) {
-                                if ($record === null) {
-                                    return true;
-                                }
-                            })
-                            ->options(function () {
-                                $whereHouse = auth()->user()->employee->branch_id;
-                                return \App\Models\Employee::where('branch_id', $whereHouse)
-                                    ->pluck('name', 'id');
-                            }),
+                            ->schema([
+                                Forms\Components\Section::make('Ingresos')
+                                    ->extraAttributes(['class' => 'border-r border-gray-200'])
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('saled_amount')
+                                            ->label('Facturación')
+                                            ->inlineLabel(true)
+                                            ->content(function () {
+                                                $openedCashBox = (new GetCashBoxOpenedService())->salesTotal();
+                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($openedCashBox, 2) . '</span>');
+                                            }),
+                                        Forms\Components\TextInput::make('ordered_amount')
+                                            ->label('Ordenes')
+                                            ->required()
+                                            ->numeric()
+                                            ->readOnly(fn($record) => $record && $record->status === 'closed'),
+                                        Forms\Components\TextInput::make('in_cash_amount')
+                                            ->label('Caja Chica')
+                                            ->required()
+                                            ->numeric()
+                                            ->readOnly(fn($record) => $record && $record->status === 'closed'),
+                                    ])->columnSpan(1),
+                                Forms\Components\Section::make('Egresos')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('out_cash_amount')
+                                            ->label('Caja Chica')
+                                            ->required()
+                                            ->numeric()
+                                            ->readOnly(fn($record) => $record && $record->status === 'closed'),
+                                    ])->columnSpan(1),
 
-                    ])->columns(1)->columnSpan(5)
+
+                                Forms\Components\DateTimePicker::make('closed_at')
+                                    ->label('Fecha de cierre')
+                                    ->default(now()) // Set the default date to current time
+                                    ->hidden(function (CashBoxOpen $record = null) {
+                                        return $record === null;
+                                    })
+                                    ->inlineLabel(true),
+
+                                Forms\Components\TextInput::make('closed_amount')
+                                    ->label('Monto Cierre')
+                                    ->hidden(function (CashBoxOpen $record = null) {
+                                        if ($record === null) {
+                                            return true;
+                                        }
+                                    }),
+                                Forms\Components\Select::make('close_employee_id')
+                                    ->relationship('closeEmployee', 'name', function ($query) {
+                                        $whereHouse = auth()->user()->employee->branch_id;
+                                        $query->where('branch_id', $whereHouse);
+                                    })
+                                    ->label('Empleado Cierra')
+                                    ->hidden(function (CashBoxOpen $record = null) {
+                                        if ($record === null) {
+                                            return true;
+                                        }
+                                    })
+                                    ->options(function () {
+                                        $whereHouse = auth()->user()->employee->branch_id;
+                                        return \App\Models\Employee::where('branch_id', $whereHouse)
+                                            ->pluck('name', 'id');
+                                    }),
+
+                            ])->columns(2)
+                        ,
+
+
+                    ])->columns(2)
             ]);
     }
 
@@ -130,7 +183,7 @@ class CashboxOpenResource extends Resource
                     ->label('Fecha de apertura')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
+                Tables\Columns\TextColumn::make('open_amount')
                     ->label('Monto Apertura')
                     ->money('USD', true, locale: 'es_US')
                     ->sortable(),
@@ -215,9 +268,5 @@ class CashboxOpenResource extends Resource
         ];
     }
 
-    public function beforeCreate()
-    {
-        dd($record);
 
-    }
 }

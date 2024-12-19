@@ -16,9 +16,13 @@ return new class extends Migration
             $table->foreignId('cashbox_id')->constrained('cash_boxes');
             $table->foreignId('open_employee_id')->constrained('employees');
             $table->dateTime('opened_at');
-            $table->decimal('amount', 10, 2);
+            $table->decimal('open_amount', 10, 2)->default(0);
+            $table->decimal('saled_amount', 10, 2)->nullable()->default(0);
+            $table->decimal('ordered_amount', 10, 2)->nullable()->default(0);
+            $table->decimal('out_cash_amount', 10, 2)->nullable()->default(0);
+            $table->decimal('in_cash_amount', 10, 2)->nullable()->default(0);
+            $table->decimal('closed_amount', 10, 2)->nullable()->default(0);
             $table->dateTime('closed_at')->nullable();
-            $table->decimal('closed_amount', 10, 2)->nullable();
             $table->foreignId('close_employee_id')->nullable()->constrained('employees');
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
