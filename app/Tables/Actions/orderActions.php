@@ -141,7 +141,7 @@ class orderActions
                             ->afterStateUpdated(function (?Sale $record, $state, callable $set) {
                                 $saleTotal = $record->sale_total ?? 0;
                                 $discountedTotal = $saleTotal - ($saleTotal * $state / 100);
-                                $set('total_a_cancelar', number_format($discountedTotal, 2));
+                                $set('total_a_cancelar', number_format($discountedTotal, 2,'.',''));
                             }),
 
                         TextInput::make('total_a_cancelar')

@@ -91,7 +91,6 @@ class SaleItemsRelationManager extends RelationManager
                         Forms\Components\TextInput::make('quantity')
                             ->label('Cantidad')
                             ->step(1)
-
                             ->numeric()
                             ->live()
                             ->debounce(300)

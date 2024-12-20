@@ -277,6 +277,8 @@ class CashboxOpenResource extends Resource
                     ->visible(function (CashboxOpen $record) {
                         return $record->status == 'closed';
                     })
+                    ->url(fn($record) => route('closeClashBoxPrint', ['idCasboxClose' => $record->id]))
+                    ->openUrlInNewTab() // Esto asegura que se abra en una nueva pestaña
 
             ])
             ->bulkActions([
