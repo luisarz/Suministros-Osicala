@@ -4,14 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Branch extends Model
 {
     use HasFactory;
+    use LogsActivity;
     protected $softDelete = true;
 
     protected $fillable = ['stablisment_type_id','name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products', 'logo', 'is_active'];
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products', 'logo', 'is_active']);
+    }
     protected $casts = [
         'logo' => 'array',
     ];

@@ -4,6 +4,8 @@ namespace App\Filament\Resources\SaleResource\Pages;
 
 use App\Filament\Resources\SaleResource;
 use App\Helpers\KardexHelper;
+use App\Models\CashBox;
+use App\Models\CashBoxCorrelative;
 use App\Models\Customer;
 use App\Models\Inventory;
 use App\Models\Provider;
@@ -22,6 +24,7 @@ use Livewire\Attributes\On;
 class EditSale extends EditRecord
 {
     protected static string $resource = SaleResource::class;
+
     public function getTitle(): string|Htmlable
     {
         return '';
@@ -49,13 +52,12 @@ class EditSale extends EditRecord
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
                 ->action(function (Actions\DeleteAction $delete) {
-                    if($this->record->is_dte)
-                    {
+                    if ($this->record->is_dte) {
                         Notification::make('No se puede cancelar una venta con DTE')
                             ->title('Error al anular venta')
-                        ->body('No se puede cancelar una venta con DTE')
-                        ->danger()
-                        ->send();
+                            ->body('No se puede cancelar una venta con DTE')
+                            ->danger()
+                            ->send();
                         return;
                     }
                     $this->record->delete();
@@ -69,7 +71,6 @@ class EditSale extends EditRecord
     public function refresh(): void
     {
     }
-
 
 
     public function aftersave()//Disminuir el inventario
@@ -133,12 +134,20 @@ class EditSale extends EditRecord
             }
         }
 
+
 //        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
         $sale->update([
             'cashbox_open_id' => $openedCashBox,
             'is_invoiced_order' => true,
             'status' => 'Finalizado',
         ]);
+
+//obtener id de la caja y buscar la caja
+        $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
+        $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $sale->document_type_id)->first();
+        $correlativo->current_number = $sale->document_internal_number;
+        $correlativo->save();
+
         // Redirigir después de completar el proceso
         $this->redirect(static::getResource()::getUrl('index'));
     }

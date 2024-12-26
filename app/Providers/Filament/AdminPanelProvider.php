@@ -32,23 +32,6 @@ use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
-//    public function render()
-//    {
-//        $branchId = session('branch_id');
-//        $branchName = session('branch_name');
-//        $branchLogo = session('branch_logo');
-//
-//        return view('filament.pages.dashboard', [
-//            'branchId' => $branchId,
-//            'branchName' => $branchName,
-//            'branchLogo' => $branchLogo,
-//        ]);
-//    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function panel(Panel $panel): Panel
     {
 
@@ -70,12 +53,14 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+               \App\Filament\Pages\Dashboard::class,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+
                 \App\Filament\Resources\SaleResource\Widgets\SalesStat::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -96,7 +81,10 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-                ActivitylogPlugin::make()->resource(LogResource::class),
+//                ActivitylogPlugin::make()->resource(LogResource::class),
+                ActivitylogPlugin::make()->label('Bitacora')
+                    ->pluralLabel('Bitacora')  ->navigationSort(3),
+
 
             ])
             ->collapsibleNavigationGroups()

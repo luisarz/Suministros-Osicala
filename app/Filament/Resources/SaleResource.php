@@ -6,12 +6,14 @@ use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Http\Controllers\DTEController;
 use App\Http\Controllers\SenEmailDTEController;
+use App\Models\CashBoxCorrelative;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\HistoryDte;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Tribute;
+use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\dteActions;
 use DeepCopy\TypeFilter\Date\DatePeriodFilter;
 use Filament\Actions\Exports\Models\Export;
@@ -109,10 +111,33 @@ class SaleResource extends Resource
                                             ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
                                         Forms\Components\Select::make('document_type_id')
                                             ->label('Comprobante')
-                                            ->relationship('documenttype', 'name')
+//                                            ->relationship('documenttype', 'name')
+                                            ->options(function (callable $get) {
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
+                                                if ($openedCashBox > 0) {
+                                                    return CashBoxCorrelative::with('document_type')
+                                                        ->where('cash_box_id', $openedCashBox)
+                                                        ->get()
+                                                        ->mapWithKeys(function ($item) {
+                                                            return [$item->id => $item->document_type->name];
+                                                        })
+                                                        ->toArray(); // Asegúrate de devolver un array
+                                                }
+
+                                                return []; // Retorna un array vacío si no hay una caja abierta
+                                            })
                                             ->preload()
-                                            ->default(1)
-                                            ->searchable()
+                                            ->reactive() // Permite reaccionar a cambios en el campo
+                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                if ($state) {
+                                                    $lastIssuedDocument = CashBoxCorrelative::where('document_type_id', $state)
+                                                        ->first();
+                                                    if ($lastIssuedDocument) {
+                                                        // Establece el número del último documento emitido en otro campo
+                                                        $set('document_internal_number', $lastIssuedDocument->current_number+1);
+                                                    }
+                                                }
+                                            })
                                             ->required(),
                                         Forms\Components\TextInput::make('document_internal_number')
                                             ->label('#   Comprobante')
@@ -355,27 +380,23 @@ class SaleResource extends Resource
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxe')
                     ->label('IVA')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('retention')
                     ->label('Retención')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sale_total')

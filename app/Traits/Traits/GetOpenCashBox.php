@@ -11,7 +11,6 @@ trait GetOpenCashBox
     public static function getOpenCashBoxId(?bool $cashbox): int
     {
         $whereHouse = auth()->user()->employee->branch_id ?? null;
-
         $cashBoxOpened = CashBoxOpen::with('cashbox')
             ->where('status', 'open')
             ->whereHas('cashbox', fn($query) => $query->where('branch_id', $whereHouse))

@@ -29,40 +29,32 @@ class Inventory extends Model
     {
         parent::booted();
         static::saved(function ($inventory) {
-//            KardexHelper::createKardexFromInventory(
-//                $inventory,
-//                'Inventario Inicial',             // operation_type
-//                'Iventario Inicial',                   // operation_id
-//                0,                 // operation_detail_id
-//                'Inventario Inicial',           // document_type
-//                '',          // document_number
-//                'Inventario Inicial',       // entity
-//                'Salvadoreña'       // nationality
-//            );
+            $kardex = KardexHelper::createKardexFromInventory(
+                $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
+                now(), // Fecha
+                'INVENTARIO INICIAL', // Tipo de operación
+                0, // operation_id
+                0, // operation_detail_id
+                0, // document_type
+                0, // document_number
+                'INVENTARIO INICIAL', // entity
+                'SALVADOREÑO', // nationality
+                $inventory->id, // inventory_id
+                0, // previous_stock
+                $inventory->stock, // stock_in
+                0, // stock_out
+                $inventory->stock, // stock_actual
+                $inventory->stock * $inventory->cost_without_taxes, // money_in
+                0, // money_out
+                $inventory->stock * $inventory->cost_without_taxes, // money_actual
+                0, // sale_price
+                $inventory->cost_without_taxes // purchase_price
+            );
 
-
-//            $kardex = new Kardex();
-//            $kardex->branch_id = $inventory->branch_id;
-//            $kardex->date = now();
-//            $kardex->operation_type = 'Inventario Inicial';
-//            $kardex->operation_id = 0;
-//            $kardex->operation_detail_id = 0;
-//            $kardex->document_type = 'Inventario Inicial';
-//            $kardex->document_number = 'Inventario Inicial';
-//            $kardex->entity = 'Inventario Inicial';
-//            $kardex->nationality = 'Salvadoreña';
-//            $kardex->inventory_id = $inventory->id;
-//            $kardex->previous_stock = 0;
-//            $kardex->stock_in = $inventory->stock;
-//            $kardex->stock_out = 0;
-//            $kardex->stock_actual = $inventory->stock;
-//            $kardex->money_in = $inventory->cost_without_taxes * $inventory->stock;
-//            $kardex->money_out = 0;
-//            $kardex->money_actual = $inventory->cost_without_taxes * $inventory->stock;
-//            $kardex->sale_price = $inventory->product->prices->where('type', 'sale')->first()->price??0;
-//            $kardex->purchase_price = $inventory->cost_without_taxes;
-//            $kardex->save();
-//            dd($inventory);  / Muestra el registro antes de guardarlo
+            // Verifica si la creación del Kardex fue exitosa
+            if (!$kardex) {
+                \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+            }
         });
     }
 
