@@ -12,7 +12,7 @@ class Category extends Model
     use HasFactory;
     use LogsActivity;
 
-    protected $fillable = ['name', 'parent_id', 'is_active'];
+    protected $fillable = ['name', 'parent_id', 'is_active','commission_percentage'];
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

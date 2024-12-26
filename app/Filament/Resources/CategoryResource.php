@@ -42,6 +42,11 @@ class CategoryResource extends Resource
                         Forms\Components\Toggle::make('is_active')
                             ->label('Activo') // Agregué un label para darle más claridad al toggle
                             ->required(),
+                        Forms\Components\TextInput::make('commission_percentage')
+                            ->label('Comisión por venta') // Corregido el acento en "producto"
+                            ->required()
+                            ->numeric()
+                            ->maxLength(2),
                     ])->columns(2),
             ]);
     }
@@ -64,6 +69,10 @@ class CategoryResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('commission_percentage')
+                    ->suffix('%')
+                    ->label('Comisión por venta') // Corregido el acento en "producto"
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
