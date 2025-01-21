@@ -11,6 +11,7 @@ class SaleItem extends Model
     protected $fillable = [
         'sale_id',
         'inventory_id',
+        'notes',
         'quantity',
         'price',
         'discount',
@@ -21,7 +22,6 @@ class SaleItem extends Model
     ];
     protected $casts = [
         'tributes' => 'array',
-//        'price' => MoneyCast::class
     ];
     public function sale()
     {
