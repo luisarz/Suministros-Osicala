@@ -24,9 +24,11 @@ class SalesStat extends BaseWidget
         $purchase_total =0;
         if(auth()->user()->hasRole('super_admin')){
             $sales_total = Sale::whereBetween('operation_date', [$startDate, $endDate])
+                ->where('wherehouse_id',$whereHouse)
                 ->sum('sale_total');
 
             $purchase_total = Purchase::whereBetween('purchase_date', [$startDate, $endDate])
+                ->where('wherehouse_id',$whereHouse)
                 ->sum('purchase_total');
         }
 
@@ -48,6 +50,8 @@ class SalesStat extends BaseWidget
                 ->icon('heroicon-o-currency-dollar')
                 ->chart([0,$sales_total-$purchase_total])
                 ->color('success')
+
+
         ];
     }
 }

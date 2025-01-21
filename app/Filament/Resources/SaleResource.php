@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
-use App\Http\Controllers\DTEController;
-use App\Http\Controllers\SenEmailDTEController;
 use App\Models\CashBoxCorrelative;
 use App\Models\Customer;
 use App\Models\Employee;
@@ -15,32 +13,24 @@ use App\Models\SaleItem;
 use App\Models\Tribute;
 use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\dteActions;
-use DeepCopy\TypeFilter\Date\DatePeriodFilter;
-use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
-use Filament\Support\View\Components\Modal;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
-use Filament\Infolists\Components\IconEntry;
-use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 function updateTotalSale(mixed $idItem, array $data): void
 {
@@ -134,7 +124,7 @@ class SaleResource extends Resource
                                                         ->first();
                                                     if ($lastIssuedDocument) {
                                                         // Establece el número del último documento emitido en otro campo
-                                                        $set('document_internal_number', $lastIssuedDocument->current_number+1);
+                                                        $set('document_internal_number', $lastIssuedDocument->current_number + 1);
                                                     }
                                                 }
                                             })
@@ -177,12 +167,9 @@ class SaleResource extends Resource
                                             })
                                             ->preload()
                                             ->searchable()
+                                            ->required()
                                             ->label('Cliente')
-//                                                    ->inlineLabel(false)
-//                                                    ->columnSpanFull()
                                             ->createOptionForm([
-
-
                                                 Section::make('Nuevo Cliente')
                                                     ->schema([
                                                         Select::make('wherehouse_id')
@@ -213,7 +200,7 @@ class SaleResource extends Resource
                                             ->default('Pendiente')
                                             ->hidden()
                                             ->disabled(),
-                                        Forms\Components\Select::make('status')
+                                        Forms\Components\Select::make('sale_status')
                                             ->options(['Nuevo' => 'Nuevo',
                                                 'Procesando' => 'Procesando',
                                                 'Cancelado' => 'Cancelado',
@@ -269,7 +256,7 @@ class SaleResource extends Resource
                                             ->label('Retención')
                                             ->onColor('danger')
                                             ->offColor('gray')
-                                            ->default(true)
+                                            ->default(false )
                                             ->required()
                                             ->reactive()
                                             ->afterStateUpdated(function ($set, $state, $get, Component $livewire) {
@@ -287,7 +274,7 @@ class SaleResource extends Resource
                                             ->required()
                                             ->default(1),
                                         Forms\Components\Select::make('payment_method_id')
-                                            ->label('Pago')
+                                            ->label('F. Pago')
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
@@ -327,27 +314,38 @@ class SaleResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('operation_date')
                     ->label('Fecha de venta')
-                    ->date()
+                    ->date('d/m/Y')
                     ->timezone('America/El_Salvador') // Zona horaria (opcional)
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('created_at')
-//                    ->label('Hora Registro')
-//                    ->dateTime('H:i:s A')
-//                    ->timezone('America/El_Salvador') // Zona horaria (opcional)
-//                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('documenttype.name')
                     ->label('Comprobante')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_dte')
-                    ->boolean()
-                    ->tooltip('DTE')
-                    ->trueIcon('heroicon-o-shield-check')
-                    ->falseIcon('heroicon-o-shield-exclamation')
+                Tables\Columns\BadgeColumn::make('is_dte')
+                    ->formatStateUsing(fn ($state) => $state ? 'Enviado' : 'Sin transmisión')
+                    ->color(fn ($state) => $state ? 'success' : 'danger') // Colores: 'success' para verde, 'danger' para rojo
+                    ->tooltip(fn ($state) => $state ? 'Documento transmitido correctamente' : 'Documento pendiente de transmisión')
                     ->label('DTE')
                     ->sortable(),
+
+//                Tables\Columns\IconColumn::make('is_dte')
+//                    ->boolean()
+//                    ->tooltip('DTE')
+//                    ->trueIcon('heroicon-o-shield-check')
+//                    ->falseIcon('heroicon-o-shield-exclamation')
+//                    ->label('DTE')
+//                    ->sortable(),
+                Tables\Columns\TextColumn::make('billingModel.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Facturacion'),
+                Tables\Columns\TextColumn::make('transmisionType.name')
+                    ->placeholder('S/N')
+                    ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
@@ -370,7 +368,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sales_payment_status')
                     ->label('Pago'),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('sale_status')
                     ->label('Estado'),
                 Tables\Columns\IconColumn::make('is_taxed')
                     ->label('Gravado')
@@ -427,7 +425,7 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_invoiced_order', true);
+                $query->where('is_invoiced_order', true)->orderby('operation_date','desc')->orderby('is_dte','asc');
             })
             ->recordUrl(null)
             ->filters([
@@ -437,28 +435,23 @@ class SaleResource extends Resource
                         'start' => now()->subDays(30)->format('Y-m-d'),
                         'end' => now()->format('Y-m-d'),
                     ]),
+                Tables\Filters\SelectFilter::make('documenttype')
+                    ->label('Sucursal')
+//                    ->multiple()
+                    ->preload()
+                    ->relationship('documenttype', 'name'),
 
             ])
             ->actions([
                 dteActions::generarDTE(),
                 dteActions::imprimirDTE(),
-                dteActions::enviarDTE(),
+                dteActions::enviarEmailDTE(),
                 dteActions::anularDTE(),
                 dteActions::historialDTE(),
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    ExportAction::make()
-                        ->exports([
-                            ExcelExport::make()
-                                ->fromTable()
-                                ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
-                                ->withWriterType(\Maatwebsite\Excel\Excel::CSV)
-                                ->withColumns([
-                                    Column::make('created_at'),
-                                ]),
-
-                        ]),
+                    ExportBulkAction::make('Exportar'),
                 ]),
             ]);
     }

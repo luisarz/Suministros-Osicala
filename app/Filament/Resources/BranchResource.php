@@ -9,6 +9,7 @@ use App\Models\Distrito;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,8 @@ class BranchResource extends Resource
     protected static ?string $model = Branch::class;
     protected static ?string $label = 'Sucursales';
     protected static ?string $navigationGroup = 'Configuración';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
+
 
     public static function getActions(): array
     {
@@ -30,7 +32,7 @@ class BranchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informacion del producto')
+                Forms\Components\Section::make('Informacion de la sucursal')
                     ->schema([
                         Forms\Components\Select::make('stablisment_type_id')
                             ->relationship('stablishmenttype', 'name')
@@ -87,6 +89,7 @@ class BranchResource extends Resource
                         Forms\Components\Select::make('economic_activity_id')
                             ->label('Actividad Economica')
                             ->relationship('economicactivity', 'description')
+
                             ->preload()
                             ->inlineLabel(false)
                             ->searchable()
@@ -116,6 +119,7 @@ class BranchResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(2),
+
                         Forms\Components\FileUpload::make('logo')
                             ->directory('wherehouses')
                             ->columnSpanFull(),
@@ -135,6 +139,8 @@ class BranchResource extends Resource
                     ->label('Tipo')
                     ->sortable()
                     ->searchable(),
+
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('company.name')
@@ -168,6 +174,7 @@ class BranchResource extends Resource
                 Tables\Columns\TextColumn::make('prices_by_products')
                     ->label('Precios por productos')
                     ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 //                Tables\Columns\IconColumn::make('is_active')
 //                    ->boolean(),
@@ -188,14 +195,14 @@ class BranchResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
+//                Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
+//                    Tables\Actions\DeleteAction::make(),
+//                    Tables\Actions\RestoreAction::make(),
 
-                    ]),
+//                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

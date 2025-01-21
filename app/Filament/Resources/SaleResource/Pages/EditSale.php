@@ -38,6 +38,26 @@ class EditSale extends EditRecord
                 ->color('primary')
                 ->icon('heroicon-o-check')
                 ->action('save')
+                ->before(function (Actions\EditAction $action, Sale $record) {
+                    if ($this->data['operation_condition_id'] == "1") {
+                        $sale_total = isset($this->data['sale_total'])
+                            ? doubleval($this->data['sale_total'])
+                            : 0.0;
+                        $cash = isset($this->data['cash'])
+                            ? doubleval($this->data['cash'])
+                            : 0.0;
+
+                        if ($cash < $sale_total) {
+                            Notification::make('No se puede finalizar la venta')
+                                ->title('Error al finalizar venta')
+                                ->body('El monto en efectivo es menor al total de la venta')
+                                ->danger()
+                                ->send();
+                            $action->halt();
+
+                        }
+                    }
+                })
                 ->extraAttributes([
                     'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
 
@@ -135,14 +155,14 @@ class EditSale extends EditRecord
         }
 
 
-//        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
         $sale->update([
             'cashbox_open_id' => $openedCashBox,
             'is_invoiced_order' => true,
-            'status' => 'Finalizado',
+            'sales_payment_status'=>'Pagada',
+            'sale_status' => 'Facturada',
         ]);
 
-//obtener id de la caja y buscar la caja
+        //obtener id de la caja y buscar la caja
         $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
         $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $sale->document_type_id)->first();
         $correlativo->current_number = $sale->document_internal_number;

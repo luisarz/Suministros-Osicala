@@ -25,7 +25,7 @@ trait GetOpenCashBox
         $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
 
         $query = Sale::where('cashbox_open_id', $idCashBoxOpened)
-            ->where('status', 'Finalizado');
+            ->where('sale_status', 'Finalizado');
 
         if ($isOrder) {
             $query->where('is_order', true);

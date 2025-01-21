@@ -26,6 +26,7 @@ class EmployeeResource extends Resource
     protected static ?string $model = Employee::class;
     protected static ?string $label = 'Empleados';
     protected static ?string $navigationGroup = 'Recursos Humanos';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -301,6 +302,7 @@ class EmployeeResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->numeric()
+                    ->label('Sucursal')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('job_title_id')
                     ->toggleable(isToggledHiddenByDefault: true)

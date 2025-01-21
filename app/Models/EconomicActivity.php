@@ -13,4 +13,9 @@ class EconomicActivity extends Model
     {
         return $this->hasMany(Company::class, 'economic_activity_id', 'id');
     }
+    public function getDescriptionWithCodeAttribute(): string
+    {
+        return "{$this->description} ({$this->code})";
+    }
+
 }

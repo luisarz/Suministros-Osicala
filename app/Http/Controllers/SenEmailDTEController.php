@@ -28,7 +28,7 @@ class SenEmailDTEController extends Controller
         // Datos de respuesta por defecto
         $data = [
             'status' => false,
-            'message' => 'No se encontraron los archivos',
+            'message' => 'No se encontraron los archivos' .$generationCode,
             'body' => 'Por favor gnere el PDF del cliente antes de enviar el correo',
         ];
         if (file_exists($JsonPath) && file_exists($PdfPath)) {

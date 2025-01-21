@@ -2,6 +2,9 @@
 
 namespace App\Tables\Actions;
 
+use App\Filament\Resources\DteTransmisionWherehouseResource;
+use App\Models\Branch;
+use App\Models\DteTransmisionWherehouse;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\IconSize;
@@ -21,16 +24,11 @@ class dteActions
             ->icon('heroicon-o-rocket-launch')
             ->iconSize(IconSize::Large)
             ->requiresConfirmation()
-            ->modalHeading('¿Está seguro de enviar el DTE?')
+            ->modalHeading('¿Está seguro de generar el DTE?')
             ->color('danger')
             ->form([
-                Select::make('tipoEnvio')
-                    ->label('Tipo de Envío')
-                    ->options(['normal' => 'Envío Normal'])
-                    ->default('normal')
-                    ->required(),
                 Select::make('confirmacion')
-                    ->label('Enviar por Email')
+                    ->label('Enviar a Hacienda')
                     ->options(['si' => 'Sí, deseo enviar', 'no' => 'No, no enviar'])
                     ->required(),
             ])
@@ -45,9 +43,9 @@ class dteActions
                             ->title('Envío Exitoso')
                             ->success()
                             ->send();
-                        if($data['confirmacion'] === 'si') {
+                        if ($data['confirmacion'] === 'si') {
                             self::imprimirDTE()->action($record);
-                            self::enviarDTE()->action($record);
+                            self::enviarEmailDTE()->action($record);
                         }
                     } else {
                         Notification::make()
@@ -115,6 +113,7 @@ class dteActions
             ->modalHeading('Bitácora procesos DTE')
             ->modalContent(function ($record) {
                 $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
+
                 return view('DTE.historial-dte', [
                     'record' => $record,
                     'historial' => $historial,
@@ -124,7 +123,7 @@ class dteActions
             ->modalWidth('7xl');
     }
 
-    public static function enviarDTE(): Action
+    public static function enviarEmailDTE(): Action
     {
         return Action::make('send')
             ->label('')
@@ -156,17 +155,27 @@ class dteActions
             });
     }
 
+
     public static function imprimirDTE(): Action
     {
         return Action::make('pdf')
-            ->label('')
+            ->label('') // Etiqueta vacía, si deseas cambiarla, agrega un texto
             ->icon('heroicon-o-printer')
-            ->tooltip('Imprimir DTE')
             ->iconSize(IconSize::Large)
-            ->visible(fn($record) => $record->is_dte)
-            ->color('default')
-            ->action(function ($record) {
-                return redirect()->route('printDTE', ['idVenta' => $record->generationCode]);
-            });
+            ->color('primary')
+            ->visible(fn($record) => $record->is_dte) // Esto asegura que solo se muestre si el registro tiene un DTE
+//
+
+            ->url(function ($record) {
+                $idSucursal = auth()->user()->employee->branch_id;
+
+                $print = DteTransmisionWherehouse::where('wherehouse',$idSucursal)->first();
+                $ruta = $print->printer_type == 1 ? 'printDTETicket' : 'printDTEPdf';
+                return route($ruta, ['idVenta' => $record->generationCode]);
+            })
+
+            ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
+
+
     }
 }

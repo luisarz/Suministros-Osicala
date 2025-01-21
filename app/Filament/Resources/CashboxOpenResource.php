@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CashboxOpenResource\Pages;
 use App\Filament\Resources\CashboxOpenResource\RelationManagers;
-use App\Models\CashboxOpen;
+use App\Models\CashBoxOpen;
 use App\Models\Sale;
 use App\Service\GetCashBoxOpenedService;
 use App\Traits\Traits\GetOpenCashBox;

@@ -19,6 +19,7 @@ class PricesRelationManager extends RelationManager
 {
     protected static string $relationship = 'Prices';
     protected static ?string $label = "Precios";
+    protected static ?string $title="Precios de venta";
 
 
 

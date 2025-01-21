@@ -13,6 +13,7 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Grouping\Group;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -117,18 +118,9 @@ class KardexResource extends Resource
                 Tables\Columns\TextColumn::make('operation_type')
                     ->label('Operación')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('operation_id')
-//                    ->label('ID Operacion')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('operation_detail_id')
-//                    ->label('ID')
-//                    ->numeric()
-//                    ->sortable(),
                 Tables\Columns\TextColumn::make('document_type')
                     ->label('T. Documento')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('N° Documento')
                     ->searchable()
@@ -137,8 +129,6 @@ class KardexResource extends Resource
                 Tables\Columns\TextColumn::make('entity')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-//                Tables\Columns\TextColumn::make('nationality')
-//                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('previous_stock')
                     ->label('S. Anterior')
@@ -215,7 +205,12 @@ class KardexResource extends Resource
                     ->label('Fecha Operación'),
             ])
             ->filters([
-
+                DateRangeFilter::make('date')->timePicker24()
+                    ->label('Fecha de venta')
+                    ->default([
+                        'start' => now()->subDays(30)->format('Y-m-d'),
+                        'end' => now()->format('Y-m-d'),
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
