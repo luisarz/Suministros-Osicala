@@ -323,6 +323,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('is_dte')
                     ->formatStateUsing(fn ($state) => $state ? 'Enviado' : 'Sin transmisión')

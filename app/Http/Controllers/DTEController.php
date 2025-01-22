@@ -11,6 +11,8 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Options;
+
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DTEController extends Controller
@@ -67,16 +69,16 @@ class DTEController extends Controller
             "documentType" => null,//$factura->customer->documenttypecustomer->code ?? null,
             "documentNum" => null,//$factura->customer->dui ?? $factura->customer->nit,
             "nrc" => null,//str_replace("-","",$factura->customer->nrc) ?? null,
-            "name" => isset($factura->customer) ? trim($factura->customer->name ?? '') . " " . trim($factura->customer->last_name ?? '')  : null,
-            "phoneNumber" => isset($factura->customer)? str_replace(["(", ")", "-", " "], "", $factura->customer->phone ?? ''): null,
+            "name" => isset($factura->customer) ? trim($factura->customer->name ?? '') . " " . trim($factura->customer->last_name ?? '') : null,
+            "phoneNumber" => isset($factura->customer) ? str_replace(["(", ")", "-", " "], "", $factura->customer->phone ?? '') : null,
             "email" => isset($factura->customer) ? trim($factura->customer->email ?? '') : null,
-            "economicAtivity" => isset($factura->customer->economicactivity) ? trim($factura->customer->economicactivity->code ?? ''): null,
-            "address" => isset($factura->customer) ? trim($factura->customer->address ?? ''): null,
-            "codeCity" => isset($factura->customer->departamento)? trim($factura->customer->departamento->code ?? ''): null,
-            "codeMunicipality" => isset($factura->customer->distrito)? trim($factura->customer->distrito->code ?? '') : null,
+            "economicAtivity" => isset($factura->customer->economicactivity) ? trim($factura->customer->economicactivity->code ?? '') : null,
+            "address" => isset($factura->customer) ? trim($factura->customer->address ?? '') : null,
+            "codeCity" => isset($factura->customer->departamento) ? trim($factura->customer->departamento->code ?? '') : null,
+            "codeMunicipality" => isset($factura->customer->distrito) ? trim($factura->customer->distrito->code ?? '') : null,
         ];
         $extencion = [
-            "deliveryName" => isset($factura->seller)? trim($factura->seller->name ?? '') . " " . trim($factura->seller->last_name ?? '') : null,
+            "deliveryName" => isset($factura->seller) ? trim($factura->seller->name ?? '') . " " . trim($factura->seller->last_name ?? '') : null,
             "deliveryDoc" => isset($factura->seller) ? str_replace("-", "", $factura->seller->dui ?? '') : null,
         ];
         $items = [];
@@ -117,7 +119,8 @@ class DTEController extends Controller
 //        return response()->json($dte);
 
         $responseData = $this->SendDTE($dte, $idVenta);
-        return response()->json($responseData);
+
+//        return response()->json($responseData);
 
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
@@ -153,7 +156,7 @@ class DTEController extends Controller
             "businessName" => null,
             "codeCity" => trim($factura->customer->departamento->code) ?? null,
             "codeMunicipality" => trim($factura->customer->distrito->code) ?? null,
-            "economicAtivity" => trim($factura->customer->economicactivity->code??null),
+            "economicAtivity" => trim($factura->customer->economicactivity->code ?? null),
         ];
         $extencion = [
             "deliveryName" => trim($factura->seller->name) . " " . trim($factura->seller->last_name) ?? null,
@@ -265,18 +268,24 @@ class DTEController extends Controller
             $falloDTE = new HistoryDte;
             $ventaID = intval($idVenta);
             $falloDTE->sales_invoice_id = $ventaID;
-            $falloDTE->version = $responseHacienda["version"] ?? null;
-            $falloDTE->ambiente = $responseHacienda["ambiente"];
-            $falloDTE->versionApp = $responseHacienda["versionApp"];
-            $falloDTE->estado = $responseHacienda["estado"];
-            $falloDTE->codigoGeneracion = $responseHacienda["codigoGeneracion"];
+            $falloDTE->version = $responseHacienda["version"] ?? 0;
+            $falloDTE->ambiente = $responseHacienda["ambiente"] ?? 0;
+            $falloDTE->versionApp = $responseHacienda["versionApp"] ?? 0;
+            $falloDTE->estado = $responseHacienda["estado"] ?? null;
+            $falloDTE->codigoGeneracion = $responseHacienda["codigoGeneracion"] ?? null;
             $falloDTE->selloRecibido = $responseHacienda["selloRecibido"] ?? null;
-            $fhProcesamiento = DateTime::createFromFormat('d/m/Y H:i:s', $responseHacienda["fhProcesamiento"]);
-            $falloDTE->fhProcesamiento = $fhProcesamiento ? $fhProcesamiento->format('Y-m-d H:i:s') : null;
-            $falloDTE->clasificaMsg = $responseHacienda["clasificaMsg"]??null;
-            $falloDTE->codigoMsg = $responseHacienda["codigoMsg"]??null;
-            $falloDTE->descripcionMsg = $responseHacienda["descripcionMsg"]??null;
-            $falloDTE->observaciones = json_encode($responseHacienda["observaciones"]??null);
+//            return $responseHacienda;
+            if (isset($responseHacienda["fhProcesamiento"])) {
+                $fhProcesamiento = DateTime::createFromFormat('d/m/Y H:i:s', $responseHacienda["fhProcesamiento"]);
+                $falloDTE->fhProcesamiento = $fhProcesamiento ? $fhProcesamiento->format('Y-m-d H:i:s') : null;
+            } else {
+                $falloDTE->fhProcesamiento = null;
+            }
+
+            $falloDTE->clasificaMsg = $responseHacienda["clasificaMsg"] ?? null;
+            $falloDTE->codigoMsg = $responseHacienda["codigoMsg"] ?? null;
+            $falloDTE->descripcionMsg = $responseHacienda["descripcionMsg"] ?? null;
+            $falloDTE->observaciones = json_encode($responseHacienda["observaciones"] ?? $responseHacienda["descripcion"]);
             $falloDTE->dte = $responseData ?? null;
             $falloDTE->save();
             return $responseData;
@@ -332,25 +341,25 @@ class DTEController extends Controller
 
         $codigoGeneracion = $venta->dteProcesado->codigoGeneracion;
         $establishmentType = trim($venta->wherehouse->stablishmenttype->code);
-        $user=\Auth::user()->employee;
+        $user = \Auth::user()->employee;
         $dte = [
             "codeGeneration" => $codigoGeneracion,
-            "codeGenerationR" =>null,
+            "codeGenerationR" => null,
             "description" => "Anulación de la operación",
             "establishmentType" => $establishmentType,
             "type" => 2,
-            "responsibleName" => $venta->seller->name." ". $venta->seller->lastname,
+            "responsibleName" => $venta->seller->name . " " . $venta->seller->lastname,
             "responsibleDocType" => "13",
             "responsibleDocNumber" => $venta->seller->dui,
-            "requesterName" => $user->name." ". $user->lastname,
+            "requesterName" => $user->name . " " . $user->lastname,
             "requesterDocType" => "13",
             "requesterDocNumber" => $user->dui,
         ];
 
 
-        return response()->json($dte);
+//        return response()->json($dte);
         $responseData = $this->SendAnularDTE($dte, $idVenta);
-    return response()->json($responseData);
+        return response()->json($responseData);
 
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [
@@ -462,31 +471,52 @@ class DTEController extends Controller
                 'tipoDocumento' => $tipoDocumento,
                 'logo' => Storage::url($logo),
             ];
+
+            // dd($datos['logo']);
+
             $directory = storage_path('app/public/QR');
 
             if (!file_exists($directory)) {
                 mkdir($directory, 0755, true); // Create the directory with proper permissions
             }
-            $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.png';
+            $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.jpg';
+
+
 
             QrCode::size(300)->generate($contenidoQR, $path);
 
-            $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
+            // $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
+            if (file_exists($path)) {
+                $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
+            } else {
+                throw new \Exception("Error: El archivo QR no fue guardado correctamente en {$path}");
+            }
 
-//            $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr')); // Cargar vista y pasar datos
-            $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr')); // Cargar vista y pasar datos
-//            $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
-//            if (file_exists($path)) {
-//                return response()->file($path);
-//            } else {
-//                $pdf->save($path);
-//            }
+
+            $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr','base64Image'))
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                ]);
+
+            $pdfPage = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr'))
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                ]);
+
+            $pathPage = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
+
+
+
+
+            $pdfPage->save($pathPage);
 
             $empresa = $this->getConfiguracion();
             $pdf->set_paper(array(0, 0, 250, 1000)); // Custom paper size
 
 
-            return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
+            return $pdf->stream("{$codGeneracion}.pdf");
         } else {
             return response()->json(['error' => 'El archivo no existe.'], 404); // Retornar error 404
         }
@@ -526,21 +556,31 @@ class DTEController extends Controller
             if (!file_exists($directory)) {
                 mkdir($directory, 0755, true); // Create the directory with proper permissions
             }
-            $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.png';
+            $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.jpg';
 
             QrCode::size(300)->generate($contenidoQR, $path);
 
-            $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
+            $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
 
             $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
             $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
             if (file_exists($path)) {
-                return response()->file($path);
-            } else {
+//                return response()->file($path);
+//            } else {
                 $pdf->save($path);
             }
 
             $empresa = $this->getConfiguracion();
+            $dompdf = $pdf->getDomPDF();
+            $dompdf->render();
+            $dom = $dompdf->getDom(); // Obtén el DOM renderizado
+
+            $body = $dom->getElementsByTagName('body')[0]; // Selecciona el nodo body
+            if ($body) {
+                $bodyHeight = $body->getBoundingClientRect()->height;
+                $GLOBALS['bodyHeight'] = $bodyHeight;
+            }
+
 
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {

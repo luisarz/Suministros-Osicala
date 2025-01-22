@@ -12,6 +12,7 @@
     "ext-curl": "*",
     "barryvdh/laravel-dompdf": "^3.0",
     "bezhansalleh/filament-shield": "^3.2",
+    "calebporzio/sushi": "^2.4",
     "charrafimed/global-search-modal": "^3.4",
     "filament/filament": "^3.2",
     "hasnayeen/themes": "^3.0",

@@ -6,7 +6,7 @@
     <title>Documento Tributario Electrónico</title>
     <style>
         body {
-            font-family:  sans-serif;
+            font-family:  Verdana, sans-serif;
             font-size: 10px;
             margin: 0;
             padding: 0;
@@ -18,7 +18,7 @@
 
         .header {
             width: 100%;
-            text-align: center;
+            /*text-align: center;*/
         }
 
         .footer {
@@ -61,11 +61,31 @@
 <body>
 <!-- Header Empresa -->
 <div class="header">
+    <table style="width: 100%; padding: 0; border-collapse: collapse;">
+        <tr>
+            <td style="width: 50%; text-align: left; vertical-align: middle; padding-right: 10px;">
+
+                <img src="{{ asset($datos['logo']) }}" alt="Logo de la empresa" style="width: 150px; height: auto;">
+
+            </td>
+
+
+            <td style="width: 50%; text-align: right; vertical-align: middle; padding-left: 10px;">
+                <img src="{{ asset($qr) }}" alt="QR Código"
+                     style="max-width: 150px; height: auto; margin-left: auto;">
+            </td>
+        </tr>
+    </table>
+
+
+
+</div>
+<div class="header">
     <table style="text-align: left; border: black solid 0px; border-radius: 10px;">
         <tr>
 
-            <td style="text-align: center;">
-                <h2>{{ $datos['empresa']['nombre'] }}</h2>
+            <td style="text-align: left;">
+                <h4>{{ $datos['empresa']['nombre'] }}</h4>
                 NIT: {{ $datos['empresa']['nit'] }}<br>
                 NRC: {{ $datos['empresa']['nrc'] }}
             </td>
@@ -78,14 +98,18 @@
             </td>
         </tr>
     </table>
-    <b>Código de generación</b> <br>
-    {{ $datos['DTE']['respuestaHacienda']['codigoGeneracion'] }} <br>
-    <b>Número de control</b> <br>
-    {{ $datos['DTE']['identificacion']['numeroControl'] }} <br>
-    <b>Sello de recepción:</b> <br>
-    {{ $datos['DTE']['respuestaHacienda']['selloRecibido'] }} <br>
-    <b>Fecha emisión</b> <br>
-    {{ date('d/m/Y', strtotime($datos['DTE']['identificacion']['fecEmi'])) }} {{ $datos['DTE']['identificacion']['horEmi'] }}
+    ---------------------------------------------------------------------------
+    <div style="text-align: left">
+        <b>Código de generación</b> <br>
+        {{ $datos['DTE']['respuestaHacienda']['codigoGeneracion'] }} <br>
+        <b>Número de control</b> <br>
+        {{ $datos['DTE']['identificacion']['numeroControl'] }} <br>
+        <b>Sello de recepción:</b> <br>
+        {{ $datos['DTE']['respuestaHacienda']['selloRecibido'] }} <br>
+        <b>Fecha emisión</b> <br>
+        {{ date('d/m/Y', strtotime($datos['DTE']['identificacion']['fecEmi'])) }} {{ $datos['DTE']['identificacion']['horEmi'] }}
+    </div>
+    ---------------------------------------------------------------------------
 
 </div>
 <?php
@@ -96,7 +120,8 @@
 //
 //print_r($data); // Muestra la respuesta
 ?>
-<!-- Contenido principal -->
+        <!-- Contenido principal -->
+
 <div class="content">
     <!-- Info Cliente -->
 
@@ -108,50 +133,36 @@
                         Documento: {{ $datos['DTE']['receptor']['numDocumento'] ?? '' }}<br>
                         Actividad: {{ $datos['DTE']['receptor']['codActividad'] }}
                         - {{ $datos['DTE']['receptor']['descActividad'] }}<br>
-{{--                        Dirección: {{ $datos['DTE']['receptor']['direccion']['complemento'] }}<br>--}}
+                        {{--                        Dirección: {{ $datos['DTE']['receptor']['direccion']['complemento'] }}<br>--}}
                         Teléfono: {{ $datos['DTE']['receptor']['telefono'] }} <br>
                         Correo: {{ $datos['DTE']['receptor']['correo'] }}
                     </p>
                 </td>
-{{--                <td style="align-items: end;">--}}
-{{--                    <img src="{{ public_path($qr) }}" alt="QR Código" width="150px">--}}
-{{--                </td>--}}
+
             </tr>
         </table>
     </div>
-    <img src="{{ public_path($qr) }}" alt="QR Código" width="150px">
-
+    ---------------------------------------------------------------------------
     <!-- Tabla Productos -->
     <table class="tabla-productos" width="100%" border="0" cellspacing="0" cellpadding="5">
-        <thead>
-        <tr>
-            {{--            <th>No</th>--}}
-            <th>Cant</th>
-            {{--            <th>Unidad</th>--}}
-            <th>Descripción</th>
-            <th>Precio Unitario</th>
-            <th>Desc Item</th>
-{{--            <th>Ventas No Sujetas</th>--}}
-{{--            <th>Ventas Exentas</th>--}}
-            <th>Ventas Gravadas</th>
-        </tr>
-        </thead>
+
         <tbody>
         @foreach ($datos['DTE']['cuerpo'] as $item)
             <tr>
-                {{--                <td>{{ $item['numItem'] }}</td>--}}
                 <td>{{ $item['cantidad'] }}</td>
-                {{--                <td>{{ $item['uniMedida'] }}</td>--}}
-                <td>{{ $item['descripcion'] }}</td>
+                <td colspan="2">{{ $item['descripcion'] }}</td>
+
+            </tr>
+            <tr>
+                <td></td>
                 <td>${{ number_format($item['precioUni'], 2) }}</td>
-                <td>${{ number_format($item['montoDescu'], 2) }}</td>
-{{--                <td>${{ number_format($item['ventaNoSuj'], 2) }}</td>--}}
-{{--                <td>${{ number_format($item['ventaExenta'], 2) }}</td>--}}
+                <td>Desc. ${{ number_format($item['montoDescu'], 2) }}</td>
                 <td>${{ number_format($item['ventaGravada'], 2) }}</td>
             </tr>
         @endforeach
         </tbody>
     </table>
+    ---------------------------------------------------------------------------
 </div>
 
 <!-- Footer fijo -->
@@ -160,40 +171,40 @@
     <table>
         <tr>
             <td style="width: 100%">Total Operaciones:
-                    <tr>
-                        <td>{{ $datos["DTE"]['resumen']['totalLetras'] }} </td>
-                    </tr>
-                    <tr>
-                        <td>Total No Sujeto:</td>
-                        <td>${{ number_format($datos['DTE']['resumen']['totalNoSuj'], 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Exento:</td>
-                        <td>${{ number_format($datos['DTE']['resumen']['totalExenta'], 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Gravadas:</td>
-                        <td>${{ number_format($datos['DTE']['resumen']['totalGravada'], 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Subtotal:</td>
-                        <td>${{ number_format($datos['DTE']['resumen']['subTotal'], 2) }}</td>
-                    </tr>
-                    @isset($datos['DTE']['resumen']['tributos'])
-                        @foreach($datos['DTE']['resumen']['tributos'] as $tributo)
-                            <tr>
-                                <td>{{ $tributo['descripcion'] }}:</td>
-                                <td>${{ number_format($tributo['valor'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    @endisset
-                    <tr>
-                        <td>
-                            <b>TOTAL A PAGAR:</b></td>
-                        <td> ${{number_format($datos['DTE']['resumen']['totalPagar'], 2)}}
-                        </td>
-                    </tr>
+        <tr>
+            <td>{{ $datos["DTE"]['resumen']['totalLetras'] }} </td>
+        </tr>
+        <tr>
+            <td>Total No Sujeto:</td>
+            <td>${{ number_format($datos['DTE']['resumen']['totalNoSuj'], 2) }}</td>
+        </tr>
+        <tr>
+            <td>Total Exento:</td>
+            <td>${{ number_format($datos['DTE']['resumen']['totalExenta'], 2) }}</td>
+        </tr>
+        <tr>
+            <td>Total Gravadas:</td>
+            <td>${{ number_format($datos['DTE']['resumen']['totalGravada'], 2) }}</td>
+        </tr>
+        <tr>
+            <td>Subtotal:</td>
+            <td>${{ number_format($datos['DTE']['resumen']['subTotal'], 2) }}</td>
+        </tr>
+        @isset($datos['DTE']['resumen']['tributos'])
+            @foreach($datos['DTE']['resumen']['tributos'] as $tributo)
+                <tr>
+                    <td>{{ $tributo['descripcion'] }}:</td>
+                    <td>${{ number_format($tributo['valor'], 2) }}</td>
+                </tr>
+            @endforeach
+        @endisset
+        <tr>
+            <td>
+                <b>TOTAL A PAGAR:</b></td>
+            <td> ${{number_format($datos['DTE']['resumen']['totalPagar'], 2)}}
             </td>
+        </tr>
+        </td>
         </tr>
     </table>
 

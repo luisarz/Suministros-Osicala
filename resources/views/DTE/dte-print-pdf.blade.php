@@ -12,7 +12,7 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            /*min-height: 100vh;*/
         }
 
         .header {
@@ -24,8 +24,8 @@
 
 
         .footer {
-            position: fixed;
-            bottom: 0;
+            /*position: fixed;*/
+            /*bottom: 0;*/
             /*background-color: #57595B;*/
             left: 0;
             width: 100%;
@@ -33,7 +33,7 @@
             border-radius: 10px; /* Radio redondeado de 10px */
             text-align: right;
             font-size: 12px;
-            padding: 3;
+            /*padding: 3;*/
         }
 
         .content {

@@ -71,7 +71,7 @@ protected static ?int $navigationSort = 12;
 //                Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
                 Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
-//                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
 //                ]),
                 Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
             ],position: Tables\Enums\ActionsPosition::BeforeColumns)
