@@ -7,7 +7,10 @@ use App\Http\Controllers\SenEmailDTEController;
 use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return redirect('/admin');
+})->name('home');
+
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

@@ -27,7 +27,7 @@ class OrdenController extends Controller
     public function generarPdf($idVenta)
     {
         //abrir el json en DTEs
-        $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller')->find($idVenta);
+        $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller','mechanic')->find($idVenta);
         $empresa = $this->getConfiguracion();
 
         $formatter = new NumeroALetras();

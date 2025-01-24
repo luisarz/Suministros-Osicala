@@ -201,7 +201,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Entregado por:</td>
+                        <td>Entregado por:   {{ $datos['DTE']['extencion']['nombEntrega']??'S/N' }}</td>
                         <td>Recibido por:</td>
                     </tr>
                     <tr>

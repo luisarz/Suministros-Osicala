@@ -188,6 +188,13 @@
       0 => 'Carbon\\Laravel\\ServiceProvider',
     ),
   ),
+  'novadaemon/filament-pretty-json' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Novadaemon\\FilamentPrettyJson\\FilamentPrettyJsonServiceProvider',
+    ),
+  ),
   'nunomaduro/collision' => 
   array (
     'providers' => 

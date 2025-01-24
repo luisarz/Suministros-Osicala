@@ -112,7 +112,23 @@ class OrderResource extends Resource
                                                     ])->columns(2),
                                             ])
                                         ,
-
+                                        Forms\Components\Select::make('mechanic_id')
+                                            ->label('Mecanico')
+                                            ->preload()
+                                            ->searchable()
+                                            ->live()
+                                            ->options(function (callable $get) {
+                                                $wherehouse = $get('wherehouse_id');
+                                                if ($wherehouse) {
+                                                    return Employee::where('branch_id', $wherehouse)
+                                                        ->where('job_title_id',4)
+                                                        ->where('is_active',true)
+                                                        ->pluck('name', 'id');
+                                                }
+                                                return []; // Return an empty array if no wherehouse selected
+                                            })
+                                            ->required()
+                                            ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
                                                 'Pendiente' => 'Pendiente',
@@ -185,7 +201,7 @@ class OrderResource extends Resource
                     ->sortable(),
                 Tables\columns\TextColumn::make('operation_date')
                     ->label('Fecha')
-                    ->date()
+                    ->date('d-m-Y')
                     ->searchable()
                     ->sortable(),
 
@@ -206,13 +222,27 @@ class OrderResource extends Resource
                     ->label('Vendedor')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('mechanic.name')
+                    ->label('Mecánico')
+                    ->searchable()
+                    ->placeholder('No asignado')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Cliente')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('sale_status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'Finalizado',
+                        'danger' => 'Anulado',
+                        'warning' => 'Pendiente',
+                        'info' => 'En proceso',
+                    ])
                     ->label('Estado'),
+
 
                 Tables\Columns\TextColumn::make('retention')
                     ->label('Retención')
@@ -259,7 +289,7 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_order', true);
+                $query->where('is_order', true)->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
             })
             ->recordUrl(null)
             ->filters([
@@ -275,7 +305,7 @@ class OrderResource extends Resource
                 orderActions::printOrder(),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
                     ->visible(function ($record) {
-                        return $record->status != 'Finalizado' && $record->status != 'Anulado';
+                        return $record->sale_status != 'Finalizado' && $record->sale_status != 'Anulado';
                     }),
                 orderActions::closeOrder(),
                 orderActions::billingOrden(),

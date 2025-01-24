@@ -46,15 +46,18 @@ class SmallCashBoxOperationResource extends Resource
                             ->preload()
                             ->required(),
                         Forms\Components\Select::make('operation')
+                            ->label('Operación')
                             ->options([
                                 'Ingreso' => 'Ingreso',
                                 'Egreso' => 'Egreso',])
                             ->default('Ingreso')
                             ->required(),
                         Forms\Components\TextInput::make('amount')
+                            ->label('Monto')
                             ->required()
                             ->numeric(),
                         Forms\Components\TextInput::make('concept')
+                            ->label('Concepto')
                             ->required()
                             ->inlineLabel(false)
                             ->columnSpanFull()

@@ -25,7 +25,7 @@
 
         .footer {
             position: fixed;
-            bottom: 0;
+            /*bottom: 0;*/
             /*background-color: #57595B;*/
             left: 0;
             width: 100%;
@@ -53,9 +53,7 @@
             padding: 5px;
         }
 
-        /*.tabla-productos th {*/
-        /*    background-color: #f2f2f2;*/
-        /*}*/
+
 
         .resumen p {
             margin: 5px 0;
@@ -83,33 +81,32 @@
 <body>
 <!-- Header Empresa -->
 <div class="header">
-    <table     style="text-align: left; border: black solid 1px; border-radius: 10px; width: 100%;">
+    <table     style="text-align: left; border:1px solid black; border-radius: 10px; width: 100%;">
         <tr>
 
-            <td colspan="5" style="text-align: center;">
+            <td colspan="4" style="text-align: center;">
 
                 <h2>{{$empresa->name}} | {{$datos->whereHouse->name}}</h2>
                 <h3>REPORTE DE ENVIO DE PRODUCTOS</h3>
 
             </td>
         <tr>
-            <td>
-                N° de Documento: <b>{{$datos->order_number}}</b>
-            </td>
+            <td>N° de Documento: <b>{{$datos->order_number}}</b></td>
             <td>TIPO: Salida de prodúctos / Orden de trabajo </td>
             <td>FECHA:{{date('d-m-Y H:s:i',strtotime($datos->created_at))}} </td>
             <td>Vendedor:{{$datos->seller->name??''}} {{$datos->seller->last_name??''}} </td>
         </tr>
         <tr>
-            <td>Estado: <b>{{$datos->status??''}}</b></td>
-            <td colspan="4">Destino/Cliente: {{$datos->customer->name??'' ." ". $datos->customer->last_name??''}} // {{$datos->customer->address??''}}</td>
+            <td>Estado: <b>{{$datos->sale_status??''}}</b></td>
+            <td colspan="1">Destino/Cliente: {{$datos->customer->name??'' ." ". $datos->customer->last_name??''}} // {{$datos->customer->address??''}}</td>
+            <td colspan="2">Mecanico: {{$datos->mechanic->name??'S/N'}} {{$datos->mechanic->lastname??''}}</td>
         </tr>
 
     </table>
     <!-- Tabla Productos -->
-    <table class="tabla-productos{{ $datos->status == 'Anulado' ? '-anulado' : '' }}" width="100%" border="1" cellspacing="0" cellpadding="5">
+    <table class="tabla-productos{{ $datos->sale_status == 'Anulado' ? '-anulado' : '' }}" width="100%" border="1" cellspacing="0" cellpadding="5">
 
-    <thead>
+    <thead style="border: 1px solid black;">
         <tr>
             <th>No</th>
             <th>Cant</th>
@@ -127,7 +124,18 @@
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>Unidad</td>
-                <td>  {{ $item->inventory->product->name??''}}  <b> SKU{{ $item->inventory->product->sku??''}} </b></td>
+                <td>
+                    {{ $item->inventory->product->name ?? '' }}
+                    @if(!empty($item->inventory->product->sku))
+                        <b> SKU {{ $item->inventory->product->sku }}</b>
+                    @endif
+                    @if(!empty($item->description))
+                        <br> <b>DESCRIPCIÓN:</b> <br>
+                        {{ $item->description ?? '' }}
+                    @endif
+
+                </td>
+
                 <td>${{ number_format($item->price??0, 2) }}</td>
                 <td>${{ number_format($item->total??0, 2) }}</td>
             </tr>

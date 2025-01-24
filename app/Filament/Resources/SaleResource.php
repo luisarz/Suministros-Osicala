@@ -278,6 +278,7 @@ class SaleResource extends Resource
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
+
                                             ->default(1),
                                         Forms\Components\TextInput::make('cash')
                                             ->label('Efectivo')
@@ -330,6 +331,7 @@ class SaleResource extends Resource
                     ->color(fn ($state) => $state ? 'success' : 'danger') // Colores: 'success' para verde, 'danger' para rojo
                     ->tooltip(fn ($state) => $state ? 'Documento transmitido correctamente' : 'Documento pendiente de transmisión')
                     ->label('DTE')
+
                     ->sortable(),
 
 //                Tables\Columns\IconColumn::make('is_dte')
@@ -346,6 +348,8 @@ class SaleResource extends Resource
                     ->label('Facturacion'),
                 Tables\Columns\TextColumn::make('transmisionType.name')
                     ->placeholder('S/N')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
@@ -366,13 +370,19 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentmethod.name')
                     ->label('Método de pago')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sales_payment_status')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->label('Pago'),
                 Tables\Columns\TextColumn::make('sale_status')
                     ->label('Estado'),
                 Tables\Columns\IconColumn::make('is_taxed')
                     ->label('Gravado')
+                    ->toggleable(isToggledHiddenByDefault: true)
+
                     ->boolean(),
                 Tables\Columns\TextColumn::make('net_amount')
                     ->label('Neto')

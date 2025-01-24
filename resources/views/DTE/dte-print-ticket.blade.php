@@ -98,6 +98,7 @@
             </td>
         </tr>
     </table>
+    <div style="text-align: left">Vendedor: {{ $datos['DTE']['extencion']['nombEntrega']??'S/N' }}</div>
     ---------------------------------------------------------------------------
     <div style="text-align: left">
         <b>Código de generación</b> <br>

@@ -78,11 +78,11 @@ class SaleItemsRelationManager extends RelationManager
                                                             $q->where('aplications', 'like', "%{$aplications}%");
                                                         }
                                                     })
-                                                    ->select('id', 'branch_id', 'product_id') // Solo selecciona las columnas necesarias
+                                                    ->select('id', 'branch_id', 'product_id','stock') // Solo selecciona las columnas necesarias
                                                     ->limit(50) // Limita los resultados
                                                     ->get()
                                                     ->mapWithKeys(function ($inventory) {
-                                                        $displayText = "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code} - aplications: {$inventory->product->aplications}";
+                                                        $displayText = "{$inventory->product->name} -  Cod: {$inventory->product->bar_code} -  STOCK: {$inventory->stock}";
                                                         return [$inventory->id => $displayText];
                                                     });
                                             })
@@ -126,6 +126,7 @@ class SaleItemsRelationManager extends RelationManager
 
 
                                             }),
+
 
                                         Forms\Components\TextInput::make('quantity')
                                             ->label('Cantidad')
@@ -196,18 +197,32 @@ class SaleItemsRelationManager extends RelationManager
                                     ->columns(2),
 
 
-                                Section::make('Image')
+
+                                Section::make('')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\FileUpload::make('product_image')
-                                            ->label('')
-                                            ->previewable(true)
-                                            ->openable()
-                                            ->storeFiles(false)
-                                            ->deletable(false)
-                                            ->disabled() // Desactiva el campo
+                                        Section::make('')
+                                            ->compact()
+                                            ->schema([
+                                                Forms\Components\Textarea::make('description')
+                                                    ->label('Descripción')
+                                                    ->inlineLabel(false)
+                                            ]),
+                                        Section::make('Imagen')
+                                            ->compact()
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('product_image')
+                                                    ->label('')
+                                                    ->previewable(true)
+                                                    ->openable()
+                                                    ->storeFiles(false)
+                                                    ->deletable(false)
+                                                    ->disabled() // Desactiva el campo
 
-                                            ->image(),
+                                                    ->image(),
+                                            ]),
+
+
 
 
                                     ])
@@ -229,8 +244,10 @@ class SaleItemsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('inventory.product.name')
                     ->wrap()
-//                    ->searchable()
+                    ->formatStateUsing(fn ($record) => $record->inventory->product->name . '</br> ' . $record->description)
+                    ->html()
                     ->label('Producto'),
+
                 Tables\Columns\BooleanColumn::make('inventory.product.is_service')
                     ->label('Producto/Servicio')
                     ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
@@ -239,6 +256,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return $record->inventory->product->is_service ? 'Es un servicio' : 'No es un servicio';
                     }),
+
 
 
                 Tables\Columns\TextColumn::make('quantity')
@@ -304,7 +322,8 @@ class SaleItemsRelationManager extends RelationManager
         try {
             $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
             $price = ($get('price') !== "" && $get('price') !== null) ? $get('price') : 0;
-            $discount = $get('discount') / 100 ?? 0;
+            $discount = ($get('discount') !== "" && $get('discount') !== null) ? $get('discount')/100 : 0;
+
             $is_except = $get('is_except');
 
             $total = $quantity * $price;

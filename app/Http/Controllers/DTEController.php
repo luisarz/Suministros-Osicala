@@ -262,7 +262,7 @@ class DTEController extends Controller
 
             $responseData = json_decode($response, true);
 
-            return response()->json($responseData);
+            // return response()->json($responseData);
 
             $responseHacienda = (isset($responseData["estado"]) == "RECHAZADO") ? $responseData : $responseData["respuestaHacienda"];
             $falloDTE = new HistoryDte;
@@ -484,8 +484,6 @@ class DTEController extends Controller
 
 
             QrCode::size(300)->generate($contenidoQR, $path);
-
-            // $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
             if (file_exists($path)) {
                 $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
             } else {
@@ -493,28 +491,24 @@ class DTEController extends Controller
             }
 
 
-            $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr','base64Image'))
-                ->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                ]);
+            $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr'));
+//                ->setOptions([
+//                    'isHtml5ParserEnabled' => true,
+//                    'isRemoteEnabled' => true,
+//                ]);
 
-            $pdfPage = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr'))
-                ->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                ]);
+            $pdfPage = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr'));
+//                ->setOptions([
+//                    'isHtml5ParserEnabled' => true,
+//                    'isRemoteEnabled' => true,
+//                ]);
 
             $pathPage = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
 
 
 
-
             $pdfPage->save($pathPage);
-
-            $empresa = $this->getConfiguracion();
             $pdf->set_paper(array(0, 0, 250, 1000)); // Custom paper size
-
 
             return $pdf->stream("{$codGeneracion}.pdf");
         } else {
@@ -526,7 +520,7 @@ class DTEController extends Controller
 
     public function printDTEPdf($codGeneracion)
     {
-        //abrir el json en DTEs
+
         $fileName = "/DTEs/{$codGeneracion}.json";
 
         if (Storage::disk('public')->exists($fileName)) {
@@ -551,6 +545,8 @@ class DTEController extends Controller
                 'tipoDocumento' => $tipoDocumento,
                 'logo' => Storage::url($logo),
             ];
+
+
             $directory = storage_path('app/public/QR');
 
             if (!file_exists($directory)) {
@@ -558,29 +554,21 @@ class DTEController extends Controller
             }
             $path = $directory . '/' . $DTE['identificacion']['codigoGeneracion'] . '.jpg';
 
+
+
             QrCode::size(300)->generate($contenidoQR, $path);
 
-            $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
-
-            $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr')); // Cargar vista y pasar datos
-            $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
             if (file_exists($path)) {
-//                return response()->file($path);
-//            } else {
-                $pdf->save($path);
+                $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.jpg");
+            } else {
+                throw new \Exception("Error: El archivo QR no fue guardado correctamente en {$path}");
             }
 
-            $empresa = $this->getConfiguracion();
-            $dompdf = $pdf->getDomPDF();
-            $dompdf->render();
-            $dom = $dompdf->getDom(); // Obtén el DOM renderizado
-
-            $body = $dom->getElementsByTagName('body')[0]; // Selecciona el nodo body
-            if ($body) {
-                $bodyHeight = $body->getBoundingClientRect()->height;
-                $GLOBALS['bodyHeight'] = $bodyHeight;
-            }
-
+            $pdf = Pdf::loadView('DTE.dte-print-pdf', compact('datos', 'qr'))
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                ]);
 
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {

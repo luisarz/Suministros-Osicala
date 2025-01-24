@@ -19,11 +19,12 @@ class Sale extends Model
         'document_internal_number',
         'wherehouse_id',
         'seller_id',
+        'mechanic_id',
         'customer_id',
         'operation_condition_id',
         'payment_method_id',
         'sales_payment_status',
-        'status',
+        'sale_status',
         'is_taxed',
         'have_retention',
         'net_amount',
@@ -61,6 +62,11 @@ class Sale extends Model
     }
 
     public function seller(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+
+    }
+    public function mechanic(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
 
