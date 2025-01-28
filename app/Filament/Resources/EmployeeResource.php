@@ -123,7 +123,6 @@ class EmployeeResource extends Resource
                                                 return [
                                                     'required',
                                                     'string',
-                                                    'max:20',
                                                     'unique:employees,email,' . ($record ? $record->id : 'NULL'), // Ignora el registro actual
                                                 ];
                                             })

@@ -68,7 +68,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->step(1)
                             ->live()
                             ->numeric()
-                            ->debounce(300)
+                            ->debounce(500)
                             ->columnSpan(1)
                             ->required()
                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -82,7 +82,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->live()
-                            ->debounce(300)
+                            ->debounce(500)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -96,7 +96,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->default(0)
-                            ->debounce(300)
+                            ->debounce(500)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -104,8 +104,18 @@ class PurchaseItemsRelationManager extends RelationManager
                         Forms\Components\TextInput::make('total')
                             ->label('Total')
                             ->step(0.01)
-                            ->readOnly()
                             ->columnSpan(1)
+                            ->live()
+                            ->debounce(500)
+                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                $total = ($get('total') !== "" && $get('total') !== null) ? $get('total') : 0;
+                                $set('total', number_format($total, 2));
+                                $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
+                                $newPrice=($total/$quantity);
+                                $set('price', number_format($newPrice, 2, '.', ''));
+
+                                $this->calculateTotal($get, $set);
+                            })
                             ->required(),
 
                     ]),
@@ -187,10 +197,11 @@ class PurchaseItemsRelationManager extends RelationManager
 
     protected function calculateTotal(callable $get, callable $set)
     {
-        $quantity = $get('quantity') ?? 0;
-        $price = $get('price') ?? 0;
-        $discount = $get('discount') / 100 ?? 0;
-        $is_except = $get('is_except');
+        $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
+        $price = ($get('price') !== "" && $get('price') !== null) ? $get('price') : 0;
+        $discount = ($get('discount') !== "" && $get('discount') !== null) ? $get('discount') / 100 : 0;
+        $is_except = $get('is_except') !== "" && $get('is_except') !== null && $get('is_except');
+
 
         $total = $quantity * $price;
         if ($discount > 0) {

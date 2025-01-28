@@ -60,32 +60,49 @@ class SaleItemsRelationManager extends RelationManager
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                                $whereHouse = \Auth::user()->employee->branch_id;
+                                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
                                                 $aplications = $get('aplications');
-
                                                 if (strlen($query) < 2) {
-                                                    return []; // No cargar resultados hasta que haya al menos 3 letras
+                                                    return []; // No buscar si el texto es muy corto
                                                 }
-                                                return Inventory::with(['product:id,name,sku,bar_code,aplications']) // Especifica los campos necesarios
-                                                ->where('branch_id', $whereHouse)
-                                                    ->whereHas('product', function ($q) use ($aplications, $query) {
-                                                        $q->where(function ($queryBuilder) use ($query) {
-                                                            $queryBuilder->where('name', 'like', "%{$query}%")
-                                                                ->orWhere('sku', 'like', "%{$query}%")
-                                                                ->orWhere('bar_code', 'like', "%{$query}%");
+                                                // Dividir el texto ingresado en palabras clave
+                                                $keywords = explode(' ', $query);
+
+                                                return Inventory::with([
+                                                    'product:id,name,sku,bar_code,aplications',
+                                                    'prices' => function ($q) {
+                                                        $q->where('is_default', 1)->select('id', 'inventory_id', 'price'); // Carga solo el precio predeterminado
+                                                    },
+                                                ])
+                                                    ->where('branch_id', $whereHouse) // Filtra por sucursal
+                                                    ->whereHas('prices', function ($q) {
+                                                        $q->where('is_default', 1); // Verifica que tenga un precio predeterminado
+                                                    })
+                                                    ->whereHas('product', function ($q) use ($aplications, $keywords) {
+                                                        $q->where(function ($queryBuilder) use ($keywords) {
+                                                            foreach ($keywords as $word) {
+                                                                $queryBuilder->where('name', 'like', "%{$word}%")
+                                                                    ->orWhere('sku', 'like', "%{$word}%")
+                                                                    ->orWhere('bar_code', 'like', "%{$word}%");
+                                                            }
                                                         });
+
                                                         if (!empty($aplications)) {
                                                             $q->where('aplications', 'like', "%{$aplications}%");
                                                         }
                                                     })
-                                                    ->select('id', 'branch_id', 'product_id','stock') // Solo selecciona las columnas necesarias
-                                                    ->limit(50) // Limita los resultados
+                                                    ->select(['id', 'branch_id', 'product_id', 'stock']) // Selecciona solo las columnas necesarias
+                                                    ->limit(50) // Limita el número de resultados
                                                     ->get()
                                                     ->mapWithKeys(function ($inventory) {
-                                                        $displayText = "{$inventory->product->name} -  Cod: {$inventory->product->bar_code} -  STOCK: {$inventory->stock}";
+                                                        $price = optional($inventory->prices->first())->price; // Obtén el precio predeterminado
+                                                        $displayText = "{$inventory->product->name} - Cod: {$inventory->product->bar_code} - STOCK: {$inventory->stock} - $ {$price}";
                                                         return [$inventory->id => $displayText];
                                                     });
                                             })
+
+
+
                                             ->getOptionLabelUsing(function ($value) {
                                                 $inventory = Inventory::with('product')->find($value);
                                                 return $inventory
@@ -93,7 +110,7 @@ class SaleItemsRelationManager extends RelationManager
                                                     : 'Producto no encontrado';
                                             })
                                             ->extraAttributes([
-                                                'class' => 'text-sm text-gray-700 font-semibold bg-gray-100 rounded-md', // Estilo de TailwindCSS
+//                                                'class' => 'text-sm text-gray-700 font-semibold bg-gray-100 rounded-md', // Estilo de TailwindCSS
                                             ])
                                             ->required()
                                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -181,6 +198,20 @@ class SaleItemsRelationManager extends RelationManager
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $this->calculateTotal($get, $set);
                                             }),
+                                        Forms\Components\Toggle::make('is_tarjet')
+                                            ->label('Con tarjeta')
+                                            ->columnSpan(1)
+                                            ->live()
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $price = $get('price'); // Obtener el precio actual
+                                                if ($get('is_tarjet')) {
+                                                    $set('price', $price * 1.05);
+                                                } else {
+                                                    $set('price', $price * 0.95);
+                                                }
+                                                $this->calculateTotal($get, $set);
+                                            }),
+
                                         Forms\Components\TextInput::make('minprice')
                                             ->label('Tributos')
                                             ->hidden(true)
@@ -377,6 +408,11 @@ class SaleItemsRelationManager extends RelationManager
 
 
         }
+    }
+
+    public function isReadOnly(): bool
+    {
+        return false;
     }
 
 

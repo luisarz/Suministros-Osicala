@@ -8,16 +8,19 @@ use App\Models\CashBoxCorrelative;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\HistoryDte;
+use App\Models\Inventory;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\dteActions;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -36,6 +39,17 @@ function updateTotalSale(mixed $idItem, array $data): void
 {
     $applyRetention = $data['have_retention'] ?? false;
     $applyTax = $data['is_taxed'] ?? false;
+    $cash = $data['cash'] ?? false;
+    $change = $data['change'] ?? false;
+    if($cash < 0){
+        Notification::make()
+            ->title('Error')
+            ->body('El monto ingresado no puede ser menor que 0.')
+            ->danger()
+            ->send();
+        return;
+    }
+
 
     $sale = Sale::find($idItem);
 
@@ -59,6 +73,8 @@ function updateTotalSale(mixed $idItem, array $data): void
         $sale->taxe = round($iva, 2);
         $sale->retention = round($retention, 2);
         $sale->sale_total = round($montoTotal - $retention, 2);
+        $sale->cash = $cash??0;
+        $sale->change = $change??0;
         $sale->save();
     }
 }
@@ -116,23 +132,23 @@ class SaleResource extends Resource
 
                                                 return []; // Retorna un array vacío si no hay una caja abierta
                                             })
-                                            ->preload()
-                                            ->reactive() // Permite reaccionar a cambios en el campo
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                if ($state) {
-                                                    $lastIssuedDocument = CashBoxCorrelative::where('document_type_id', $state)
-                                                        ->first();
-                                                    if ($lastIssuedDocument) {
-                                                        // Establece el número del último documento emitido en otro campo
-                                                        $set('document_internal_number', $lastIssuedDocument->current_number + 1);
-                                                    }
-                                                }
-                                            })
+//                                            ->preload()
+//                                            ->reactive() // Permite reaccionar a cambios en el campo
+//                                            ->afterStateUpdated(function ($state, callable $set) {
+//                                                if ($state) {
+//                                                    $lastIssuedDocument = CashBoxCorrelative::where('document_type_id', $state)
+//                                                        ->first();
+//                                                    if ($lastIssuedDocument) {
+//                                                        // Establece el número del último documento emitido en otro campo
+//                                                        $set('document_internal_number', $lastIssuedDocument->current_number + 1);
+//                                                    }
+//                                                }
+//                                            })
                                             ->required(),
-                                        Forms\Components\TextInput::make('document_internal_number')
-                                            ->label('#   Comprobante')
-                                            ->required()
-                                            ->maxLength(255),
+//                                        Forms\Components\TextInput::make('document_internal_number')
+//                                            ->label('#   Comprobante')
+//                                            ->required()
+//                                            ->maxLength(255),
 
 
                                         Forms\Components\Select::make('seller_id')
@@ -151,23 +167,39 @@ class SaleResource extends Resource
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
                                         Forms\Components\Select::make('customer_id')
-                                            ->relationship('customer', 'name')
-                                            ->options(function (callable $get) {
-                                                $documentType = $get('document_type_id');
-                                                if ($documentType == 2) {
-                                                    return Customer::whereNotNull('departamento_id')
-                                                        ->whereNotNull('distrito_id')//MUnicipio
-                                                        ->whereNotNull('economicactivity_id')
-                                                        ->whereNotNull('nrc')
-                                                        ->whereNotNull('dui')
-                                                        ->orderBy('name')
-                                                        ->pluck('name', 'id');
-                                                }
-                                                return Customer::orderBy('name')->pluck('name', 'id');
-                                            })
-                                            ->preload()
+                                            ->columnSpanFull()
                                             ->searchable()
-                                            ->required()
+                                            ->live()
+                                            ->preload()
+                                            ->inlineLabel(false)
+                                            ->getSearchResultsUsing(function (string $query) {
+                                                if (strlen($query) < 2) {
+                                                    return []; // No buscar si el texto es muy corto
+                                                }
+
+                                                // Buscar clientes por múltiples criterios
+                                                return (new Customer)->where('name', 'like', "%{$query}%")
+                                                    ->orWhere('last_name', 'like', "%{$query}%")
+                                                    ->orWhere('nrc', 'like', "%{$query}%")
+                                                    ->orWhere('dui', 'like', "%{$query}%")
+                                                    ->orWhere('nit', 'like', "%{$query}%")
+                                                    ->select(['id', 'name', 'last_name', 'nrc', 'dui', 'nit'])
+                                                    ->limit(50)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($customer) {
+                                                        // Formato para mostrar el resultado en el select
+                                                        $displayText = "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}";
+                                                        return [$customer->id => $displayText];
+                                                    });
+                                            })
+                                            ->getOptionLabelUsing(function ($value) {
+                                                // Obtener detalles del cliente seleccionado
+                                                $customer = Customer::find($value); // Buscar el cliente por ID
+                                                return $customer
+                                                    ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
+                                                    : 'Cliente no encontrado';
+                                            })
+
                                             ->label('Cliente')
                                             ->createOptionForm([
                                                 Section::make('Nuevo Cliente')
@@ -256,7 +288,7 @@ class SaleResource extends Resource
                                             ->label('Retención')
                                             ->onColor('danger')
                                             ->offColor('gray')
-                                            ->default(false )
+                                            ->default(false)
                                             ->required()
                                             ->reactive()
                                             ->afterStateUpdated(function ($set, $state, $get, Component $livewire) {
@@ -278,13 +310,44 @@ class SaleResource extends Resource
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
-
                                             ->default(1),
                                         Forms\Components\TextInput::make('cash')
                                             ->label('Efectivo')
                                             ->required()
                                             ->numeric()
-                                            ->default(0.00),
+                                            ->default(0.00)
+                                            ->reactive()
+                                            ->debounce(500)
+                                            ->afterStateUpdated(function ($set, $state, $get, Component $livewire, ?Sale $record) {
+                                                $sale_total = $record->sale_total;
+                                                $cash = $state;
+
+                                                if ($cash < 0) {
+                                                    Notification::make()
+                                                        ->title('Error')
+                                                        ->body('El monto ingresado no puede ser menor que 0.')
+                                                        ->danger()
+                                                        ->send();
+                                                    $set('cash', 0); // Restablecer el efectivo a 0 en caso de error
+                                                    $set('change', 0); // También establecer el cambio en 0
+                                                } elseif ($cash < $sale_total) {
+                                                    $set('cash', number_format($sale_total, 2, '.', '')); // Ajustar el efectivo al total de la venta
+                                                    $set('change', 0); // Sin cambio ya que el efectivo es igual al total
+                                                } else {
+                                                    $set('change', number_format($cash - $sale_total, 2, '.', '')); // Calcular el cambio con formato
+                                                }
+// Operaciones adicionales
+                                                $idItem = $get('id'); // ID del item de venta
+                                                $data = [
+                                                    'cash' => $state,
+                                                    'change' => $get('change'),
+                                                ];
+                                                updateTotalSale($idItem, $data);
+
+// Emitir evento para actualizar la venta
+                                                $livewire->dispatch('refreshSale');
+
+                                            }),
                                         Forms\Components\TextInput::make('change')
                                             ->label('Cambio')
                                             ->required()
@@ -327,11 +390,10 @@ class SaleResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('is_dte')
-                    ->formatStateUsing(fn ($state) => $state ? 'Enviado' : 'Sin transmisión')
-                    ->color(fn ($state) => $state ? 'success' : 'danger') // Colores: 'success' para verde, 'danger' para rojo
-                    ->tooltip(fn ($state) => $state ? 'Documento transmitido correctamente' : 'Documento pendiente de transmisión')
+                    ->formatStateUsing(fn($state) => $state ? 'Enviado' : 'Sin transmisión')
+                    ->color(fn($state) => $state ? 'success' : 'danger') // Colores: 'success' para verde, 'danger' para rojo
+                    ->tooltip(fn($state) => $state ? 'Documento transmitido correctamente' : 'Documento pendiente de transmisión')
                     ->label('DTE')
-
                     ->sortable(),
 
 //                Tables\Columns\IconColumn::make('is_dte')
@@ -349,7 +411,6 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('transmisionType.name')
                     ->placeholder('S/N')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
@@ -371,18 +432,15 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('paymentmethod.name')
                     ->label('Método de pago')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sales_payment_status')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->label('Pago'),
                 Tables\Columns\TextColumn::make('sale_status')
                     ->label('Estado'),
                 Tables\Columns\IconColumn::make('is_taxed')
                     ->label('Gravado')
                     ->toggleable(isToggledHiddenByDefault: true)
-
                     ->boolean(),
                 Tables\Columns\TextColumn::make('net_amount')
                     ->label('Neto')
@@ -436,7 +494,7 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_invoiced_order', true)->orderby('operation_date','desc')->orderby('is_dte','asc');
+                $query->where('is_invoiced_order', true)->orderby('operation_date', 'desc')->orderby('is_dte', 'asc');
             })
             ->recordUrl(null)
             ->filters([
@@ -459,6 +517,7 @@ class SaleResource extends Resource
                 dteActions::enviarEmailDTE(),
                 dteActions::anularDTE(),
                 dteActions::historialDTE(),
+
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -482,6 +541,7 @@ class SaleResource extends Resource
             'index' => Pages\ListSales::route('/'),
             'create' => Pages\CreateSale::route('/create'),
             'edit' => Pages\EditSale::route('/{record}/edit'),
+//            'view' => Pages\ViewSale::route('/{record}'),
         ];
     }
 

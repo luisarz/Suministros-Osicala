@@ -59,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\pages\Dashboard::class,
             ])
+
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
