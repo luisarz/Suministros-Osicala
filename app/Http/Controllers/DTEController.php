@@ -146,11 +146,11 @@ class DTEController extends Controller
         $conditionCode = trim($factura->salescondition->code);
         $receptor = [
             "documentType" => trim($factura->customer->documenttypecustomer->code) ?? null,
-            "documentNum" => trim($factura->customer->dui ?? $factura->customer->nit),
-            "nit" => trim(str_replace("-", '', $factura->customer->dui)) ?? null,
+            "documentNum" => trim($factura->customer->nit),
+            "nit" => trim(str_replace("-", '', $factura->customer->nit)) ?? null,
             "nrc" => trim(str_replace("-", "", $factura->customer->nrc)) ?? null,
             "name" => trim($factura->customer->name) . " " . trim($factura->customer->last_name) ?? null,
-            "phoneNumber" => trim(str_replace(['-', '(', ')', ' '], '', $factura->customer->phone)) ?? null,
+            "phoneNumber" => isset($factura->customer) ? str_replace(["(", ")", "-", " "], "", $factura->customer->phone ?? '') : null,
             "email" => trim($factura->customer->email) ?? null,
             "address" => trim($factura->customer->address) ?? null,
             "businessName" => null,
@@ -350,14 +350,14 @@ class DTEController extends Controller
             "type" => 2,
             "responsibleName" => $venta->seller->name . " " . $venta->seller->lastname,
             "responsibleDocType" => "13",
-            "responsibleDocNumber" => $venta->seller->dui,
+            "responsibleDocNumber" => trim(str_replace("-", "", $venta->seller->dui)),
             "requesterName" => $user->name . " " . $user->lastname,
             "requesterDocType" => "13",
-            "requesterDocNumber" => $user->dui,
+            "requesterDocNumber" => trim(str_replace("-", "", $user->dui)),
         ];
 
 
-//        return response()->json($dte);
+        return response()->json($dte);
         $responseData = $this->SendAnularDTE($dte, $idVenta);
         return response()->json($responseData);
 

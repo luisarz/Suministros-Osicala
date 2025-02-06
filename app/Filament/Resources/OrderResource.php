@@ -74,32 +74,49 @@ class OrderResource extends Resource
                                             })
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
-
                                         Forms\Components\Select::make('customer_id')
-                                            ->relationship('customer', 'name')
-                                            ->options(function (callable $get) {
-                                                $documentType = $get('document_type_id');
-                                                if ($documentType == 2) {
-                                                    return Customer::whereNotNull('departamento_id')
-                                                        ->whereNotNull('distrito_id')//MUnicipio
-                                                        ->whereNotNull('economicactivity_id')
-                                                        ->whereNotNull('nrc')
-                                                        ->whereNotNull('dui')
-                                                        ->orderBy('name')
-                                                        ->pluck('name', 'id');
-                                                }
-                                                return Customer::orderBy('name')->pluck('name', 'id');
-                                            })
-                                            ->preload()
                                             ->searchable()
+                                            ->live()
+                                            ->preload()
+                                            ->getSearchResultsUsing(function (string $query) {
+                                                if (strlen($query) < 2) {
+                                                    return []; // No buscar si el texto es muy corto
+                                                }
+
+                                                // Buscar clientes por múltiples criterios
+                                                return (new Customer)->where('name', 'like', "%{$query}%")
+                                                    ->orWhere('last_name', 'like', "%{$query}%")
+                                                    ->orWhere('nrc', 'like', "%{$query}%")
+                                                    ->orWhere('dui', 'like', "%{$query}%")
+                                                    ->orWhere('nit', 'like', "%{$query}%")
+                                                    ->select(['id', 'name', 'last_name', 'nrc', 'dui', 'nit'])
+                                                    ->limit(50)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($customer) {
+                                                        // Formato para mostrar el resultado en el select
+                                                        $displayText = "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}";
+                                                        return [$customer->id => $displayText];
+                                                    });
+                                            })
+                                            ->getOptionLabelUsing(function ($value) {
+                                                // Obtener detalles del cliente seleccionado
+                                                $customer = Customer::find($value); // Buscar el cliente por ID
+                                                return $customer
+                                                    ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
+                                                    : 'Cliente no encontrado';
+                                            })
+
                                             ->label('Cliente')
-//                                                    ->inlineLabel(false)
-//                                                    ->columnSpanFull()
                                             ->createOptionForm([
-
-
                                                 Section::make('Nuevo Cliente')
                                                     ->schema([
+                                                        Select::make('wherehouse_id')
+                                                            ->label('Sucursal')
+//                                                            ->inlineLabel(false)
+                                                            ->relationship('wherehouse', 'name')
+                                                            ->preload()
+                                                            ->default(fn() => optional(Auth::user()->employee)->branch_id)
+                                                            ->columnSpanFull(),
 
 
                                                         // Null-safe check
@@ -112,6 +129,45 @@ class OrderResource extends Resource
                                                     ])->columns(2),
                                             ])
                                         ,
+
+//                                        Forms\Components\Select::make('customer_id')
+//                                            ->relationship('customer', 'name')
+//                                            ->required()
+//                                            ->options(function (callable $get) {
+//                                                $documentType = $get('document_type_id');
+//                                                if ($documentType == 2) {
+//                                                    return Customer::whereNotNull('departamento_id')
+//                                                        ->whereNotNull('distrito_id')//MUnicipio
+//                                                        ->whereNotNull('economicactivity_id')
+//                                                        ->whereNotNull('nrc')
+//                                                        ->whereNotNull('dui')
+//                                                        ->orderBy('name')
+//                                                        ->pluck('name', 'id');
+//                                                }
+//                                                return Customer::orderBy('name')->pluck('name', 'id');
+//                                            })
+//                                            ->preload()
+//                                            ->searchable()
+//                                            ->label('Cliente')
+////                                                    ->inlineLabel(false)
+////                                                    ->columnSpanFull()
+//                                            ->createOptionForm([
+//
+//
+//                                                Section::make('Nuevo Cliente')
+//                                                    ->schema([
+//
+//
+//                                                        // Null-safe check
+//                                                        Forms\Components\TextInput::make('name')
+//                                                            ->required()
+//                                                            ->label('Nombre'),
+//                                                        Forms\Components\TextInput::make('last_name')
+//                                                            ->required()
+//                                                            ->label('Apellido'),
+//                                                    ])->columns(2),
+//                                            ])
+//                                        ,
                                         Forms\Components\Select::make('mechanic_id')
                                             ->label('Mecanico')
                                             ->preload()
@@ -127,7 +183,6 @@ class OrderResource extends Resource
                                                 }
                                                 return []; // Return an empty array if no wherehouse selected
                                             })
-                                            ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',

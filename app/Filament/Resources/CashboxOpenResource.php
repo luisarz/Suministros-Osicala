@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CashboxOpenResource\Pages;
 use App\Filament\Resources\CashboxOpenResource\RelationManagers;
 use App\Models\CashBoxOpen;
+use App\Models\Employee;
 use App\Models\Sale;
 use App\Service\GetCashBoxOpenedService;
 use App\Traits\Traits\GetOpenCashBox;
@@ -180,9 +181,7 @@ class CashboxOpenResource extends Resource
                                     $whereHouse = auth()->user()->employee->branch_id;
                                     $query->where('branch_id', $whereHouse);
                                 })
-
                                 ->required()
-
                                 ->label('Empleado Cierra')
                                 ->hidden(function (CashBoxOpen $record = null) {
                                     if ($record === null) {
@@ -191,7 +190,7 @@ class CashboxOpenResource extends Resource
                                 })
                                 ->options(function () {
                                     $whereHouse = auth()->user()->employee->branch_id;
-                                    return \App\Models\Employee::where('branch_id', $whereHouse)
+                                    return Employee::where('branch_id', $whereHouse)
                                         ->pluck('name', 'id');
                                 }),
                         ])->columns(3)
@@ -200,6 +199,7 @@ class CashboxOpenResource extends Resource
                     ])->columns(2)
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -230,6 +230,7 @@ class CashboxOpenResource extends Resource
                     ->placeholder('Sin cerrar')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('closeEmployee.name')
+                    ->label('Cerró')
                     ->placeholder('Sin cerrar')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
@@ -288,12 +289,7 @@ class CashboxOpenResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
+
 
     public static function getPages(): array
     {

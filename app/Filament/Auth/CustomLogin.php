@@ -60,7 +60,6 @@ class CustomLogin extends Login
     protected function getCredentialsFromFormData(array $data): array
     {
         $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
-//        dd($login_type);
         return [
             $login_type => $data['login'],
             'password' => $data['password'],

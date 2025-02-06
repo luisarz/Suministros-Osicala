@@ -33,7 +33,7 @@ class EditCashboxOpen extends EditRecord
         $totalClose = ($montoApertura + $totalIngresos + $totalOrder + $totalSale) - $totalEgresos;
 
         $cashboxOpen->closed_at = now();
-        $cashboxOpen->close_employee_id = auth()->user()->employee->id;
+//        $cashboxOpen->close_employee_id = auth()->user()->employee->id;
         $cashboxOpen->status = 'closed';
         $cashboxOpen->saled_amount = $totalSale;
         $cashboxOpen->ordered_amount = $totalOrder;

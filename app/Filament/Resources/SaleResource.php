@@ -371,6 +371,9 @@ class SaleResource extends Resource
         ];
     }
 
+    /**
+     * @throws \Exception
+     */
     public
     static function table(Table $table): Table
     {
@@ -494,17 +497,22 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_invoiced_order', true)->orderby('operation_date', 'desc')->orderby('is_dte', 'asc');
+                $query->where('is_invoiced_order', true)
+                    ->orderby('operation_date', 'desc')
+                    ->orderby('document_internal_number','desc')
+                    ->orderby('is_dte', 'desc');
             })
             ->recordUrl(null)
             ->filters([
-                DateRangeFilter::make('operation_date')->timePicker24()
+                DateRangeFilter::make('operation_date')
+                    ->timePicker24()
                     ->label('Fecha de venta')
                     ->default([
-                        'start' => now()->subDays(30)->format('Y-m-d'),
-                        'end' => now()->format('Y-m-d'),
+                        'start' => now()->subDays(30)->toDateTimeString()??now()->toDateTimeString(),
+                        'end' => now()->toDateTimeString() ?? now()->toDateTimeString(),
                     ]),
-                Tables\Filters\SelectFilter::make('documenttype')
+
+        Tables\Filters\SelectFilter::make('documenttype')
                     ->label('Sucursal')
 //                    ->multiple()
                     ->preload()
