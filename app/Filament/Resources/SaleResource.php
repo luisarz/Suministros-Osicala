@@ -14,6 +14,7 @@ use App\Models\SaleItem;
 use App\Models\Tribute;
 use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\dteActions;
+use Carbon\Carbon;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
@@ -41,7 +42,7 @@ function updateTotalSale(mixed $idItem, array $data): void
     $applyTax = $data['is_taxed'] ?? false;
     $cash = $data['cash'] ?? false;
     $change = $data['change'] ?? false;
-    if($cash < 0){
+    if ($cash < 0) {
         Notification::make()
             ->title('Error')
             ->body('El monto ingresado no puede ser menor que 0.')
@@ -73,8 +74,8 @@ function updateTotalSale(mixed $idItem, array $data): void
         $sale->taxe = round($iva, 2);
         $sale->retention = round($retention, 2);
         $sale->sale_total = round($montoTotal - $retention, 2);
-        $sale->cash = $cash??0;
-        $sale->change = $change??0;
+        $sale->cash = $cash ?? 0;
+        $sale->change = $change ?? 0;
         $sale->save();
     }
 }
@@ -199,7 +200,6 @@ class SaleResource extends Resource
                                                     ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
                                                     : 'Cliente no encontrado';
                                             })
-
                                             ->label('Cliente')
                                             ->createOptionForm([
                                                 Section::make('Nuevo Cliente')
@@ -499,7 +499,7 @@ class SaleResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->where('is_invoiced_order', true)
                     ->orderby('operation_date', 'desc')
-                    ->orderby('document_internal_number','desc')
+                    ->orderby('document_internal_number', 'desc')
                     ->orderby('is_dte', 'desc');
             })
             ->recordUrl(null)
@@ -507,14 +507,11 @@ class SaleResource extends Resource
                 DateRangeFilter::make('operation_date')
                     ->timePicker24()
                     ->label('Fecha de venta')
-                    ->default([
-                        'start' => now()->subDays(30)->toDateTimeString()??now()->toDateTimeString(),
-                        'end' => now()->toDateTimeString() ?? now()->toDateTimeString(),
-                    ]),
+                    ->startDate(Carbon::now())
+                    ->endDate(Carbon::now()),
 
-        Tables\Filters\SelectFilter::make('documenttype')
+                Tables\Filters\SelectFilter::make('documenttype')
                     ->label('Sucursal')
-//                    ->multiple()
                     ->preload()
                     ->relationship('documenttype', 'name'),
 

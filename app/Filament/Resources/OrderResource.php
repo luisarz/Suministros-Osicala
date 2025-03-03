@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Sale;
 use App\Tables\Actions\dteActions;
 use App\Tables\Actions\orderActions;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -349,11 +350,9 @@ class OrderResource extends Resource
             ->recordUrl(null)
             ->filters([
                 DateRangeFilter::make('created_at')->timePicker24()
-                    ->label('Fecha de venta')
-                    ->default([
-                        'start' => now()->subDays(30)->format('Y-m-d'),
-                        'end' => now()->format('Y-m-d'),
-                    ]),
+                    ->label('Fecha de Orden')
+                    ->startDate(Carbon::now())
+                    ->endDate(Carbon::now()),
 
             ])
             ->actions([
