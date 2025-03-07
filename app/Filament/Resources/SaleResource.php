@@ -15,6 +15,7 @@ use App\Models\Tribute;
 use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\dteActions;
 use Carbon\Carbon;
+use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
@@ -22,9 +23,11 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Pages\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
@@ -43,10 +46,11 @@ function updateTotalSale(mixed $idItem, array $data): void
     $cash = $data['cash'] ?? false;
     $change = $data['change'] ?? false;
     if ($cash < 0) {
-        Notification::make()
-            ->title('Error')
+
+        PageAlert::make()
+            ->title('Saved successfully')
             ->body('El monto ingresado no puede ser menor que 0.')
-            ->danger()
+            ->success()
             ->send();
         return;
     }
@@ -159,19 +163,21 @@ class SaleResource extends Resource
                                             ->live()
                                             ->options(function (callable $get) {
                                                 $wherehouse = $get('wherehouse_id');
+                                                $saler = \Auth::user()->employee->id ?? null;
                                                 if ($wherehouse) {
-                                                    return Employee::where('branch_id', $wherehouse)->pluck('name', 'id');
+                                                    return Employee::where('id', $saler)->pluck('name', 'id');
                                                 }
                                                 return []; // Return an empty array if no wherehouse selected
                                             })
+                                            ->default(fn() => optional(Auth::user()->employee)->id)
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
                                         Forms\Components\Select::make('customer_id')
-                                            ->columnSpanFull()
                                             ->searchable()
                                             ->live()
                                             ->preload()
+                                            ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->getSearchResultsUsing(function (string $query) {
                                                 if (strlen($query) < 2) {
@@ -207,13 +213,17 @@ class SaleResource extends Resource
                                                         Select::make('wherehouse_id')
                                                             ->label('Sucursal')
                                                             ->inlineLabel(false)
-                                                            ->relationship('wherehouse', 'name')
+                                                            // ->relationship('wherehouse', 'name')
+                                                            ->options(function (callable $get) {
+                                                                $wherehouse = (Auth::user()->employee)->branch_id;
+                                                                if ($wherehouse) {
+                                                                    return \App\Models\Branch::where('id', $wherehouse)->pluck('name', 'id');
+                                                                }
+                                                                return []; // Return an empty array if no wherehouse selected
+                                                            })
                                                             ->preload()
                                                             ->default(fn() => optional(Auth::user()->employee)->branch_id)
                                                             ->columnSpanFull(),
-
-
-                                                        // Null-safe check
                                                         Forms\Components\TextInput::make('name')
                                                             ->required()
                                                             ->label('Nombre'),
@@ -222,7 +232,10 @@ class SaleResource extends Resource
                                                             ->label('Apellido'),
                                                     ])->columns(2),
                                             ])
-                                        ,
+                                            ->createOptionUsing(function ($data) {
+                                                return Customer::create($data)->id; // Guarda y devuelve el ID del nuevo cliente
+                                            }),
+
 
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
@@ -242,7 +255,7 @@ class SaleResource extends Resource
                                             ->hidden()
                                             ->required(),
                                         Section::make('')//Resumen Venta
-                                        ->description('Resumen Venta')
+                                        ->description('')
                                             ->compact()
                                             ->schema([
                                                 Forms\Components\Placeholder::make('net_amount')
@@ -277,6 +290,57 @@ class SaleResource extends Resource
                                 Section::make('Caja')
                                     ->compact()
                                     ->schema([
+                                        Select::make('order_id')
+                                            ->label('Órdenes')
+                                            ->searchable()
+                                            ->placeholder('Orden #')
+                                            ->preload()
+                                            ->live()
+                                            ->getSearchResultsUsing(function (string $searchQuery) {
+                                                if (strlen($searchQuery) < 1) {
+                                                    return []; // No buscar si el texto es muy corto
+                                                }
+
+                                                // Buscar órdenes basadas en el cliente
+                                                return Sale::whereHas('customer', function ($customerQuery) use ($searchQuery) {
+                                                    $customerQuery->where('name', 'like', "%{$searchQuery}%")
+                                                        ->orWhere('last_name', 'like', "%{$searchQuery}%")
+                                                        ->orWhere('nrc', 'like', "%{$searchQuery}%")
+                                                        ->orWhere('dui', 'like', "%{$searchQuery}%");
+                                                })
+                                                    ->where('operation_type', 'Order')
+                                                    ->orWhere('order_number', 'like', "%{$searchQuery}%")
+                                                    ->whereNotIn('sale_status', ['Finalizado', 'Facturada', 'Anulado'])
+                                                    ->select(['id', 'order_number', 'operation_type'])
+                                                    ->limit(50)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($sale) {
+                                                        // Formato para mostrar el resultado en el select
+                                                        $displayText = "Orden # : {$sale->order_number}  - Tipo: {$sale->operation_type}";
+
+                                                        // Incluir el nombre del cliente si es necesario
+                                                        if ($sale->customer) {
+                                                            $displayText .= " - Cliente: {$sale->customer->name}";
+                                                        }
+
+                                                        return [$sale->id => $displayText];
+                                                    });
+                                            })
+                                            ->getOptionLabelUsing(function ($value) {
+                                                // Obtener detalles de la orden seleccionada
+                                                $sale = Sale::find($value); // Buscar la orden por ID
+                                                return $sale
+                                                    ? "Orden # : {$sale->order_number} - Cliente: {$sale->customer->name} - Tipo: {$sale->operation_type}"
+                                                    : 'Orden no encontrada';
+                                            })
+                                            ->loadingMessage('Cargando ordenes...')
+                                            ->searchingMessage('Buscando Orden...')
+                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                redirect('admin/sales/' . $state . '/edit');
+
+//                                                return redirect()->route('filament.resources.sales.edit', $state); // 'sales.edit' es la ruta de edición del recurso de "Sale"
+                                            }),
+
                                         Forms\Components\Toggle::make('is_taxed')
                                             ->label('Gravado')
                                             ->default(true)
@@ -310,14 +374,14 @@ class SaleResource extends Resource
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
+                                            ->required()
                                             ->default(1),
                                         Forms\Components\TextInput::make('cash')
                                             ->label('Efectivo')
                                             ->required()
                                             ->numeric()
                                             ->default(0.00)
-                                            ->reactive()
-                                            ->debounce(500)
+                                            ->live(true)
                                             ->afterStateUpdated(function ($set, $state, $get, Component $livewire, ?Sale $record) {
                                                 $sale_total = $record->sale_total;
                                                 $cash = $state;
@@ -328,29 +392,27 @@ class SaleResource extends Resource
                                                         ->body('El monto ingresado no puede ser menor que 0.')
                                                         ->danger()
                                                         ->send();
-                                                    $set('cash', 0); // Restablecer el efectivo a 0 en caso de error
-                                                    $set('change', 0); // También establecer el cambio en 0
+//                                                    $set('cash', 0); // Restablecer el efectivo a 0 en caso de error
+//                                                    $set('change', 0); // También establecer el cambio en 0
                                                 } elseif ($cash < $sale_total) {
-                                                    $set('cash', number_format($sale_total, 2, '.', '')); // Ajustar el efectivo al total de la venta
-                                                    $set('change', 0); // Sin cambio ya que el efectivo es igual al total
+//                                                    $set('cash', number_format($sale_total, 2, '.', '')); // Ajustar el efectivo al total de la venta
+//                                                    $set('change', 0); // Sin cambio ya que el efectivo es igual al total
+                                                    $set('change', number_format($cash - $sale_total, 2, '.', '')); // Calcular el cambio con formato
+
                                                 } else {
                                                     $set('change', number_format($cash - $sale_total, 2, '.', '')); // Calcular el cambio con formato
                                                 }
-// Operaciones adicionales
                                                 $idItem = $get('id'); // ID del item de venta
-                                                $data = [
-                                                    'cash' => $state,
-                                                    'change' => $get('change'),
-                                                ];
+                                                $data = ['cash' => $state, 'change' => $get('change')];
                                                 updateTotalSale($idItem, $data);
-
-// Emitir evento para actualizar la venta
                                                 $livewire->dispatch('refreshSale');
 
                                             }),
                                         Forms\Components\TextInput::make('change')
                                             ->label('Cambio')
                                             ->required()
+                                            ->readOnly()
+                                            ->extraAttributes(['class' => 'bg-gray-100 border border-gray-500 rounded-md '])
                                             ->numeric()
                                             ->default(0.00),
                                     ])
@@ -379,6 +441,12 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('wherehouse.name')
+                    ->label('Sucursal')
+                    ->numeric()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('operation_date')
                     ->label('Fecha de venta')
                     ->date('d/m/Y')
@@ -390,6 +458,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
+                    ->numeric()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('is_dte')
@@ -406,21 +475,26 @@ class SaleResource extends Resource
 //                    ->falseIcon('heroicon-o-shield-exclamation')
 //                    ->label('DTE')
 //                    ->sortable(),
-                Tables\Columns\TextColumn::make('billingModel.name')
+
+                Tables\Columns\BadgeColumn::make('billingModel')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Facturacion'),
-                Tables\Columns\TextColumn::make('transmisionType.name')
+//                    ->searchable()
+                    ->label('Facturación')
+                    ->tooltip(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo')
+                    ->icon(fn($state) => $state?->id === 2 ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
+                    ->color(fn($state) => $state?->id === 2 ? 'danger' : 'success')
+                    ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo'), // Aquí se define el badge
+
+
+                Tables\Columns\BadgeColumn::make('transmisionType')
+                    ->label('Transmisión')
                     ->placeholder('S/N')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Transmision'),
-                Tables\Columns\TextColumn::make('wherehouse.name')
-                    ->label('Sucursal')
-                    ->numeric()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->tooltip(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal')
+                    ->icon(fn($state) => $state?->id === 2 ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
+                    ->color(fn($state) => $state?->id === 2 ? 'danger' : 'success')
+                    ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal'), // Texto del badge
+
+
                 Tables\Columns\TextColumn::make('seller.name')
                     ->label('Vendedor')
                     ->searchable()
@@ -439,8 +513,12 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('sales_payment_status')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Pago'),
-                Tables\Columns\TextColumn::make('sale_status')
-                    ->label('Estado'),
+                Tables\Columns\BadgeColumn::make('sale_status')
+                    ->label('Estado')
+                    ->extraAttributes(['class' => 'text-lg'])  // Cambia el tamaño de la fuente
+
+                    ->color(fn($record) => $record->sale_status === 'Anulado' ? 'danger' : 'success'),
+
                 Tables\Columns\IconColumn::make('is_taxed')
                     ->label('Gravado')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -471,6 +549,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sale_total')
                     ->label('Total')
+                    ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cash')
@@ -497,7 +576,8 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_invoiced_order', true)
+                $query->where('is_invoiced', true)
+                    ->whereIn('operation_type', ['Sale', 'Order'])
                     ->orderby('operation_date', 'desc')
                     ->orderby('document_internal_number', 'desc')
                     ->orderby('is_dte', 'desc');
@@ -506,12 +586,14 @@ class SaleResource extends Resource
             ->filters([
                 DateRangeFilter::make('operation_date')
                     ->timePicker24()
-                    ->label('Fecha de venta')
                     ->startDate(Carbon::now())
-                    ->endDate(Carbon::now()),
+                    ->endDate(Carbon::now())
+                    ->label('Fecha de venta'),
+
 
                 Tables\Filters\SelectFilter::make('documenttype')
                     ->label('Sucursal')
+//                    ->multiple()
                     ->preload()
                     ->relationship('documenttype', 'name'),
 

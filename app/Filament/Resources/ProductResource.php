@@ -7,8 +7,10 @@ use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -98,6 +100,10 @@ class ProductResource extends Resource
                                     ->label('Activo')
                                     ->default(true)
                                     ->required(),
+                                Forms\Components\Toggle::make('is_grouped')
+                                    ->label('Compuesto')
+                                    ->default(true)
+                                    ->required(),
                                 Forms\Components\Toggle::make('is_taxed')
                                     ->label('Gravado')
                                     ->default(true)
@@ -107,8 +113,7 @@ class ProductResource extends Resource
                         Forms\Components\FileUpload::make('images')
                             ->directory('products')
                             ->image()
-//                            ->avatar()
-//                            ->multiple()
+                            ->openable()
                             ->columnSpanFull(),
 
                     ])->columns(2)
@@ -129,7 +134,7 @@ class ProductResource extends Resource
                                 ->schema([
                                     Tables\Columns\ImageColumn::make('images')
                                         ->placeholder('Sin imagen')
-                                        ->defaultImageUrl(url('storage/products/noimage.jpg'))
+//                                        ->defaultImageUrl(url('storage/products/noimage.jpg'))
                                         ->openUrlInNewTab()
                                         ->height(150)
                                         ->square()
@@ -154,7 +159,6 @@ class ProductResource extends Resource
                                     ->label('Aplicaicones')
                                     ->badge()
                                     ->icon('heroicon-s-cog')
-
                                     ->sortable()
                                     ->separator(';')
                                     ->searchable(),
@@ -164,6 +168,12 @@ class ProductResource extends Resource
                                     ->icon('heroicon-s-qr-code')
                                     ->copyMessage('SKU  copied')
                                     ->searchable(),
+                                Tables\Columns\BooleanColumn::make('is_grouped')
+                                    ->label('Servicio')
+                                    ->trueIcon('heroicon-o-server-stack')
+                                    ->falseIcon('heroicon-o-server')
+                                    ->sortable(),
+
 
                                 Tables\Columns\TextColumn::make('bar_code')
                                     ->icon('heroicon-s-code-bracket-square')
@@ -222,13 +232,13 @@ class ProductResource extends Resource
 
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Large),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning'),
+                Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Large),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
-                ]) ->link()
+                ])->link()
                     ->label('Acciones'),
             ], position: Tables\Enums\ActionsPosition::AfterContent)
             ->bulkActions([

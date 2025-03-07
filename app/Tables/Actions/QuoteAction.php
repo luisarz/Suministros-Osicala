@@ -5,8 +5,6 @@ namespace App\Tables\Actions;
 use App\Helpers\KardexHelper;
 use App\Http\Controllers\OrdenController;
 use App\Models\CashBoxOpen;
-use App\Models\Company;
-use App\Models\Inventory;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Filament\Forms\Components\Placeholder;
@@ -22,80 +20,20 @@ use PhpParser\Node\Stmt\Label;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Service\GetCashBoxOpenedService;
 
-function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
-{
-    $id_sale = $record->id; // Obtener el registro de la venta
-    $sale = Sale::with('documenttype', 'customer', 'customer.country')->find($id_sale);
-    $salesItem = SaleItem::where('sale_id', $sale->id)->get();
-    $client = $sale->customer;
-    $documnetType = $sale->documenttype->name ?? 'Orden de venta';
-    $entity = $client->name . ' ' . $client->last_name;
-    $pais = $client->country->name ?? 'Salvadoreña';
-
-    foreach ($salesItem as $item) {
-        $inventory = Inventory::with('product')->find($item->inventory_id);
-
-        // Verifica si el inventario existe
-        if (!$inventory) {
-            \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
-            continue; // Si no se encuentra el inventario, continúa con el siguiente item
-        }
-
-        if (!$inventory->product->is_service) {
-            // Determinar si es entrada o salida
-            $quantityChange = $isEntry ? $item->quantity : -$item->quantity;
-            $newStock = $inventory->stock + $quantityChange;
-
-            // Actualizar inventario
-            $inventory->update(['stock' => $newStock]);
-
-            // Crear el Kardex
-            $kardex = KardexHelper::createKardexFromInventory(
-                $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
-                $sale->created_at, // Fecha
-                $operation . ' Orden ' . $sale->order_number, // Tipo de operación
-                $sale->id, // operation_id
-                $item->id, // operation_detail_id
-                $documnetType, // document_type
-                $sale->order_number, // document_number
-                $entity, // entity
-                $pais, // nationality
-                $inventory->id, // inventory_id
-                $inventory->stock, // previous_stock
-                $isEntry ? $item->quantity : 0, // stock_in
-                !$isEntry ? $item->quantity : 0, // stock_out
-                $newStock, // stock_actual
-                $isEntry ? $item->quantity * $item->price : 0, // money_in
-                !$isEntry ? $item->quantity * $item->price : 0, // money_out
-                $newStock * $item->price, // money_actual
-                $item->price, // sale_price
-                0 // purchase_price
-            );
-
-            // Verifica si la creación del Kardex fue exitosa
-            if (!$kardex) {
-                \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
-            }
-        }
-    }
-
-    return true;
-}
 
 
-class orderActions
+class QuoteAction
 {
 
-    public static function printOrder(): Action
+    public static function printQuote(): Action
     {
-        return Action::make('printOrder')
+        return Action::make('printQuote')
             ->label('')
             ->icon('heroicon-o-printer')
             ->iconSize(IconSize::Large)
             ->color('primary')
-            ->url(fn($record) => route('ordenGenerarPdf', ['idVenta' => $record->id]))
+            ->url(fn($record) => route('printQuote', ['idVenta' => $record->id]))
             ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
-
     }
 
     public static function billingOrden(): Action

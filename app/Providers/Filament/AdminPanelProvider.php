@@ -7,6 +7,7 @@ use App\Filament\Resources\LogResource;
 use App\Filament\Resources\SaleResource;
 use App\Models\DteTransmisionWherehouse;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use EightyNine\FilamentPageAlerts\FilamentPageAlertsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -41,10 +42,10 @@ class AdminPanelProvider extends PanelProvider
 
         return $panel
             ->brandLogo(fn() => view('logo'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('6rem')
             ->default()
-            ->font('serif')
-            ->sidebarWidth('20rem')
+            ->font('Poppins')
+            ->sidebarWidth('18rem')
             ->id('admin')
             ->path('admin')
             ->profile(isSimple: false)
@@ -89,6 +90,7 @@ class AdminPanelProvider extends PanelProvider
                 GlobalSearchModalPlugin::make(),
                 ActivitylogPlugin::make()->label('Bitacora')
                     ->pluralLabel('Bitacora')->navigationSort(3),
+                FilamentPageAlertsPlugin::make()
 
             ])
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {
@@ -161,7 +163,9 @@ class AdminPanelProvider extends PanelProvider
             NavigationItem::make('Manual de usuario')
                 ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
                 ->icon('heroicon-o-book-open')
-        ]);
-
+        ])
+        ->renderHook('topbar.start', function () {
+        return '<div class="text-lg font-bold text-gray-900">' . (Session::get('modulo_nombre') ?? 'Módulo Actual') . '</div>';
+    });
     }
 }

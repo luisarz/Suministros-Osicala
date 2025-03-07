@@ -5,6 +5,7 @@ namespace App\Tables\Actions;
 use App\Filament\Resources\DteTransmisionWherehouseResource;
 use App\Models\Branch;
 use App\Models\DteTransmisionWherehouse;
+use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\IconSize;
@@ -39,7 +40,7 @@ class dteActions
                     $dteController = new DTEController();
                     $resultado = $dteController->generarDTE($record->id);
                     if ($resultado['estado'] === 'EXITO') {
-                        Notification::make()
+                        PageAlert::make()
                             ->title('Envío Exitoso')
                             ->success()
                             ->send();
@@ -48,14 +49,14 @@ class dteActions
                             self::enviarEmailDTE()->action($record);
                         }
                     } else {
-                        Notification::make()
+                        PageAlert::make()
                             ->title('Fallo en envío')
                             ->danger()
                             ->body($resultado["mensaje"])
                             ->send();
                     }
                 } else {
-                    Notification::make()
+                    PageAlert::make()
                         ->title('Se canceló el envío')
                         ->warning()
                         ->send();
@@ -70,7 +71,7 @@ class dteActions
             ->tooltip('Anular DTE')
             ->icon('heroicon-o-shield-exclamation')
             ->iconSize(IconSize::Large)
-            ->visible(fn($record) => $record->is_dte && $record->status != 'Anulado')
+            ->visible(fn($record) => $record->is_dte && $record->sale_status != 'Anulado')
             ->requiresConfirmation()
             ->modalHeading('¿Está seguro de Anular el DTE?')
             ->modalDescription('Al anular el DTE no se podrá recuperar')
@@ -87,14 +88,15 @@ class dteActions
                     $dteController = new DTEController();
                     $resultado = $dteController->anularDTE($record->id);
                     if ($resultado['estado'] === 'EXITO') {
-                        Notification::make()
+                        PageAlert::make()
                             ->title('Anulación Exitosa')
                             ->success()
                             ->send();
                     } else {
-                        Notification::make()
+                        PageAlert   ::make()
                             ->title('Fallo en anulación')
                             ->danger()
+                            ->duration(5000)
                             ->body($resultado["mensaje"])
                             ->send();
                     }
@@ -130,7 +132,7 @@ class dteActions
             ->icon('heroicon-o-envelope')
             ->iconSize(IconSize::Large)
             ->tooltip('Enviar DTE')
-            ->visible(fn($record) => $record->is_dte)
+            ->visible(fn($record) => $record->is_dte && $record->sale_status != 'Anulado')
             ->color('warning')
             ->requiresConfirmation()
             ->modalHeading('¿Está seguro de enviar el DTE?')

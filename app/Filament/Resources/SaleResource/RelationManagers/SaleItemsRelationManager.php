@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SaleResource\RelationManagers;
 
+use App\Models\Distrito;
 use App\Models\Inventory;
 use App\Models\Price;
 use App\Models\Purchase;
@@ -26,7 +27,7 @@ use Symfony\Component\Console\Input\Input;
 class SaleItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'saleDetails';
-    protected static ?string $title="Prodúctos agregados";
+    protected static ?string $title = "Prodúctos agregados";
     protected static ?string $pollingInterval = '1s';
 
 
@@ -46,10 +47,7 @@ class SaleItemsRelationManager extends RelationManager
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\TextInput::make('aplications')
-                                            ->inlineLabel(false)
-                                            ->columnSpanFull()
-                                            ->label('Aplicaciones'),
+
 
                                         Select::make('inventory_id')
                                             ->label('Producto')
@@ -100,9 +98,6 @@ class SaleItemsRelationManager extends RelationManager
                                                         return [$inventory->id => $displayText];
                                                     });
                                             })
-
-
-
                                             ->getOptionLabelUsing(function ($value) {
                                                 $inventory = Inventory::with('product')->find($value);
                                                 return $inventory
@@ -143,6 +138,45 @@ class SaleItemsRelationManager extends RelationManager
 
 
                                             }),
+                                        Forms\Components\TextInput::make('aplications')
+                                            ->inlineLabel(false)
+//                                            ->columnSpanFull()
+                                            ->label('Aplicaciones'),
+                                        Select::make('priceList')
+                                            ->label('Precios')
+                                            ->inlineLabel(false)
+                                            ->options(function (callable $get) {
+                                                $inventory_id = $get('inventory_id');
+
+                                                if (!$inventory_id) {
+                                                    return [];
+                                                }
+
+                                                // Fetch price details and format them
+                                                $options = Price::where('inventory_id', $inventory_id)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($price) {
+                                                        return [$price->id => "{$price->name} - $: {$price->price}"];
+                                                    });
+
+                                                return $options;
+                                            })
+                                            ->reactive() // Ensure the field is reactive when the value changes
+                                            ->afterStateUpdated(function (callable $get, $state, callable $set) {
+                                                // This will automatically set the price to the corresponding price field when the select value changes
+                                                $price = Price::find($state);
+                                                if ($price) {
+                                                    $set('price', $price->price ?? 0); // Set the 'price' field with the selected price
+                                                    // Call the calculateTotal method after updating the price
+                                                    $this->calculateTotal($get, $set);
+                                                }
+                                            }),
+
+
+
+
+
+
 
 
                                         Forms\Components\TextInput::make('quantity')
@@ -165,6 +199,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->numeric()
                                             ->columnSpan(1)
                                             ->required()
+                                            ->readOnly()
                                             ->live()
                                             ->debounce(300)
                                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -188,6 +223,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->label('Total')
                                             ->step(0.01)
                                             ->readOnly()
+                                            ->readOnly()
                                             ->columnSpan(1)
                                             ->required(),
 
@@ -198,19 +234,19 @@ class SaleItemsRelationManager extends RelationManager
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $this->calculateTotal($get, $set);
                                             }),
-                                        Forms\Components\Toggle::make('is_tarjet')
-                                            ->label('Con tarjeta')
-                                            ->columnSpan(1)
-                                            ->live()
-                                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                                $price = $get('price'); // Obtener el precio actual
-                                                if ($get('is_tarjet')) {
-                                                    $set('price', $price * 1.05);
-                                                } else {
-                                                    $set('price', $price * 0.95);
-                                                }
-                                                $this->calculateTotal($get, $set);
-                                            }),
+                                        // Forms\Components\Toggle::make('is_tarjet')
+                                        //     ->label('Con tarjeta')
+                                        //     ->columnSpan(1)
+                                        //     ->live()
+                                        //     ->afterStateUpdated(function (callable $get, callable $set) {
+                                        //         $price = $get('price'); // Obtener el precio actual
+                                        //         if ($get('is_tarjet')) {
+                                        //             $set('price', $price * 1.05);
+                                        //         } else {
+                                        //             $set('price', $price * 0.95);
+                                        //         }
+                                        //         $this->calculateTotal($get, $set);
+                                        //     }),
 
                                         Forms\Components\TextInput::make('minprice')
                                             ->label('Tributos')
@@ -226,7 +262,6 @@ class SaleItemsRelationManager extends RelationManager
                                         'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2',
                                     ])
                                     ->columns(2),
-
 
 
                                 Section::make('')
@@ -254,8 +289,6 @@ class SaleItemsRelationManager extends RelationManager
                                             ]),
 
 
-
-
                                     ])
                                     ->extraAttributes([
 //                                        'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2',
@@ -275,7 +308,7 @@ class SaleItemsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('inventory.product.name')
                     ->wrap()
-                    ->formatStateUsing(fn ($record) => $record->inventory->product->name . '</br> ' . $record->description)
+                    ->formatStateUsing(fn($record) => $record->inventory->product->name . '</br> ' . $record->description)
                     ->html()
                     ->label('Producto'),
 
@@ -287,7 +320,6 @@ class SaleItemsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return $record->inventory->product->is_service ? 'Es un servicio' : 'No es un servicio';
                     }),
-
 
 
                 Tables\Columns\TextColumn::make('quantity')
@@ -353,7 +385,7 @@ class SaleItemsRelationManager extends RelationManager
         try {
             $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
             $price = ($get('price') !== "" && $get('price') !== null) ? $get('price') : 0;
-            $discount = ($get('discount') !== "" && $get('discount') !== null) ? $get('discount')/100 : 0;
+            $discount = ($get('discount') !== "" && $get('discount') !== null) ? $get('discount') / 100 : 0;
 
             $is_except = $get('is_except');
 

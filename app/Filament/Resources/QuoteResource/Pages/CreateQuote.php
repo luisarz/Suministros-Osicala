@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\OrderResource\Pages;
+namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\OrderResource;
+use App\Filament\Resources\QuoteResource;
+use App\Models\Sale;
 use App\Models\SaleItem;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -10,9 +12,9 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 
-class CreateOrder extends CreateRecord
+class CreateQuote extends CreateRecord
 {
-    protected static string $resource = OrderResource::class;
+    protected static string $resource = QuoteResource::class;
     protected static bool $canCreateAnother = false;
 
     public function getTitle(): string
@@ -24,8 +26,8 @@ class CreateOrder extends CreateRecord
     {
         return Notification::make()
             ->success()
-            ->title('Orden Iniciada')
-            ->body('La orden fue Iniciada puedes agregar productos o servicios a la orden')
+            ->title('Cotización Iniciada')
+            ->body('La Cotización fue Iniciada puedes agregar productos o servicios a la orden')
             ->send();
     }
 
@@ -33,12 +35,12 @@ class CreateOrder extends CreateRecord
     {
         return [
             Action::make('save')
-                ->label('Iniciar Orden')
+                ->label('Iniciar Cotización')
                 ->color('success')
                 ->icon('heroicon-o-check')
                 ->action('create')
                 ->before(function (Action $action, array &$data) {
-                    $data['operation_type'] = "Order";
+                    $data['operation_type'] = "Quote";
                     $data['is_invoiced'] = false;
                 })
                 ->extraAttributes([
@@ -72,10 +74,11 @@ class CreateOrder extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['operation_type'] = "Order";
+        $data['operation_type'] = "Quote";
         $data['is_invoiced'] = false;
         $whereHouse = auth()->user()->employee->branch_id ?? null;
-        $lastOrder = \App\Models\Sale::where('wherehouse_id', $whereHouse)
+        $lastOrder = Sale::where('wherehouse_id', $whereHouse)
+            ->where('operation_type', 'Quote')
             ->max('order_number');
         $nextNumber = $lastOrder ? intval(preg_replace('/[^0-9]/', '', $lastOrder)) + 1 : 1;
         $data['order_number'] = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);

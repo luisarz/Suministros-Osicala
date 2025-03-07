@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OrderResource\Pages;
+use App\Filament\Resources\QuoteResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 
 use App\Models\Customer;
@@ -10,6 +10,8 @@ use App\Models\Employee;
 use App\Models\Sale;
 use App\Tables\Actions\dteActions;
 use App\Tables\Actions\orderActions;
+use App\Tables\Actions\QuoteAction;
+use Couchbase\QueryOptions;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -29,11 +31,12 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
-class OrderResource extends Resource
+class QuoteResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $label = 'Ordenes';
+    protected static ?string $label = 'Cotización';
+    protected static ?string $pluralLabel = 'Cotizaciones';
     protected static ?string $navigationGroup = 'Facturación';
 
     protected static bool $softDelete = true;
@@ -49,7 +52,7 @@ class OrderResource extends Resource
                         Grid::make(12)
                             ->schema([
 
-                                Section::make('Orden de Trabajo-Venta')
+                                Section::make('Cotización - Venta')
                                     ->icon('heroicon-o-user')
                                     ->iconColor('success')
                                     ->compact()
@@ -72,8 +75,6 @@ class OrderResource extends Resource
                                                 }
                                                 return []; // Return an empty array if no wherehouse selected
                                             })
-                                            ->default(fn() => optional(Auth::user()->employee)->id)
-
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
                                         Forms\Components\Select::make('customer_id')
@@ -109,14 +110,13 @@ class OrderResource extends Resource
                                                     ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
                                                     : 'Cliente no encontrado';
                                             })
-
                                             ->label('Cliente')
                                             ->createOptionForm([
                                                 Section::make('Nuevo Cliente')
                                                     ->schema([
                                                         Select::make('wherehouse_id')
                                                             ->label('Sucursal')
-                                                           ->inlineLabel(false)
+                                                            ->inlineLabel(false)
                                                             ->options(function (callable $get) {
                                                                 $wherehouse = (Auth::user()->employee)->branch_id;
                                                                 if ($wherehouse) {
@@ -140,23 +140,6 @@ class OrderResource extends Resource
                                             })
                                         ,
 
-                                      
-                                        // Forms\Components\Select::make('mechanic_id')
-                                        //     ->label('Mecanico')
-                                        //     ->preload()
-                                        //     ->searchable()
-                                        //     ->live()
-                                        //     ->options(function (callable $get) {
-                                        //         $wherehouse = $get('wherehouse_id');
-                                        //         if ($wherehouse) {
-                                        //             return Employee::where('branch_id', $wherehouse)
-                                        //                 ->where('job_title_id',4)
-                                        //                 ->where('is_active',true)
-                                        //                 ->pluck('name', 'id');
-                                        //         }
-                                        //         return []; // Return an empty array if no wherehouse selected
-                                        //     })
-                                        //     ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
@@ -168,7 +151,7 @@ class OrderResource extends Resource
                                             ->disabled(),
 
                                     ])->columnSpan(9)
-                                    ->extraAttributes([ 'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2'])
+                                    ->extraAttributes(['class' => 'bg-blue-100 border border-blue-500 rounded-md p-2'])
                                     ->columns(2),
 
 //                                Section::make('Orden Total' . ($this->getOrderNumber() ?? 'Sin número'))
@@ -283,7 +266,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('discount_percentage')
                     ->label('Descuento')
                     ->suffix('%')
-                 ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 //                Tables\Columns\TextColumn::make('discount_money')
 //                    ->label('Taller')
@@ -317,7 +300,7 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('operation_type', "Order")->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
+                $query->where('operation_type', "Quote")->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
             })
             ->recordUrl(null)
             ->filters([
@@ -327,20 +310,18 @@ class OrderResource extends Resource
                         'start' => now()->subDays(30)->format('Y-m-d'),
                         'end' => now()->format('Y-m-d'),
                     ]),
+                Tables\Filters\TrashedFilter::make('withTrashed')
+                    ->label('Mostrar eliminados'),
+
 
             ])
             ->actions([
-                orderActions::printOrder(),
+                QuoteAction::printQuote(),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
-//                    ->visible(function ($record) {
-//                        return $record->sale_status != 'Finalizado' && $record->sale_status != 'Anulado';
-//                    })
-            ->visible(function ($record) {
-                return $record->sale_status != 'Finalizado' && $record->is_invoiced == false;
-            }),
-                orderActions::closeOrder(),
+                    ->visible(function ($record) {
+                        return $record->sale_status != 'Finalizado' && $record->is_invoiced == false;
+                    }),
                 orderActions::billingOrden(),
-//                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
                 orderActions::cancelOrder(),
                 Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
             ], position: ActionsPosition::BeforeCells)
@@ -362,9 +343,9 @@ class OrderResource extends Resource
     static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrders::route('/'),
-            'create' => Pages\CreateOrder::route('/create'),
-            'edit' => Pages\EditOrder::route('/{record}/edit'),
+            'index' => Pages\ListQuotes::route('/'),
+            'create' => Pages\CreateQuote::route('/create'),
+            'edit' => Pages\EditQuote::route('/{record}/edit'),
         ];
     }
 
