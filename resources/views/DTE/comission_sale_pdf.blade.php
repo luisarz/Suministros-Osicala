@@ -163,7 +163,8 @@
                 <td>{{date('d-m-Y',strtotime( $venta['date'])) }}</td>
                 @foreach ($venta['categories'] as $categoria => $detalle)
                     <td style="text-align: right;">
-                        ${{ number_format($detalle['ventas'],2) }}
+                        {{ $detalle['ventas'] > 0 ? '$ '.number_format($detalle['ventas'], 2) : '-' }}
+
                         @php
                             $totalVentasDiaria += number_format($detalle['ventas'],2, '.', '');
                             $totalComisionDiaria += number_format($detalle['comision_total'],2, '.', '');
@@ -173,10 +174,11 @@
 
                     </td>
                     <td style="text-align: right;">
-                        ${{ number_format($detalle['comision_total'],2) }}
+                        {{ $detalle['comision_total'] > 0 ? '$ '.number_format($detalle['comision_total'], 2) : '-' }}
+
                     </td>
                 @endforeach
-                <th style="text-align: right;">$ {{number_format($totalVentasDiaria,2)}}</th>
+                <th style="text-align: right;">$ {{number_format(($totalVentasDiaria),2)}}</th>
                 <th style="text-align: right;">$ {{number_format($totalComisionDiaria,2)}}</th>
             </tr>
 
