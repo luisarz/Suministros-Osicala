@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DTEController;
+use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\hoja;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\QuoteController;
@@ -33,6 +34,6 @@ Route::get('/admin/sales/{idVenta}/edit', [OrdenController::class, 'billingOrder
 Route::get('/printQuote/{idVenta}', [QuoteController::class, 'printQuote'])->name('printQuote');
 //Traslados
 Route::get('/printTransfer/{idTransfer}', [TransferController::class, 'printTransfer'])->middleware(['auth'])->name('printTransfer');
-
+Route::get('employee/sales/{id_employee}/{star_date}/{end_date}',[EmployeesController::class, 'sales'])->middleware(['auth'])->name('employee.sales');
 
 require __DIR__.'/auth.php';
