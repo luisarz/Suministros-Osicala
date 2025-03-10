@@ -48,6 +48,7 @@ class EmployeesController extends Controller
 
         $empleado = Employee::where('id', $id_employee)->select('name', 'lastname', 'phone', 'gender', 'dui', 'nit')->get();
 // Crear el encabezado con las categorías y sus porcentajes de comisión
+        $vendedor= $empleado[0]->name.' '.$empleado[0]->lastname.' - DUI '.$empleado[0]->dui??'';
         $header = [
             "empleado" => $empleado,
             'StartDate' => $startDate,
@@ -190,7 +191,7 @@ class EmployeesController extends Controller
         $sucursal = Branch::find($id_sucursal);
 //        return response()->json($report);
 
-        $pdf = Pdf::loadView('DTE.comission_sale_pdf', compact('ventas', 'empresa', 'sucursal')) ->setPaper('letter', 'landscape');
+        $pdf = Pdf::loadView('DTE.comission_sale_pdf', compact('ventas', 'empresa', 'sucursal','startDate','endDate','vendedor')) ->setPaper('letter', 'landscape');
 //            ->setOptions([
 //                'isHtml5ParserEnabled' => true,
 //                'isRemoteEnabled' => true,

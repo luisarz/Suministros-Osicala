@@ -98,19 +98,14 @@
 
                 <h2>{{$empresa->name}} | {{$sucursal->name}}</h2>
                 <h3>REPORTE DE COMISIÓN DE VENTAS</h3>
+                <h3>Desde: {{date('d-m-Y',strtotime($startDate))}} - Hasta {{date('d-m-Y',strtotime($endDate))}}</h3>
+                <h3>Vendedor:{{ strtoupper( $vendedor) }}</h3>
+
 
             </td>
-        <tr>
-            {{--            <td>N° de Documento: <b>{{$datos->order_number}}</b></td>--}}
-            {{--            <td>TIPO: Salida de prodúctos / Orden de trabajo </td>--}}
-            {{--            <td>FECHA:{{date('d-m-Y H:s:i',strtotime($datos->created_at))}} </td>--}}
-            {{--            <td>Vendedor:{{$datos->seller->name??''}} {{$datos->seller->last_name??''}} </td>--}}
-        </tr>
-        <tr>
-            {{--            <td>Estado: <b>{{$datos->sale_status??''}}</b></td>--}}
-            {{--            <td colspan="1">Destino/Cliente: {{$datos->customer->name??'' ." ". $datos->customer->last_name??''}} // {{$datos->customer->address??''}}</td>--}}
-            {{--            <td colspan="2">Mecanico: {{$datos->mechanic->name??'S/N'}} {{$datos->mechanic->lastname??''}}</td>--}}
-        </tr>
+
+
+
 
     </table>
     <!-- Tabla Productos -->
@@ -211,6 +206,13 @@
 
         </tfoot>
     </table>
+    <br>
+    <br>
+    <p style="text-align: left">
+        F:Recibido: _____________________________
+    </p>
+
+
 
 </div>
 
