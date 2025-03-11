@@ -506,6 +506,9 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('salescondition.name')
                     ->label('Condición')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status_sale_credit')
+                    ->label('Credito')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('paymentmethod.name')
                     ->label('Método de pago')
                     ->toggleable(isToggledHiddenByDefault: true)

@@ -340,7 +340,7 @@ class EmployeeResource extends Resource
                     ->icon('heroicon-s-calendar-date-range')
                     ->color('success')
                     ->iconSize(IconSize::Medium)
-                    ->modalWidth('max-w-3xl')
+                    ->modalWidth('max-w-2xl')
                     ->form([
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Fecha Inicio')

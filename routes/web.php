@@ -29,6 +29,7 @@ Route::get('/printDTETicket/{idVenta}', [DTEController::class, 'printDTETicket']
 Route::get('/printDTEPdf/{idVenta}', [DTEController::class, 'printDTEPdf'])->middleware(['auth'])->name('printDTEPdf');
 Route::get('/sendDTE/{idVenta}', [SenEmailDTEController::class, 'SenEmailDTEController'])->middleware(['auth'])->name('sendDTE');
 Route::get('/ordenPrint/{idVenta}', [OrdenController::class, 'generarPdf'])->middleware(['auth'])->name('ordenGenerarPdf');
+Route::get('/ordenPrintTicket/{idVenta}', [OrdenController::class, 'ordenGenerarTicket'])->middleware(['auth'])->name('ordenGenerarTicket');
 Route::get('/closeCashboxPrint/{idCasboxClose}', [OrdenController::class, 'closeClashBoxPrint'])->middleware(['auth'])->name('closeClashBoxPrint');
 Route::get('/admin/sales/{idVenta}/edit', [OrdenController::class, 'billingOrder'])->middleware(['auth'])->name('billingOrder');
 Route::get('/printQuote/{idVenta}', [QuoteController::class, 'printQuote'])->name('printQuote');
