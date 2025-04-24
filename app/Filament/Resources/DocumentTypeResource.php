@@ -18,7 +18,7 @@ use mysql_xdevapi\Schema;
 class DocumentTypeResource extends Resource
 {
     protected static ?string $model = DocumentType::class;
-protected static ?string $label = 'Cat-002 T. D. Tributario';
+protected static ?string $label = 'CAT-002 T. Doc. Tributario';
     protected static ?string $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort=2;
 
@@ -60,26 +60,12 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+
             ->actions([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large),
+                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large),
+                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large),
             ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

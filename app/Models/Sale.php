@@ -38,6 +38,7 @@ class Sale extends Model
         'billing_model',
         'transmision_type',
         'is_dte',
+        'is_hacienda_send',
         'generationCode',
         'receiptStamp',
         'jsonUrl',
@@ -48,6 +49,7 @@ class Sale extends Model
         'discount_percentage',
         'discount_money',
         'total_order_after_discount',
+        'document_related_id'
     ];
 
 
@@ -55,6 +57,10 @@ class Sale extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+public function saleRelated(): BelongsTo
+{
+    return $this->belongsTo(Sale::class, 'document_related_id', 'id');
+}
 
     public function documenttype(): BelongsTo
     {
@@ -73,7 +79,7 @@ class Sale extends Model
     }
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class,'customer_id','id');
     }
     public  function salescondition(): BelongsTo
     {

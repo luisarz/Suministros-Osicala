@@ -6,6 +6,17 @@
       'EloquentSerialize' => 'AnourValar\\EloquentSerialize\\Facades\\EloquentSerializeFacade',
     ),
   ),
+  'aymanalhattami/filament-slim-scrollbar' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentSlimScrollbar' => 'Aymanalhattami\\FilamentSlimScrollbar\\FilamentSlimScrollbarFacade',
+    ),
+    'providers' => 
+    array (
+      0 => 'Aymanalhattami\\FilamentSlimScrollbar\\FilamentSlimScrollbarServiceProvider',
+    ),
+  ),
   'barryvdh/laravel-dompdf' => 
   array (
     'aliases' => 
@@ -48,6 +59,13 @@
     'providers' => 
     array (
       0 => 'CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider',
+    ),
+  ),
+  'cwsps154/app-settings' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'CWSPS154\\AppSettings\\AppSettingsServiceProvider',
     ),
   ),
   'eightynine/filament-page-alerts' => 
@@ -220,6 +238,13 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
+  'propaganistas/laravel-phone' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Propaganistas\\LaravelPhone\\PhoneServiceProvider',
+    ),
+  ),
   'pxlrbt/filament-excel' => 
   array (
     'providers' => 
@@ -229,13 +254,13 @@
   ),
   'rmsramos/activitylog' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Rmsramos\\Activitylog\\ActivitylogServiceProvider',
-    ),
     'aliases' => 
     array (
       'Activitylog' => 'Rmsramos\\Activitylog\\Facades\\Activitylog',
+    ),
+    'providers' => 
+    array (
+      0 => 'Rmsramos\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
   'ryangjchandler/blade-capture-directive' => 
@@ -279,6 +304,13 @@
     'providers' => 
     array (
       0 => 'Spatie\\Permission\\PermissionServiceProvider',
+    ),
+  ),
+  'ysfkaya/filament-phone-input' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Ysfkaya\\FilamentPhoneInput\\FilamentPhoneInputServiceProvider',
     ),
   ),
 );

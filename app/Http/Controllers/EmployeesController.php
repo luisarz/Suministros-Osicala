@@ -43,7 +43,7 @@ class EmployeesController extends Controller
         ])
             ->whereBetween('operation_date', [$startDate, $endDate])
             ->where('seller_id', $id_employee)
-            ->select('id', 'document_internal_number', 'operation_date', 'sale_total', 'status')
+            ->select('id', 'document_internal_number', 'operation_date', 'sale_total', 'sale_status')
             ->get();
 
         $empleado = Employee::where('id', $id_employee)->select('name', 'lastname', 'phone', 'gender', 'dui', 'nit')->get();

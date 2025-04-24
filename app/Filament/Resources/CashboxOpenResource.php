@@ -105,7 +105,7 @@ class CashboxOpenResource extends Resource
                                             ->label('Facturación')
                                             ->inlineLabel(true)
                                             ->content(function () {
-                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(false);
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(false,false);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($openedCashBox, 2) . '</span>');
                                             }),
                                         Forms\Components\Placeholder::make('ordered_amount')

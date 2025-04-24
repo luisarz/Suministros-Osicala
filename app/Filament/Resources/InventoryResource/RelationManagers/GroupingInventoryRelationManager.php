@@ -5,6 +5,7 @@ namespace App\Filament\Resources\InventoryResource\RelationManagers;
 use App\Models\Inventory;
 use App\Models\InventoryGrouped;
 use App\Models\Price;
+use App\Models\Product;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -14,6 +15,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
 use Filament\Forms;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 
@@ -23,7 +25,7 @@ class GroupingInventoryRelationManager extends RelationManager
     protected static ?string $label = "Inventarios agrupados";
     protected static ?string $title = "Inventarios Agregados";
 
-
+    protected static ?string $badgeColor = 'danger';
 
     public function form(Form $form): Form
     {
@@ -134,9 +136,29 @@ class GroupingInventoryRelationManager extends RelationManager
     }
 
 
-
-
-
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        try {
+            $product_id=$ownerRecord->product_id;
+            $product=Product::find($product_id);
+            $is_grouped=$product->is_grouped;
+            return $is_grouped === 1;
+        }catch (\Exception $exception){
+            throw new \Exception($exception->getMessage());
+        }
+    }
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        return static::$badge;
+    }
+    public function getContentTabIcon(): ?string
+    {
+        return 'heroicon-m-cog';
+    }
+    public function hasCombinedRelationManagerTabsWithForm(): bool
+    {
+        return true;
+    }
 
 
 }

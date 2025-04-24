@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\CashboxOpen;
+use App\Models\CashBoxOpen;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class CashboxOpenPolicy
+class CashBoxOpenPolicy
 {
     use HandlesAuthorization;
 
@@ -21,7 +21,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, CashboxOpen $cashboxOpen): bool
+    public function view(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('view_cashbox::open');
     }
@@ -37,7 +37,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, CashboxOpen $cashboxOpen): bool
+    public function update(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('update_cashbox::open');
     }
@@ -45,7 +45,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, CashboxOpen $cashboxOpen): bool
+    public function delete(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('delete_cashbox::open');
     }
@@ -61,7 +61,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, CashboxOpen $cashboxOpen): bool
+    public function forceDelete(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('force_delete_cashbox::open');
     }
@@ -77,7 +77,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, CashboxOpen $cashboxOpen): bool
+    public function restore(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('restore_cashbox::open');
     }
@@ -93,7 +93,7 @@ class CashboxOpenPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, CashboxOpen $cashboxOpen): bool
+    public function replicate(User $user, CashBoxOpen $cashBoxOpen): bool
     {
         return $user->can('replicate_cashbox::open');
     }

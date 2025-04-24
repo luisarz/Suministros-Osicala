@@ -17,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Log;
@@ -183,8 +184,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->label('Cantidad')
                                             ->step(1)
                                             ->numeric()
-                                            ->live()
-                                            ->debounce(300)
+                                            ->live(onBlur: true)
                                             ->columnSpan(1)
                                             ->required()
                                             ->live()
@@ -199,25 +199,24 @@ class SaleItemsRelationManager extends RelationManager
                                             ->numeric()
                                             ->columnSpan(1)
                                             ->required()
-                                            ->readOnly()
-                                            ->live()
-                                            ->debounce(300)
+//                                            ->readOnly()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('discount')
-                                            ->label('Descuento')
-                                            ->step(0.01)
-                                            ->prefix('%')
-                                            ->numeric()
-                                            ->live()
-                                            ->columnSpan(1)
-                                            ->required()
-                                            ->debounce(300)
-                                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                                $this->calculateTotal($get, $set);
-                                            }),
+//                                        Forms\Components\TextInput::make('discount')
+//                                            ->label('Descuento')
+//                                            ->step(0.01)
+//                                            ->prefix('%')
+//                                            ->numeric()
+//                                            ->live()
+//                                            ->columnSpan(1)
+//                                            ->required()
+//                                            ->debounce(300)
+//                                            ->afterStateUpdated(function (callable $get, callable $set) {
+//                                                $this->calculateTotal($get, $set);
+//                                            }),
 
                                         Forms\Components\TextInput::make('total')
                                             ->label('Total')
@@ -227,13 +226,13 @@ class SaleItemsRelationManager extends RelationManager
                                             ->columnSpan(1)
                                             ->required(),
 
-                                        Forms\Components\Toggle::make('is_except')
-                                            ->label('Exento de IVA')
-                                            ->columnSpan(1)
-                                            ->live()
-                                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                                $this->calculateTotal($get, $set);
-                                            }),
+//                                        Forms\Components\Toggle::make('is_except')
+//                                            ->label('Exento de IVA')
+//                                            ->columnSpan(1)
+//                                            ->live()
+//                                            ->afterStateUpdated(function (callable $get, callable $set) {
+//                                                $this->calculateTotal($get, $set);
+//                                            }),
                                         // Forms\Components\Toggle::make('is_tarjet')
                                         //     ->label('Con tarjeta')
                                         //     ->columnSpan(1)
@@ -274,7 +273,7 @@ class SaleItemsRelationManager extends RelationManager
                                                     ->label('Descripción')
                                                     ->inlineLabel(false)
                                             ]),
-                                        Section::make('Imagen')
+                                        Section::make('')
                                             ->compact()
                                             ->schema([
                                                 Forms\Components\FileUpload::make('product_image')
@@ -336,6 +335,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
+                    ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
@@ -415,6 +415,7 @@ class SaleItemsRelationManager extends RelationManager
     {
         $idSale = $record->sale_id;
         $sale = Sale::where('id', $idSale)->first();
+        $documentType = $sale->document_type_id ?? null;
 
 //        dd($sale);
         if ($sale) {
@@ -428,6 +429,10 @@ class SaleItemsRelationManager extends RelationManager
 //            dd($montoTotal);
                 $neto = $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
                 $iva = $montoTotal - $neto;
+                if($documentType==11 || $documentType==14){
+                    $neto=$neto+$iva;
+                    $iva = 0;
+                }
                 $retention = $sale->have_retention ? $neto * 0.1 : 0;
                 $sale->net_amount = round($neto, 2);
                 $sale->taxe = round($iva, 2);
@@ -442,10 +447,10 @@ class SaleItemsRelationManager extends RelationManager
         }
     }
 
-    public function isReadOnly(): bool
-    {
-        return false;
-    }
+//    public function isReadOnly(): bool
+//    {
+//        return false;
+//    }
 
 
 }

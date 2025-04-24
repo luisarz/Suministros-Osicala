@@ -19,8 +19,7 @@ class PricesRelationManager extends RelationManager
 {
     protected static string $relationship = 'Prices';
     protected static ?string $label = "Precios";
-    protected static ?string $title="Precios de venta";
-
+    protected static ?string $title = "Precios de venta";
 
 
     public function form(Form $form): Form
@@ -28,37 +27,80 @@ class PricesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Section::make('Información del Precio')
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->required()
-                        ->inlineLabel(false)
-                        ->label('Descripción Precio')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('price')
-                        ->label('Precio')
-                        ->inlineLabel(false)
-                        ->required()
-                        ->numeric()
-                        ->rules(function (?Price $record) {
-                            $inventory = Inventory::find($record->inventory_id ?? null); // Cambia 'inventory_id' al nombre correcto del campo de relación
-                            $cost = $inventory ? $inventory->cost_with_taxes : 0; // Obtén el costo, o 0 si no hay inventario
-                            return [
-                                'required',
-                                'numeric',
-                                'gt:' . $cost,
-                            ];
-                        }),
-                    Forms\Components\Toggle::make('is_default')
-                        ->label('Predeterminado'),
-                ]),
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->inlineLabel(false)
+                            ->label('Descripción Precio')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Precio')
+                            ->inlineLabel(false)
+                            ->required()
+                            ->numeric()
+                            ->debounce(500)
+                            ->afterStateUpdated(function ($state, $record, callable $set, callable $get) {
+                                $inventory = $this->getOwnerRecord();
+
+                                if (!$inventory) {
+                                    return;
+                                }
+                                $costo = $inventory->cost_without_taxes;
+                                // Validar si el precio de venta es nulo, vacío o cero
+                                if (empty($state) || $state <= 0) {
+                                    $margenUtilidad = 0;
+                                } else {
+                                    $margenUtilidad = (($state - $costo) / $state) * 100;
+                                }
+
+
+                                $set('cost', $costo);
+                                $set('utilidad', number_format($margenUtilidad, 2));
+                            }),
+
+                        Forms\Components\TextInput::make('utilidad')
+                            ->label('Utilidad')
+                            ->inlineLabel(false)
+                            ->required()
+                            ->numeric()
+                            ->debounce(500)
+                            ->afterStateUpdated(function ($state, $record, callable $set, callable $get) {
+                                $inventory = $this->getOwnerRecord();
+
+                                if (!$inventory) {
+                                    return;
+                                }
+                                $costo = $inventory->cost_without_taxes;
+                                // Validar si el precio de venta es nulo, vacío o cero
+                                if (empty($state) || $state < 0) {
+                                    $precioVenta = 0;
+                                } else {
+                                    $divisor = 1 - ($state / 100);
+                                    // Evitar división por cero
+                                    $precioVenta = ($divisor != 0) ? ($costo / $divisor) : 0;
+                                }
+
+                                $set('price', number_format($precioVenta, 2));
+                            }),
+
+//                        Forms\Components\TextInput::make('cost')
+//                            ->label('Costo')
+//                            ->inlineLabel(false)
+//                            ->required()
+//                            ->numeric(),
+
+                        Forms\Components\Toggle::make('is_default')
+                            ->label('Predeterminado'),
+                    ]),
             ]);
         // Asegúrate de que estás usando el modelo correcto
 
     }
+
     protected function beforeDelete(DeleteAction $action): void
     {
         $inventoryId = $this->ownerRecord->id;
-        dd($inventoryId);
+//        dd($inventoryId);
         $pricesCount = Price::where('inventory_id', $inventoryId)->count();
         // Si hay solo un precio, cancelar la eliminación
         if ($pricesCount <= 1) {
@@ -85,11 +127,12 @@ class PricesRelationManager extends RelationManager
                 ->send();
         }
     }
+
     public function table(Table $table): Table
     {
         $inventory = $this->ownerRecord;
         $branch = $inventory->branch;
-        $maxPriceByProduct=$branch->prices_by_products;
+        $maxPriceByProduct = $branch->prices_by_products;
         $pricesCount = Price::where('inventory_id', $inventory->id)->count();
         $canCreate = $pricesCount < $maxPriceByProduct;
 
@@ -99,15 +142,20 @@ class PricesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                ->label('Descripción Precio'),
+                    ->label('Descripción Precio'),
                 Tables\Columns\TextColumn::make('price')
                     ->numeric()
                     ->money('USD', locale: 'en_US')
-                ->label('Precio'),
+                    ->label('Precio'),
+                Tables\Columns\TextColumn::make('utilidad')
+                    ->numeric()
+                    ->money('USD', locale: 'en_US')
+                    ->suffix('%')
+                    ->label('Utilidad (%)'),
                 Tables\Columns\ToggleColumn::make('is_default')
-                ->label('Predeterminado'),
+                    ->label('Predeterminado'),
                 Tables\Columns\ToggleColumn::make('is_active')
-                ->label('Activo'),
+                    ->label('Activo'),
             ])
             ->filters([
                 //
@@ -125,6 +173,7 @@ class PricesRelationManager extends RelationManager
                 ]),
             ]);
     }
+
     protected function afterSave(): void
     {
         $this->model->precios()->each(function ($precio) {
@@ -135,6 +184,7 @@ class PricesRelationManager extends RelationManager
             }
         });
     }
+
     protected function getValidationRules(): array
     {
         return [

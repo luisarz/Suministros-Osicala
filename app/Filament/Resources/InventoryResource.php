@@ -18,10 +18,14 @@ use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Filament\Notifications\Actions\Action;
 use Filament\Tables\Actions;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class InventoryResource extends Resource
 {
@@ -36,6 +40,7 @@ class InventoryResource extends Resource
     protected static ?string $pluralLabel = "Lista de inventario";
     protected static ?string $badgeColor = 'danger';
 
+    protected static ?string $recordTitleAttribute = 'record_title';
 
 
 //
@@ -111,9 +116,9 @@ class InventoryResource extends Resource
                                     ->debounce(500) // Espera 500 ms después de que el usuario deje de escribir
                                     ->afterStateUpdated(function ($state, callable $set) use ($iva) {
                                         $costWithoutTaxes = $state ?: 0; // Valor predeterminado en 0 si está vacío
-                                        $costWithTaxes = round($costWithoutTaxes * $iva, 2); // Cálculo del costo con impuestos
+                                        $costWithTaxes = number_format($costWithoutTaxes * $iva, 2, '.', ''); // Cálculo del costo con impuestos
                                         $costWithTaxes += $costWithoutTaxes; // Suma el costo sin impuestos
-                                        $set('cost_with_taxes', $costWithTaxes); // Actualiza el campo
+                                        $set('cost_with_taxes', number_format($costWithTaxes, 2, '.', '')); // Actualiza el campo
                                     })
                                     ->default(0.00),
                                 Forms\Components\TextInput::make('cost_with_taxes')
@@ -177,23 +182,23 @@ class InventoryResource extends Resource
                                     ->weight(FontWeight::Medium)
                                     ->sortable()
                                     ->icon('heroicon-s-cube')
-                                    ->searchable()
+//                                    ->searchable()
                                     ->sortable(),
-                                Tables\Columns\TextColumn::make('product.aplications')
-                                    ->label('Aplicaciones')
-                                    ->badge()
-                                    ->icon('heroicon-s-cog')
-                                    ->searchable()
-                                    ->separator(';'),
+                                Tables\Columns\TextColumn::make('product.marca.nombre')
+                                    ->icon('heroicon-s-check-badge')
+                                    ->label('Laboratorio')
+//                                    ->searchable()
+                                    ->sortable(),
+
+
                                 Tables\Columns\TextColumn::make('product.sku')
                                     ->label('SKU')
-                                    ->copyable()
                                     ->copyable()
                                     ->copyMessage('SKU code copado')
                                     ->copyMessageDuration(1500)
                                     ->copyableState(fn(Inventory $record): string => "Color: {$record->color}")
                                     ->icon('heroicon-s-qr-code')
-                                    ->searchable()
+//                                    ->searchable()
                                     ->sortable(),
                                 Tables\Columns\TextColumn::make('branch.name')
                                     ->label('Sucursal')
@@ -229,7 +234,7 @@ class InventoryResource extends Resource
                                     }),
 //                                    ->sortable(),
                             ])->extraAttributes([
-                                'class' => 'space-y-2'
+                                'class' => 'space-y-1'
                             ])
                                 ->grow(),
 
@@ -243,18 +248,43 @@ class InventoryResource extends Resource
                 'md' => 3,
                 'xs' => 4,
             ])
+            ->paginationPageOptions([
+                9, 12, 25, 50, 100 // Define your specific pagination limits here
+            ])
 //            ->deferLoading()
             ->striped()
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('branch_id')
-                    ->relationship('branch', 'name')
-                    ->label('Sucursal')
+                Filter::make('Buscar por nombre')
+                    ->form([
+                        TextInput::make('name')
+                            ->label('Producto')
+                            ->placeholder('Buscar...')
+                            ->prefixIcon('heroicon-o-magnifying-glass'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['name'], fn ($q, $nombre) =>
+                            $q->whereHas('product', fn ($subQuery) =>
+                            $subQuery->where('name', 'like', "%{$nombre}%")
+                            )
+                            );
+                    }),
+                Tables\Filters\SelectFilter::make('product.marca')
+                    ->label('Laboratorio')
+                    ->searchable()
                     ->preload()
-                    ->default(\Auth::user()->employee->wherehouse->id)
-                    ->placeholder('Buscar por sucursal'),
+                    ->relationship('product.marca', 'nombre'),
+//                Tables\Filters\SelectFilter::make('branch_id')
+//                    ->relationship('branch', 'name')
+//                    ->label('Sucursal')
+//                    ->preload()
+//                    ->default(\Auth::user()->employee->wherehouse->id)
+//                    ->placeholder('Buscar por sucursal'),
+                Tables\Filters\TrashedFilter::make()->label('Eliminados'),
+
+
 //
-            ])->filtersFormColumns(2)
+            ], layout: FiltersLayout::AboveContent)->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
@@ -295,8 +325,6 @@ class InventoryResource extends Resource
                                 $action->halt(); // Detener la acción en caso de error
                             }
                         }),
-
-
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                 ])
@@ -308,7 +336,7 @@ class InventoryResource extends Resource
             ->headerActions([
 
             ])
-            ->searchable('product.name', 'product.sku', 'branch.name', 'product.aplications')
+//            ->searchable('product.name', 'product.sku', 'branch.name', 'product.aplications')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -337,10 +365,10 @@ class InventoryResource extends Resource
 
         return [
             RelationManagers\PricesRelationManager::class,
-            //Mostrarla solo si el inventario padre tiene producto compuesto true
             RelationManagers\GroupingInventoryRelationManager::class,
         ];
     }
+
 
     public static function getPages(): array
     {

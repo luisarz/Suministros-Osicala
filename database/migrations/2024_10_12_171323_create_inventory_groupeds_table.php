@@ -13,14 +13,19 @@ return new class extends Migration
     {
         Schema::create('inventory_groupeds', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('inventory_grouped_id');
-            $table->foreign('inventory_id')->references('id')->on('inventories');
+            $table->foreign('inventory_grouped_id')->references('id')->on('inventories');
+
             $table->unsignedBigInteger('inventory_child_id');
             $table->foreign('inventory_child_id')->references('id')->on('inventories');
+
             $table->integer('quantity');
             $table->boolean('is_active')->default(true);
+
             $table->softDeletes();
             $table->timestamps();
+
         });
     }
 

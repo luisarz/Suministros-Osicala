@@ -208,6 +208,12 @@ class PurchaseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(function ($record) {
+//                return route('filament.resources.purchases.view', $record);
+                return self::getUrl('view', [
+                    'record' => $record->id,
+                ]);
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('provider.comercial_name')
                     ->label('Proveedor')
@@ -309,6 +315,7 @@ class PurchaseResource extends Resource
             'index' => Pages\ListPurchases::route('/'),
             'create' => Pages\CreatePurchase::route('/create'),
             'edit' => Pages\EditPurchase::route('/{record}/edit'),
+            'view' => Pages\ViewPurchase::route('/{record}/purchase'),
         ];
     }
 

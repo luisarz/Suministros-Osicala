@@ -126,24 +126,14 @@
             <th rowspan="2">Total Comision</th>
         </tr>
         <tr>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
-            <th>V</th>
-            <th>C</th>
+            @foreach ($ventas[0]['categorias'] as $categoria => $porcentaje)
+                <th>V</th>
+                <th>C</th>
+
+            @endforeach
 
         </tr>
+
         </thead>
         <tbody>
         @php

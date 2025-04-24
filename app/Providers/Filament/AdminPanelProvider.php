@@ -5,8 +5,10 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\CustomLogin;
 use App\Filament\Resources\LogResource;
 use App\Filament\Resources\SaleResource;
+use App\Models\Contingency;
 use App\Models\DteTransmisionWherehouse;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use CWSPS154\AppSettings\AppSettingsPlugin;
 use EightyNine\FilamentPageAlerts\FilamentPageAlertsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -60,12 +62,11 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\pages\Dashboard::class,
             ])
-
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
 
-                \App\Filament\Resources\SaleResource\Widgets\SalesStat::class,
+//                \App\Filament\Resources\SaleResource\Widgets\SalesStat::class,
                 SaleResource\Widgets\ChartWidgetSales::class,
 
             ])
@@ -90,15 +91,16 @@ class AdminPanelProvider extends PanelProvider
                 GlobalSearchModalPlugin::make(),
                 ActivitylogPlugin::make()->label('Bitacora')
                     ->pluralLabel('Bitacora')->navigationSort(3),
-                FilamentPageAlertsPlugin::make()
+                FilamentPageAlertsPlugin::make(),
+                AppSettingsPlugin::make()
 
             ])
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {
                 $whereHouse = auth()->user()->employee->branch_id ?? null;
-                $DTETransmisionType = DteTransmisionWherehouse::where('wherehouse', $whereHouse)->first();
+                $DTETransmisionType = Contingency::where('warehouse_id', $whereHouse)->where('is_close',0)->first();
                 $labelTransmisionType = "Previo Normal";
                 $labelTransmisionTypeBorderColor = " #52b01e ";
-                if ($DTETransmisionType->billing_model != 1) {//Previo Normal)
+                if ($DTETransmisionType) {//Previo Normal)
                     $labelTransmisionType = " Deferido Contingencia ";
                     $labelTransmisionTypeBorderColor = " red ";
                 }
@@ -116,56 +118,57 @@ class AdminPanelProvider extends PanelProvider
 
 
             })
-        ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, function () {
-        return Blade::render('@env(\'local\')<x-login-link />@endenv');
-    })
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, function () {
+//                return Blade::render('@env(\'local\')<x-login-link />@endenv');
+            })
             ->collapsibleNavigationGroups()
-        ->navigationGroups([
-            NavigationGroup::make()
-                ->label('Almacén')
-                ->icon('heroicon-o-building-office')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Inventario')
-                ->icon('heroicon-o-circle-stack')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Facturación')
-                ->icon('heroicon-o-shopping-cart')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Caja Chica')
-                ->icon('heroicon-o-currency-dollar')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Contabilidad')
-                ->icon('heroicon-o-building-office')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Recursos Humanos')
-                ->icon('heroicon-o-academic-cap')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Configuración')
-                ->icon('heroicon-o-cog-6-tooth')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Catálogos Hacienda')
-                ->icon('heroicon-o-magnifying-glass-circle')
-                ->collapsed(),
-            NavigationGroup::make()
-                ->label('Seguridad')
-                ->icon('heroicon-o-shield-check')
-                ->collapsed(),
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Almacén')
+                    ->icon('heroicon-o-building-office')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Inventario')
+                    ->icon('heroicon-o-circle-stack')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Facturación')
+                    ->icon('heroicon-o-shopping-cart')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Caja Chica')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Contabilidad')
+                    ->icon('heroicon-o-building-office')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Recursos Humanos')
+                    ->icon('heroicon-o-academic-cap')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Configuración')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Catálogos Hacienda')
+                    ->icon('heroicon-o-magnifying-glass-circle')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Seguridad')
+                    ->icon('heroicon-o-shield-check')
+                    ->collapsed(),
 
-        ])
-        ->navigationItems([
-            NavigationItem::make('Manual de usuario')
-                ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
-                ->icon('heroicon-o-book-open')
-        ])
-        ->renderHook('topbar.start', function () {
-        return '<div class="text-lg font-bold text-gray-900">' . (Session::get('modulo_nombre') ?? 'Módulo Actual') . '</div>';
-    });
+            ])
+            ->navigationItems([
+                NavigationItem::make('Manual de usuario')
+                    ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
+                    ->icon('heroicon-o-book-open')
+            ])
+            ->renderHook('topbar.start', function () {
+                return 'asd';
+//                return '<div class="text-lg font-bold text-gray-900">' . (Session::get('modulo_nombre') ?? 'Módulo Actual') . '</div>';
+            });
     }
 }

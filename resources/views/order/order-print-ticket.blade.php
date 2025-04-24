@@ -36,12 +36,14 @@
             width: 100%;
             /*border-collapse: collapse;*/
         }
-        tr{
-            padding:10px;
+
+        tr {
+            padding: 2px;
             /*border: 1px solid black;*/
         }
-        td{
-            padding:4px;
+
+        td {
+            padding: 4px;
             /*border: 1px solid black;*/
         }
 
@@ -82,35 +84,35 @@
 
     <table width="100%" style="border: 0px solid black; border-collapse: collapse;padding: 10px !important;">
         <tbody>
-            <tr>
-                <td><b>FECHA</b></td>
-                <td>{{date('d-m-Y H:s:i',strtotime($datos->created_at))}}</td>
-            </tr>
+        <tr>
+            <td><b>FECHA</b></td>
+            <td>{{date('d-m-Y H:s:i',strtotime($datos->created_at))}}</td>
+        </tr>
 
-            <tr>
-                <td><b>Estado</b></td>
-                <td>{{$datos->sale_status??''}}, {{$datos->customer->address??''}}</td>
-            </tr>
-            <tr>
-                <td><b>Cliente</b></td>
-                <td>{{$datos->customer->name??''}} {{$datos->customer->last_name??''}}</td>
-            </tr>
-            <tr>
-                <td><b>Teléfono</b></td>
-                <td>{{$datos->customer->phone??''}}</td>
-            </tr>
-            <tr>
-                <td><b>Dirección</b></td>
-                <td>{{$datos->customer->address??''}}</td>
-            </tr>
-            <tr>
-                <td><b>Vendedor</b></td>
-                <td>{{$datos->seller->name??''}} {{$datos->seller->last_name??''}}</td>
-            </tr>
-            <tr>
-                <td><b>Mecánico</b></td>
-                <td>{{$datos->mechanic->name??'S/N'}} {{$datos->mechanic->lastname??''}}</td>
-            </tr>
+        <tr>
+            <td><b>Estado</b></td>
+            <td>{{$datos->sale_status??''}}</td>
+        </tr>
+        <tr>
+            <td><b>Cliente</b></td>
+            <td>{{$datos->customer->name??''}} {{$datos->customer->last_name??''}}</td>
+        </tr>
+        <tr>
+            <td><b>Teléfono</b></td>
+            <td>{{$datos->customer->phone??''}}</td>
+        </tr>
+        <tr>
+            <td><b>Dirección</b></td>
+            <td>{{$datos->customer->address??''}}</td>
+        </tr>
+        <tr>
+            <td><b>Vendedor</b></td>
+            <td>{{$datos->seller->name??''}} {{$datos->seller->last_name??''}}</td>
+        </tr>
+        <tr>
+            <td><b>Mecánico</b></td>
+            <td>{{$datos->mechanic->name??'S/N'}} {{$datos->mechanic->lastname??''}}</td>
+        </tr>
         </tbody>
     </table>
 
@@ -122,17 +124,17 @@
             @php($inventory = $item)
             <tr>
                 <td>{{ $item->quantity }}</td>
-                <td colspan="3  ">{{$item->inventory->product->name ?? '' }}</td>
+                <td colspan="2">{{$item->inventory->product->name ?? '' }}</td>
 
             </tr>
             <tr>
                 <td></td>
-                <td colspan="3">
-                    @if(!empty($item->inventory->product->sku))
-                        <b> SKU {{ $item->inventory->product->sku }}</b>
-                    @endif
+                <td colspan="2">
+{{--                    @if(!empty($item->inventory->product->sku))--}}
+{{--                        <b> SKU {{ $item->inventory->product->sku }}</b>--}}
+{{--                    @endif--}}
                     @if(!empty($item->description))
-                        <br/>
+{{--                        <br/>--}}
                         <b>DESCRIPCIÓN:</b> <br>
                         {{ $item->description ?? '' }}
                     @endif
@@ -141,84 +143,78 @@
             </tr>
             <tr>
                 <td></td>
-                <td>${{ number_format($item->price??0, 2) }}</td>
-                <td>Desc. ${{ number_format($item->discount, 2) }}</td>
+                <td colspan="2">${{ number_format($item->price??0, 2) }}</td>
+{{--                <td>Desc. ${{ number_format($item->discount, 2) }}</td>--}}
                 <td style="text-align: right">${{ number_format($item->total??0, 2) }}</td>
             </tr>
         @endforeach
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="3">TOTAL</td>
+            <td style="text-align: right;"><b> ${{$datos->sale_total}}</b></td>
+        </tr>
+        </tfoot>
+    </table>
+    <p>
+        ---------------------------------------------------------------------------
+    </p>
+
+    <table width="100%" style="border: 0px solid black; border-collapse: collapse;">
+        <tbody>
+        <tr>
+            <td>
+                <b>VALOR EN LETRAS:</b> <br> {{ $montoLetras ??''}}
+            </td>
+        </tr>
         </tbody>
     </table>
     <p>
         ---------------------------------------------------------------------------
     </p>
 
-</div>
-
-
-<!-- Footer fijo -->
-<div >
-
-    <table>
+    <table width="100%" style="border: 0px solid black; border-collapse: collapse;">
+        <tbody>
         <tr>
-            <td style="width: 100%">
-                <table style="width: 100%">
-                    <tr>
-                        <td colspan="2"><b>VALOR EN LETRAS:</b> {{ $montoLetras ??''}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="background-color: #57595B; color: white;  text-align: center;">
-                            EXTENSIÓN-INFORMACIÓN ADICIONAL
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Entregado por:_____________________</td>
-                        <td>Recibido por:_____________________</td>
-                    </tr>
-                    <tr>
-                        <td>N° Documento:____________________</td>
-                        <td>N° Documento:____________________</td>
-                    </tr>
-                    <tr>
-                        <td>Condicion Operación:____________________</td>
-                        <td>{{$datos["DTE"]['resumen']['condicionOperacion']??''}}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Observaciones:</td>
-                    </tr>
-                </table>
-            </td>
-            <td style="width: 10%">Total Operaciones:
-                <table style="width: 100%">
-                    <tr>
-                        <td>Total No Sujeto:</td>
-                        <td>${{ number_format(0, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Exento:</td>
-                        <td>${{ number_format(0, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Gravadas:</td>
-                        <td>${{ number_format($datos->sale_total, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Subtotal:</td>
-                        <td>${{ number_format($datos->sale_total, 2) }}</td>
-                    </tr>
-
-                    <tr style="background-color: #57595B; color: white;">
-                        <td>
-                            <b>TOTAL A PAGAR:</b></td>
-                        <td> ${{number_format($datos->sale_total, 2)}}
-                        </td>
-                    </tr>
-                </table>
+            <td style="background-color: #57595B; color: white; text-align: center; font-weight: bold; padding: 10px;">
+                EXTENSIÓN - INFORMACIÓN ADICIONAL
             </td>
         </tr>
+        <tr>
+            <td style="padding: 5px; font-weight: bold;">Entregado por:</td>
+        </tr>
+        <tr>
+            <td style="border-bottom: 1px solid black;"></td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; font-weight: bold;">N° Documento:</td>
+        </tr>
+        <tr>
+            <td style="border-bottom: 1px solid black; "></td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; font-weight: bold;">Recibido por:</td>
+        </tr>
+        <tr>
+            <td style="border-bottom: 1px solid black;"></td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; font-weight: bold;">N° Documento:</td>
+        </tr>
+        <tr>
+            <td style="border-bottom: 1px solid black;"></td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; font-weight: bold;">Observaciones:</td>
+        </tr>
+        <tr>
+            <td style="border-bottom: 1px solid black; height: 50px;"></td>
+        </tr>
+        </tbody>
     </table>
 
-
 </div>
+
+
 </body>
 </html>

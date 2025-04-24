@@ -27,12 +27,18 @@ class OrdenController extends Controller
     public function generarPdf($idVenta)
     {
         //abrir el json en DTEs
-        $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller', 'mechanic')->find($idVenta);
+        $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller', 'mechanic')
+            ->find($idVenta);
         $empresa = $this->getConfiguracion();
 
         $formatter = new NumeroALetras();
         $montoLetras = $formatter->toInvoice($datos->sale_total, 2, 'DoLARES');
-        $pdf = Pdf::loadView('order.order-print-pdf', compact('datos', 'empresa', 'montoLetras')); // Cargar vista y pasar datos
+        $isLocalhost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']);
+        $pdf = Pdf::loadView('order.order-print-pdf', compact('datos', 'empresa', 'montoLetras'))
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => !$isLocalhost,
+            ]); // Cargar vista y pasar datos
 
 
         return $pdf->stream("Orden-ventas-.{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña
@@ -45,16 +51,18 @@ class OrdenController extends Controller
         $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller', 'mechanic')->find($idVenta);
         $empresa = $this->getConfiguracion();
         $logo = auth()->user()->employee->wherehouse->logo;
-        $logoPath=\Storage::url($logo);
+        $logoPath = \Storage::url($logo);
 
         $formatter = new NumeroALetras();
         $montoLetras = $formatter->toInvoice($datos->sale_total, 2, 'DoLARES');
-        $pdf = Pdf::loadView('order.order-print-ticket', compact('datos', 'empresa', 'montoLetras','logoPath')) // Cargar vista y pasar datos
+        $isLocalhost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']);
+        $pdf = Pdf::loadView('order.order-print-ticket', compact('datos', 'empresa', 'montoLetras', 'logoPath')) // Cargar vista y pasar datos
 
         ->setPaper([25, -10, 250, 1000]) // Tamaño personalizado
+
         ->setOptions([
-            'isPhpEnabled' => true, // Permite PHP en la vista
-//            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => !$isLocalhost,
 
         ]);
         return $pdf->stream("Orden-ventas-.{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña

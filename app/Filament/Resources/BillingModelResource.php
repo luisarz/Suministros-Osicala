@@ -8,6 +8,7 @@ use App\Models\BillingModel;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,27 +17,27 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class BillingModelResource extends Resource
 {
     protected static ?string $model = BillingModel::class;
-protected static ?string $label = 'CAT-003 Modelo de Facturación';
-protected static ?string $pluralLabel = 'CAT-003 Modelos de Facturación';
-protected static ?string $navigationGroup = 'Catálogos Hacienda';
-protected static ?int $navigationSort = 3;
+    protected static ?string $label = 'CAT-003 Modelo de Facturación';
+    protected static ?string $pluralLabel = 'CAT-003 Modelos de Facturación';
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                    Forms\Components\Section::make('')
-                        ->compact()
-                        ->schema([
-                            Forms\Components\TextInput::make('code')
-                                ->label('Código')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('name')
-                                ->required()
-                                ->label('Nombre')
-                                ->maxLength(255),
-                            ]),
+                Forms\Components\Section::make('')
+                    ->compact()
+                    ->schema([
+                        Forms\Components\TextInput::make('code')
+                            ->label('Código')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->label('Nombre')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 
@@ -48,21 +49,14 @@ protected static ?int $navigationSort = 3;
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large),
+            ], position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

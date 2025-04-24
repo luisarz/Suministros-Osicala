@@ -22,6 +22,7 @@ class MarcaResource extends Resource
     protected static bool $softDelete = true;
     protected static ?string $navigationGroup = "Almacén";
     protected static ?string $recordTitleAttribute = 'nombre';
+    protected static ?string $label = 'Marcas';
 
     public static function form(Form $form): Form
     {

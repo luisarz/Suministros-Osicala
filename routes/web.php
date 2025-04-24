@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\ContingencyController;
 use App\Http\Controllers\DTEController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\hoja;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SenEmailDTEController;
 use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +24,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-//Route::get('/ejecutar', [hoja::class, 'ejecutar']);
+Route::get('/ejecutar', [hoja::class, 'ejecutar']);
 Route::get('/generarDTE/{idVenta}', [DTEController::class, 'generarDTE'])->middleware(['auth'])->name('generarDTE');
 Route::get('/sendAnularDTE/{idVenta}', [DTEController::class, 'anularDTE'])->middleware(['auth'])->name('sendAnularDTE');
 Route::get('/printDTETicket/{idVenta}', [DTEController::class, 'printDTETicket'])->middleware(['auth'])->name('printDTETicket');
@@ -35,6 +37,14 @@ Route::get('/admin/sales/{idVenta}/edit', [OrdenController::class, 'billingOrder
 Route::get('/printQuote/{idVenta}', [QuoteController::class, 'printQuote'])->name('printQuote');
 //Traslados
 Route::get('/printTransfer/{idTransfer}', [TransferController::class, 'printTransfer'])->middleware(['auth'])->name('printTransfer');
-Route::get('employee/sales/{id_employee}/{star_date}/{end_date}',[EmployeesController::class, 'sales'])->middleware(['auth'])->name('employee.sales');
+Route::get('/employee/sales/{id_employee}/{star_date}/{end_date}', [EmployeesController::class, 'sales'])->middleware(['auth'])->name('employee.sales');
 
-require __DIR__.'/auth.php';
+//Libros de excel
+Route::get('/sale/iva/libro/fact/{starDate}/{endDate}',[ReportsController::class,'saleReportFact']);
+Route::get('/sale/iva/libro/ccf/{starDate}/{endDate}',[ReportsController::class,'saleReportCCF']);
+Route::get('/sale/iva/libro/ccf/{startDate}/{endDate}', [ReportsController::class, 'saleReportCCF'])->name('sale.iva.libro.ccf');
+Route::get('/contingency/{description}',[ContingencyController::class,'contingencyDTE'])->middleware(['auth'])->name('contingency');
+Route::get('/contingency_close/{uuid_contingence}',[ContingencyController::class,'contingencyCloseDTE'])->middleware(['auth'])->name('contingencyClose');
+//csv
+
+require __DIR__ . '/auth.php';
