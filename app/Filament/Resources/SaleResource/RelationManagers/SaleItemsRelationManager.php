@@ -205,18 +205,18 @@ class SaleItemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-//                                        Forms\Components\TextInput::make('discount')
-//                                            ->label('Descuento')
-//                                            ->step(0.01)
-//                                            ->prefix('%')
-//                                            ->numeric()
-//                                            ->live()
-//                                            ->columnSpan(1)
-//                                            ->required()
-//                                            ->debounce(300)
-//                                            ->afterStateUpdated(function (callable $get, callable $set) {
-//                                                $this->calculateTotal($get, $set);
-//                                            }),
+                                        Forms\Components\TextInput::make('discount')
+                                            ->label('Descuento')
+                                            ->step(0.01)
+                                            ->prefix('%')
+                                            ->numeric()
+                                            ->live()
+                                            ->columnSpan(1)
+                                            ->required()
+                                            ->debounce(300)
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $this->calculateTotal($get, $set);
+                                            }),
 
                                         Forms\Components\TextInput::make('total')
                                             ->label('Total')
@@ -331,6 +331,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
+                    ->suffix('%')
                     ->numeric()
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('total')

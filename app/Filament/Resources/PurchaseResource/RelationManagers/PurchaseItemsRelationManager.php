@@ -89,7 +89,8 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Cantidad')
                             ->step(1)
                             ->numeric()
-                            ->debounce(500)
+
+                            ->live(onBlur: true)
                             ->columnSpan(1)
                             ->required()
                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -102,7 +103,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->numeric()
                             ->columnSpan(1)
                             ->required()
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -115,7 +116,9 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->default(0)
-                            ->debounce(500)
+                            ->live(onBlur: true)
+
+
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -124,14 +127,13 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Total')
                             ->step(0.01)
                             ->columnSpan(1)
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $total = ($get('total') !== "" && $get('total') !== null) ? $get('total') : 0;
                                 $set('total', number_format($total, 2));
                                 $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
                                 $newPrice=($total/$quantity);
                                 $set('price', number_format($newPrice, 2, '.', ''));
-
                                 $this->calculateTotal($get, $set);
                             })
                             ->required(),

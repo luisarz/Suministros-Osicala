@@ -39,7 +39,7 @@ class EditOrder extends EditRecord
                 ->icon('heroicon-o-check')
                 ->action('save')
                 ->extraAttributes([
-                    'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
+//                    'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
 
                 ]),
 
@@ -67,16 +67,12 @@ class EditOrder extends EditRecord
 
     protected function afterSave(): void
     {
-        Notification::make('Orden enviada')
+
+
+        PageAlert::make()
             ->title('Orden enviada')
             ->body('La orden ha sido enviada correctamente')
             ->success()
-            ->send();
-
-        PageAlert::make()
-            ->title('Error al anular venta')
-            ->body('No se puede cancelar una venta con DTE')
-            ->danger()
             ->send();
         $this->redirect(static::getResource()::getUrl('index'));
 

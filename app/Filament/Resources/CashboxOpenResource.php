@@ -190,7 +190,7 @@ class CashboxOpenResource extends Resource
                                 })
                                 ->options(function () {
                                     $whereHouse = auth()->user()->employee->branch_id;
-                                    return Employee::where('branch_id', $whereHouse)
+                                    return Employee::where('branch_id', $whereHouse)->whereIn('job_title_id',[3,5])//vendeodr y cajero
                                         ->pluck('name', 'id');
                                 }),
                         ])->columns(3)

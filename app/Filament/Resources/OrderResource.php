@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\CreateClienteForm;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\Order;
 use App\Models\Sale;
 use App\Tables\Actions\dteActions;
 use App\Tables\Actions\orderActions;
@@ -68,7 +70,8 @@ class OrderResource extends Resource
                                             ->options(function (callable $get) {
                                                 $wherehouse = $get('wherehouse_id');
                                                 if ($wherehouse) {
-                                                    return Employee::where('branch_id', $wherehouse)->pluck('name', 'id');
+                                                    return Employee::where('branch_id', $wherehouse)->whereIn('job_title_id',[3,5])
+                                                        ->pluck('name', 'id');
                                                 }
                                                 return []; // Return an empty array if no wherehouse selected
                                             })
@@ -78,67 +81,25 @@ class OrderResource extends Resource
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
                                         Forms\Components\Select::make('customer_id')
                                             ->searchable()
-                                            ->live()
-                                            ->inlineLabel(false)
-//                                            ->columnSpanFull()
+                                            ->debounce(500)
+                                            ->relationship('customer', 'name')
+                                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}  {$record->last_name}, dui: {$record->dui}  nit: {$record->nit}  nrc: {$record->nrc}")
                                             ->preload()
-                                            ->getSearchResultsUsing(function (string $query) {
-                                                if (strlen($query) < 2) {
-                                                    return []; // No buscar si el texto es muy corto
-                                                }
-
-                                                // Buscar clientes por múltiples criterios
-                                                return (new Customer)->where('name', 'like', "%{$query}%")
-                                                    ->orWhere('last_name', 'like', "%{$query}%")
-                                                    ->orWhere('nrc', 'like', "%{$query}%")
-                                                    ->orWhere('dui', 'like', "%{$query}%")
-                                                    ->orWhere('nit', 'like', "%{$query}%")
-                                                    ->select(['id', 'name', 'last_name', 'nrc', 'dui', 'nit'])
-                                                    ->limit(50)
-                                                    ->get()
-                                                    ->mapWithKeys(function ($customer) {
-                                                        // Formato para mostrar el resultado en el select
-                                                        $displayText = "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}";
-                                                        return [$customer->id => $displayText];
-                                                    });
-                                            })
-                                            ->getOptionLabelUsing(function ($value) {
-                                                // Obtener detalles del cliente seleccionado
-                                                $customer = Customer::find($value); // Buscar el cliente por ID
-                                                return $customer
-                                                    ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
-                                                    : 'Cliente no encontrado';
-                                            })
-
+                                            ->required()
+                                            ->inlineLabel(false)
                                             ->label('Cliente')
-                                            ->createOptionForm([
-                                                Section::make('Nuevo Cliente')
-                                                    ->schema([
-                                                        Select::make('wherehouse_id')
-                                                            ->label('Sucursal')
-                                                           ->inlineLabel(false)
-                                                            ->options(function (callable $get) {
-                                                                $wherehouse = (Auth::user()->employee)->branch_id;
-                                                                if ($wherehouse) {
-                                                                    return \App\Models\Branch::where('id', $wherehouse)->pluck('name', 'id');
-                                                                }
-                                                                return []; // Return an empty array if no wherehouse selected
-                                                            })
-                                                            ->preload()
-                                                            ->default(fn() => optional(Auth::user()->employee)->branch_id)
-                                                            ->columnSpanFull(),
-                                                        Forms\Components\TextInput::make('name')
-                                                            ->required()
-                                                            ->label('Nombre'),
-                                                        Forms\Components\TextInput::make('last_name')
-                                                            ->required()
-                                                            ->label('Apellido'),
-                                                    ])->columns(2),
-                                            ])
+                                            ->createOptionForm(CreateClienteForm::getForm())
+                                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                                return $action
+                                                    ->label('Crear cliente')
+                                                    ->color('success')
+                                                    ->icon('heroicon-o-plus')
+                                                    ->modalWidth('7xl');
+//                                                    ->size(IconSize::sizeI);
+                                            })
                                             ->createOptionUsing(function ($data) {
                                                 return Customer::create($data)->id; // Guarda y devuelve el ID del nuevo cliente
-                                            })
-                                        ,
+                                            }),
 
                                       
                                          Forms\Components\Select::make('mechanic_id')

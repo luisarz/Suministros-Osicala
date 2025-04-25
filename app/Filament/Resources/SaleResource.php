@@ -579,9 +579,10 @@ class SaleResource extends Resource
 
                 Tables\Filters\SelectFilter::make('documenttype')
                     ->label('Documento')
-//                    ->multiple()
                     ->preload()
-                    ->relationship('documenttype', 'name'),
+                    ->relationship('documenttype', 'name', function ($query) {
+                        return $query->whereIn('id', [1,3,11,14]); // Aplica tu condición aquí
+                    }),
 
             ])
 

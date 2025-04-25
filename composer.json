@@ -16,6 +16,7 @@
     "calebporzio/sushi": "^2.4",
     "charrafimed/global-search-modal": "^3.4",
     "cwsps154/app-settings": "^1.0",
+    "devonab/filament-easy-footer": "*",
     "eightynine/filament-page-alerts": "^3.0",
     "filament/filament": "^3.2",
     "hasnayeen/themes": "^3.0",

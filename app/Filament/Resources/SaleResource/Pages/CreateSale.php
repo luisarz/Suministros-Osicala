@@ -16,10 +16,7 @@ class CreateSale extends CreateRecord
 {
     protected static string $resource = SaleResource::class;
 
-    protected function getCreatedNotificationTitle(): ?string
-    {
-        return 'Venta iniciada';
-    }
+
 
     protected function getCreatedNotification(): ?Notification
     {
