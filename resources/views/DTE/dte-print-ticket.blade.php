@@ -105,7 +105,6 @@
     ---------------------------------------------------------------------------
     <div style="text-align: left">
         <h4>DOCUMENTO TRIBUTARIO ELECTRÓNICO</h4>
-        <h4>DOCUMENTO TRIBUTARIO ELECTRÓNICO</h4>
         <h5>{{ $datos['tipoDocumento'] }}</h5>
         <b>Código de generación</b> <br>
         {{ $datos['DTE']['respuestaHacienda']['codigoGeneracion'] ?? $datos['DTE']['identificacion']['codigoGeneracion'] }}

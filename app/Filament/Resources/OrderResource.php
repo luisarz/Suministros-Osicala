@@ -79,8 +79,8 @@ class OrderResource extends Resource
                                         Forms\Components\Select::make('customer_id')
                                             ->searchable()
                                             ->live()
-                                            ->inlineLabel(false)
-                                            ->columnSpanFull()
+//                                            ->inlineLabel(false)
+//                                            ->columnSpanFull()
                                             ->preload()
                                             ->getSearchResultsUsing(function (string $query) {
                                                 if (strlen($query) < 2) {
@@ -141,22 +141,22 @@ class OrderResource extends Resource
                                         ,
 
                                       
-                                        // Forms\Components\Select::make('mechanic_id')
-                                        //     ->label('Mecanico')
-                                        //     ->preload()
-                                        //     ->searchable()
-                                        //     ->live()
-                                        //     ->options(function (callable $get) {
-                                        //         $wherehouse = $get('wherehouse_id');
-                                        //         if ($wherehouse) {
-                                        //             return Employee::where('branch_id', $wherehouse)
-                                        //                 ->where('job_title_id',4)
-                                        //                 ->where('is_active',true)
-                                        //                 ->pluck('name', 'id');
-                                        //         }
-                                        //         return []; // Return an empty array if no wherehouse selected
-                                        //     })
-                                        //     ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
+                                         Forms\Components\Select::make('mechanic_id')
+                                             ->label('Mecanico')
+                                             ->preload()
+                                             ->searchable()
+                                             ->live()
+                                             ->options(function (callable $get) {
+                                                 $wherehouse = $get('wherehouse_id');
+                                                 if ($wherehouse) {
+                                                     return Employee::where('branch_id', $wherehouse)
+                                                         ->where('job_title_id',4)
+                                                         ->where('is_active',true)
+                                                         ->pluck('name', 'id');
+                                                 }
+                                                 return []; // Return an empty array if no wherehouse selected
+                                             })
+                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
@@ -248,11 +248,11 @@ class OrderResource extends Resource
                     ->label('Vendedor')
                     ->searchable()
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('mechanic.name')
-//                    ->label('Mecánico')
-//                    ->searchable()
-//                    ->placeholder('No asignado')
-//                    ->sortable(),
+                Tables\Columns\TextColumn::make('mechanic.name')
+                    ->label('Mecánico')
+                    ->searchable()
+                    ->placeholder('No asignado')
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Cliente')

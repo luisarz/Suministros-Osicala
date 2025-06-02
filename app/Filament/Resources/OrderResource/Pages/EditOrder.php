@@ -67,16 +67,16 @@ class EditOrder extends EditRecord
 
     protected function afterSave(): void
     {
-        Notification::make('Orden enviada')
+//        Notification::make('Orden enviada')
+//            ->title('Orden enviada')
+//            ->body('La orden ha sido enviada correctamente')
+//            ->success()
+//            ->send();
+
+        PageAlert::make()
             ->title('Orden enviada')
             ->body('La orden ha sido enviada correctamente')
             ->success()
-            ->send();
-
-        PageAlert::make()
-            ->title('Error al anular venta')
-            ->body('No se puede cancelar una venta con DTE')
-            ->danger()
             ->send();
         $this->redirect(static::getResource()::getUrl('index'));
 

@@ -644,19 +644,19 @@ class SaleResource extends Resource
                 dteActions::anularDTE(),
                 dteActions::historialDTE(),
 
-                Tables\Actions\DeleteAction::make()
-                    ->label('Borrar')
-                    ->iconSize(IconSize::Large)
-                    ->hidden(function ($record) {
-                        return $record->is_dte || $record->deleted_at;
-                    }),
+//                Tables\Actions\DeleteAction::make()
+//                    ->label('Borrar')
+//                    ->iconSize(IconSize::Large)
+//                    ->hidden(function ($record) {
+//                        return $record->is_dte || $record->deleted_at;
+//                    }),
 
-                Tables\Actions\ForceDeleteAction::make('wipe')
-                    ->label('Forzar')
-                    ->iconSize(IconSize::Large)
-                    ->hidden(function ($record) {
-                        return !$record->deleted_at;
-                    }),
+//                Tables\Actions\ForceDeleteAction::make('wipe')
+//                    ->label('Forzar')
+//                    ->iconSize(IconSize::Large)
+//                    ->hidden(function ($record) {
+//                        return !$record->deleted_at;
+//                    }),
 
 
 
