@@ -20,6 +20,7 @@ use App\Tables\Actions\dteActions;
 use Carbon\Carbon;
 use Doctrine\DBAL\Exception\DatabaseDoesNotExist;
 use EightyNine\FilamentPageAlerts\PageAlert;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
@@ -435,6 +436,11 @@ class SaleResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('generationCode')
+                    ->label('Cod.Generaición')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\BadgeColumn::make('is_dte')
                     ->label('DTE')
                     ->sortable()
@@ -500,6 +506,10 @@ class SaleResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.fullname')
+                    ->badge()
+                    ->placeholder('Asignar cliente...')
+                    ->color(fn ($record) => $record->is_dte ? 'success' : 'danger') // color según is_dte
+                    ->icon(fn($record)=>$record->is_dte ? 'heroicon-o-check-circle' : 'heroicon-o-arrow-path')
                     ->label('Cliente')
                     ->wrap(50)
                     ->searchable(query: function ($query, $search) {
@@ -508,6 +518,46 @@ class SaleResource extends Resource
                                 ->orWhere('last_name', 'like', "%{$search}%");
                         });
                     })
+                    ->action(
+                        Tables\Actions\Action::make('customer.fullname')
+                            ->label('Cambiar Cliente')
+                            ->form([
+                                Forms\Components\Select::make('customer_id')
+                                    ->searchable()
+                                    ->debounce(500)
+                                    ->relationship('customer', 'name')
+                                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}  {$record->last_name}, dui: {$record->dui}  nit: {$record->nit}  nrc: {$record->nrc}")
+                                    ->preload()
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->inlineLabel(false)
+                                    ->label('Cliente')
+                                    ->createOptionForm(CreateClienteForm::getForm())
+                                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                        return $action
+                                            ->label('Crear cliente')
+                                            ->color('success')
+                                            ->icon('heroicon-o-plus')
+                                            ->modalWidth('7xl');
+//                                                    ->size(IconSize::sizeI);
+                                    })
+                                    ->createOptionUsing(function ($data) {
+                                        return Customer::create($data)->id; // Guarda y devuelve el ID del nuevo cliente
+                                    }),
+
+
+                            ])
+                            ->disabled(fn ($record) => $record->is_dte) // ✅ deshabilitar si is_dte es true
+                            ->modalHeading('Cambiar Cliente')
+                            ->modalSubmitActionLabel('Guardar')
+                            ->action(function ($record, array $data) {
+                                $record->update([
+                                    'customer_id' => $data['customer_id'],
+                                ]);
+                            })
+                    )
+
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('salescondition.name')
                     ->label('Condición')
@@ -593,6 +643,22 @@ class SaleResource extends Resource
                 dteActions::enviarEmailDTE(),
                 dteActions::anularDTE(),
                 dteActions::historialDTE(),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('Borrar')
+                    ->iconSize(IconSize::Large)
+                    ->hidden(function ($record) {
+                        return $record->is_dte || $record->deleted_at;
+                    }),
+
+                Tables\Actions\ForceDeleteAction::make('wipe')
+                    ->label('Forzar')
+                    ->iconSize(IconSize::Large)
+                    ->hidden(function ($record) {
+                        return !$record->deleted_at;
+                    }),
+
+
 
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([

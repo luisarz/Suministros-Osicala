@@ -27,59 +27,59 @@ class hoja extends Controller
 //        Customer::truncate();
 //
 //        //customer
-//        $clientes = DB::connection('mariadb2')->table('cliente')->get();
+//        $clientes = DB::connection('sqlsrv')->table('Clientes')->get();
 //        foreach ($clientes as $oldCliente) {
 //            $cliente = new Customer();
-//            $cliente->id=$oldCliente->id_cliente;
-//            $cliente->name=$oldCliente->nombre_cliente;
+////            $cliente->id=$oldCliente->id_cliente;
+//            $cliente->name=$oldCliente->Cliente;
 //            $cliente->last_name=null;
 //            $cliente->email="ferreteriasanjose.dte@gmail.com";
-//            $cliente->phone=$oldCliente->movil?'(503)'.$oldCliente->movil:'';
+//            $cliente->phone='(503)'.$oldCliente->Telefono1;
 //            $cliente->country_id=1;
 //            $cliente->departamento_id=1;
 //            $cliente->municipio_id=1;
 //            $cliente->document_type_id=13;
 //            $cliente->person_type_id=1;
-//            $cliente->nrc=$oldCliente->nrc;
-//            $cliente->nit=$oldCliente->nit;
-//            $cliente->dui=$oldCliente->dui;
+//            $cliente->nrc=$oldCliente->Nrc;
+//            $cliente->nit=$oldCliente->Nit;
+//            $cliente->dui=null;
 //            $cliente->is_taxed=true;
-//            $cliente->wherehouse_id=$oldCliente->id_sucursal;
+//            $cliente->wherehouse_id=3;
 //            $cliente->save();
 //
 //        }
 //       dd('Clientes');
 //        Provider::truncate();
 //
-//        $providers=DB::connection('mariadb2')->table('proveedor')->get();
+//        $providers=DB::connection('sqlsrv')->table('Proveedores')->get();
 //        foreach ($providers as $provider){
 //            $providerNew = new Provider();
 //
-//            $providerNew->id = $provider->id_proveedor; // Asignando el ID manualmente si es necesario
-//            $providerNew->legal_name = strtoupper($provider->proveedor);
-//            $providerNew->comercial_name =strtoupper($provider->proveedor);
+////            $providerNew->id = $provider->id_proveedor; // Asignando el ID manualmente si es necesario
+//            $providerNew->legal_name = strtoupper($provider->Proveedor);
+//            $providerNew->comercial_name =strtoupper($provider->Proveedor);
 //            $providerNew->country_id = 1;
 //            $providerNew->department_id =1;
 //            $providerNew->municipility_id = 1;
 //            $providerNew->distrito_id = 1;
-//            $providerNew->direction = strtoupper($provider->direccion);
-//            $providerNew->phone_one = $provider->telefonos_proveedor;
-//            $providerNew->phone_two = null;
+//            $providerNew->direction = strtoupper($provider->Direccion);
+//            $providerNew->phone_one = $provider->Telefono1;
+//            $providerNew->phone_two = $provider->Telefono2;
 //            $providerNew->email = null;
-//            $providerNew->nrc = $provider->nrc;
-//            $providerNew->nit = $provider->nit;
+//            $providerNew->nrc = $provider->Nrc;
+//            $providerNew->nit = $provider->Nit;
 //            $providerNew->economic_activity_id = 1;
 //            $providerNew->condition_payment =1;
-//            $providerNew->credit_days =0;
-//            $providerNew->credit_limit =0;
-//            $providerNew->balance =0;
+//            $providerNew->credit_days =$provider->Plazo_credito;
+//            $providerNew->credit_limit =$provider->Limite_credito;
+//            $providerNew->balance =$provider->Balance;
 //            $providerNew->provider_type = 1;
 //            $providerNew->is_active = true;
-//            $providerNew->contact_seller = strtoupper($provider->nombre_vendedor??'');
+//            $providerNew->contact_seller = strtoupper($provider->Contacto??'');
 //            $providerNew->phone_seller = null;
 //            $providerNew->email_seller = null;
 //            $providerNew->last_purchase = null;
-//            $providerNew->purchase_decimals = $provider->decimales;
+//            $providerNew->purchase_decimals = 2;
 //            $providerNew->save();
 //
 //
@@ -91,102 +91,127 @@ class hoja extends Controller
 
         Product::truncate();
         Marca::truncate();
+        Category::truncate();
+
         Price::truncate();
         Inventory::truncate();
-        Category::truncate();
-        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        $categorias = DB::connection('mariadb2')->table('categoria')->get();
+//        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $categorias = DB::connection('sqlsrv')->table('Lineas')->get();
         foreach ($categorias as $category) {
             $newCategory = new Category();
-            $newCategory->id = $category->id_categoria;
-            $newCategory->name = $category->nombre_categoria;
+            $newCategory->id = $category->Id;
+            $newCategory->name = trim($category->Nombre);
             $newCategory->is_active = true;
             $newCategory->save();
         }
-
-        $brands = DB::connection('mariadb2')->table('marca')->get();
+//
+//        dd('Cater');
+        $brands = DB::connection('sqlsrv')->table('Marcas')->get();
         foreach ($brands as $brand) {
             $newBrand = new Marca();
-            $newBrand->id = $brand->id_marca;
-            $newBrand->nombre = $brand->nombre_marca;
-            $newBrand->descripcion = $brand->nombre_marca;
+            $newBrand->id = $brand->Id;
+            $newBrand->nombre = trim($brand->Marca);
+            $newBrand->descripcion = trim($brand->Marca);
             $newBrand->estado = true;
             $newBrand->save();
         }
-        $products = DB::connection('mariadb2')->table('producto')->get();
+//        dd('Marcas');
+        $products = DB::connection('sqlsrv')->table('Inventario')->get();
 //        dd($products);
+        $lineasNuevas=0;
+        $marcasNuevas=0;
+        $productosNuevos=0;
+        $inventarioNuevo=0;
+        $productosNoCrados=[];
+        $inventariosNoCreados=[];
         foreach ($products as $producto) {
-            $imagen = DB::connection('mariadb2')->table('escaneo')->where('id_partida', $producto->id_producto)->first();
-            if ($imagen) {
-                $img = "products/".$imagen->imagen;
-                if (!Storage::disk('public')->exists($img)) {
-                    $img = null;
-                }
-
-            }
 
 
             try {
                 $nuevo = new Product();
-                $nuevo->id = $producto->id_producto;
-                $nuevo->name = trim($producto->producto);
+                $nuevo->id = $producto->Id;
+                $nuevo->name = trim($producto->Descripcion);
                 $nuevo->aplications = "";//str_replace(',', ';', $producto['Linea']);
-                $nuevo->sku = trim($producto->codigo_barra);
-                $nuevo->bar_code = trim($producto->codigo_barra);
+                $nuevo->sku = trim($producto->Codigo);
+                $nuevo->bar_code = trim($producto->Codigo_de_barra);
                 $nuevo->is_service = false;
-                $nuevo->category_id = $producto->categoria;
-                $nuevo->marca_id = ($producto->marca == 274) ? 1 : $producto->marca;
+                //verifiamos si existe la linea
+                $idLinea = 0;
+                $categoria = Category::where('name',trim($producto->Linea))->first();
+                if (!$categoria) {
+                    $categoria = new Category();
+                    $categoria->name = $producto->Linea;
+                    $categoria->is_active = true;
+                    $categoria->save();
+                    $idLinea=$categoria->id;
+                    $lineasNuevas++;
+                }else{
+                    $idLinea=$categoria->id;
+                }
+                $nuevo->category_id =$idLinea;
+//                revisamos si existe la marca
+                $idMarca = 0;
+                $marca = Marca::where('nombre', trim($producto->Marca))->first();
+                if (!$marca) {
+                    $marca = new Marca();
+                    $marca->nombre = $producto->Marca;
+                    $marca->descripcion = $producto->Marca;
+                    $marca->estado = true;
+                    $marca->save();
+                    $idMarca = $marca->id;
+                    $marcasNuevas++;
+                }else{
+                    $idMarca = $marca->id;
+                }
+
+                $nuevo->marca_id = $idMarca;
                 $nuevo->unit_measurement_id = 1;
                 $nuevo->is_taxed = true;
-                $nuevo->images =$img;
+                $nuevo->images =null;
                 $nuevo->is_active = true;
-                $nuevo->save();
+                if($nuevo->save()){
+                    $productosNuevos++;
+                }else{
+                    $productosNoCrados[]= $producto->Id;
+                }
 
 
-                $inventories = DB::connection('mariadb2')
-                    ->table('inventario')
-                    ->where('id_producto', $producto->id_producto) // Filtra por product_id
-                    ->get();
-//
-                foreach ($inventories as $oldInventory) {
                     //llenar el inventario
                     $inventario = new Inventory();
-                    $inventario->id = $oldInventory->id_inventario;
-                    $inventario->product_id = $oldInventory->id_producto;
-                    $inventario->branch_id = $oldInventory->id_sucursal;
-                    $cost = $oldInventory->costo_compra ?? 0; // Si $producto->cost es null, asigna 0
+//                    $inventario->id = $oldInventory->id_inventario;
+                    $inventario->product_id = $producto->Id;
+                    $inventario->branch_id = 3;
+                    $cost = $producto->Costo ?? 0; // Si $producto->cost es null, asigna 0
                     $inventario->cost_without_taxes = $cost;
                     $inventario->cost_with_taxes = $cost > 0 ? $cost * 1.13 : 0; // Evita multiplicar si es 0
 
 //                    $stock = ($producto->unidades_presentacion * $oldInventory->saldo_caja) + $oldInventory->saldo_fraccion + $oldInventory->bonificables;
-                    $stock = max(0, ($producto->unidades_presentacion * $oldInventory->saldo_caja) + $oldInventory->saldo_fraccion + $oldInventory->bonificables);
+                    $stock = $producto->Existencia ?? 0;
 
                     $inventario->stock = $stock;
-                    $inventario->stock_min = $oldInventory->stock_minimo ?? 0;
-                    $inventario->stock_max = $oldInventory->stock_minimo ?? 0;
+                    $inventario->stock_min = $producto->E_minimo ?? 0;
+                    $inventario->stock_max = $producto->E_maximo ?? 0;
                     $inventario->is_stock_alert = true;
                     $inventario->is_expiration_date = false;
                     $inventario->is_active = true;
-                    $inventario->save();
+                   if( $inventario->save()){
+                        $inventarioNuevo++;
+                    }else{
+                        $inventariosNoCreados[]=$producto->Id;
+                   }
                     //llenar los precios
 
-                    $precios = DB::connection('mariadb2')
-                        ->table('precio')
-                        ->where('id_inventario', $oldInventory->id_inventario) // Filtra por product_id
-                        ->get();
-                    foreach ($precios as $price){
-                        $precio = new Price();
-                        $precio->inventory_id = $price->id_inventario;
-                        $precio->name = $price->descripcion;
-                        $precio->price = $price->precio;
 
-                        $precio->is_default = ($price->mostrar == 1) ? true : false;
+                        $precio = new Price();
+                        $precio->inventory_id = $inventario->id;
+                        $precio->name = 'Público';
+                        $precio->price = $producto->Precio_iva;
+                        $precio->utilidad=0;
+                        $precio->is_default = true;
                         $precio->is_active = true;
                         $precio->save();
-                    }
 
 
-                }
 
 
             } catch (\Exception $e) {
@@ -196,7 +221,10 @@ class hoja extends Controller
 //                $items[] = $producto['id']; // Use the actual product ID for tracking failures
             }
         }
-        dd('productos');
+        dd('productos' . $lineasNuevas . ' lineas nuevas y ' . $marcasNuevas . ' marcas nuevas'.
+            ' y ' . $productosNuevos . ' productos nuevos y ' . $inventarioNuevo . ' inventarios nuevos' .
+            ' productos no creados: '.implode(',',$productosNoCrados) .
+            ' inventarios no creados: '.implode(',',$inventariosNoCreados));
 
 
 

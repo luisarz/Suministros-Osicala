@@ -126,9 +126,9 @@
                 <td>Unidad</td>
                 <td>
                     {{ $item->inventory->product->name ?? '' }}
-{{--                    @if(!empty($item->inventory->product->sku))--}}
-{{--                        <b> SKU {{ $item->inventory->product->sku }}</b>--}}
-{{--                    @endif--}}
+                    @if(!empty($item->inventory->product->sku))
+                        <b> SKU {{ $item->inventory->product->sku }}</b>
+                    @endif
                     @if(!empty($item->description))
                         <br> <b>DESCRIPCIÓN:</b> <br>
                         {{ $item->description ?? '' }}
@@ -181,7 +181,7 @@
                     <table style="width: 100%">
                         <tr>
                             <td>Total No Sujeto:</td>
-                            <td style="">${{ number_format(0, 2) }}</td>
+                            <td>${{ number_format(0, 2) }}</td>
                         </tr>
                         <tr>
                             <td>Total Exento:</td>

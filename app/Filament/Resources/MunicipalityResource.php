@@ -22,7 +22,7 @@ class MunicipalityResource extends Resource
     protected static ?string $navigationGroup = "Catálogos Hacienda";
     protected static ?string $label = 'Distritos';
     protected static ?string $recordTitleAttribute = 'name';
-    protected static ?int $navigationSort = 14;
+    protected static ?int $navigationSort = 4;
     public static function form(Form $form): Form
     {
         return $form

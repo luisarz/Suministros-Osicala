@@ -124,17 +124,17 @@
             @php($inventory = $item)
             <tr>
                 <td>{{ $item->quantity }}</td>
-                <td colspan="2">{{$item->inventory->product->name ?? '' }}</td>
+                <td colspan="3  ">{{$item->inventory->product->name ?? '' }}</td>
 
             </tr>
             <tr>
                 <td></td>
-                <td colspan="2">
-{{--                    @if(!empty($item->inventory->product->sku))--}}
-{{--                        <b> SKU {{ $item->inventory->product->sku }}</b>--}}
-{{--                    @endif--}}
+                <td colspan="3">
+                    @if(!empty($item->inventory->product->sku))
+                        <b> SKU {{ $item->inventory->product->sku }}</b>
+                    @endif
                     @if(!empty($item->description))
-{{--                        <br/>--}}
+                        <br/>
                         <b>DESCRIPCIÓN:</b> <br>
                         {{ $item->description ?? '' }}
                     @endif
@@ -143,8 +143,8 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="2">${{ number_format($item->price??0, 2) }}</td>
-{{--                <td>Desc. ${{ number_format($item->discount, 2) }}</td>--}}
+                <td>${{ number_format($item->price??0, 2) }}</td>
+                <td>Desc. ${{ number_format($item->discount, 2) }}</td>
                 <td style="text-align: right">${{ number_format($item->total??0, 2) }}</td>
             </tr>
         @endforeach

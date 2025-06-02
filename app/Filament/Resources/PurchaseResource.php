@@ -208,12 +208,6 @@ class PurchaseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordUrl(function ($record) {
-                return self::getUrl('purchase',
-                    [
-                        'record' => $record->id
-                    ]);
-            })
             ->columns([
                 Tables\Columns\TextColumn::make('provider.comercial_name')
                     ->label('Proveedor')
@@ -315,8 +309,6 @@ class PurchaseResource extends Resource
             'index' => Pages\ListPurchases::route('/'),
             'create' => Pages\CreatePurchase::route('/create'),
             'edit' => Pages\EditPurchase::route('/{record}/edit'),
-            'purchase' => Pages\ViewPurchase::route('/{record}/purchase'),
-
         ];
     }
 

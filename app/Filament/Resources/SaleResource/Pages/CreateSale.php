@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\SaleResource\Pages;
 
 use App\Filament\Resources\SaleResource;
-use App\Models\Sale;
 use App\Models\SaleItem;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -16,7 +15,10 @@ class CreateSale extends CreateRecord
 {
     protected static string $resource = SaleResource::class;
 
-
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Venta iniciada';
+    }
 
     protected function getCreatedNotification(): ?Notification
     {
@@ -56,9 +58,6 @@ class CreateSale extends CreateRecord
                 ->color('success')
                 ->icon('heroicon-o-check')
                 ->action('create')
-//                ->successRedirectUrl(fn (Sale $record): string => route('sale.edit', [
-//                    'post' => $record,
-//                ]))
                 ->extraAttributes([
                     'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
 

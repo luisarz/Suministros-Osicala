@@ -10,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -89,8 +88,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Cantidad')
                             ->step(1)
                             ->numeric()
-
-                            ->live(onBlur: true)
+                            ->debounce(500)
                             ->columnSpan(1)
                             ->required()
                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -103,7 +101,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->numeric()
                             ->columnSpan(1)
                             ->required()
-                            ->live(onBlur: true)
+                            ->debounce(500)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -116,9 +114,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->default(0)
-                            ->live(onBlur: true)
-
-
+                            ->debounce(500)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -127,13 +123,14 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Total')
                             ->step(0.01)
                             ->columnSpan(1)
-                            ->live(onBlur: true)
+                            ->debounce(500)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $total = ($get('total') !== "" && $get('total') !== null) ? $get('total') : 0;
                                 $set('total', number_format($total, 2));
                                 $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
                                 $newPrice=($total/$quantity);
                                 $set('price', number_format($newPrice, 2, '.', ''));
+
                                 $this->calculateTotal($get, $set);
                             })
                             ->required(),
@@ -168,8 +165,6 @@ class PurchaseItemsRelationManager extends RelationManager
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
-                    ->money('USD', locale: 'en_US')
-                    ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])

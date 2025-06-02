@@ -12,7 +12,6 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -210,7 +209,7 @@ class ProductResource extends Resource
                 'xs' => 4,
             ])
             ->paginationPageOptions([
-                6, 12, 25, 50, 100 // Define your specific pagination limits here
+                5, 10, 25, 50, 100 // Define your specific pagination limits here
             ])
             ->filters([
                 //
@@ -231,14 +230,13 @@ class ProductResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
 
 
-            ], layout: FiltersLayout::AboveContent)->filtersFormColumns(3)
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Large),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning'),
                 Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Large),
                 Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
                 Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
-                Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\ActionGroup::make([
                 ])->link()
                     ->label('Acciones'),
@@ -246,7 +244,6 @@ class ProductResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-//                    Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
 //                    ExportAction::make(),
                 ])

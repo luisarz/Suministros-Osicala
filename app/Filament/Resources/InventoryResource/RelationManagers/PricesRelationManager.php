@@ -100,7 +100,7 @@ class PricesRelationManager extends RelationManager
     protected function beforeDelete(DeleteAction $action): void
     {
         $inventoryId = $this->ownerRecord->id;
-//        dd($inventoryId);
+        dd($inventoryId);
         $pricesCount = Price::where('inventory_id', $inventoryId)->count();
         // Si hay solo un precio, cancelar la eliminación
         if ($pricesCount <= 1) {

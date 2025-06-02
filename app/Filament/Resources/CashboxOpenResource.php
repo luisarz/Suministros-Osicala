@@ -105,7 +105,7 @@ class CashboxOpenResource extends Resource
                                             ->label('Facturación')
                                             ->inlineLabel(true)
                                             ->content(function () {
-                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(false,false);
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getTotal(false);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($openedCashBox, 2) . '</span>');
                                             }),
                                         Forms\Components\Placeholder::make('ordered_amount')
@@ -190,7 +190,7 @@ class CashboxOpenResource extends Resource
                                 })
                                 ->options(function () {
                                     $whereHouse = auth()->user()->employee->branch_id;
-                                    return Employee::where('branch_id', $whereHouse)->whereIn('job_title_id',[3,5])//vendeodr y cajero
+                                    return Employee::where('branch_id', $whereHouse)
                                         ->pluck('name', 'id');
                                 }),
                         ])->columns(3)

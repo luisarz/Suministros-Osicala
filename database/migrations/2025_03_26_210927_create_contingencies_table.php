@@ -12,24 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contingencies', function (Blueprint $table) {
-            $table->bigIncrements('id');
-
+            $table->bigInteger('id')->primary();
             $table->unsignedBigInteger('warehouse_id');
-            $table->foreign('warehouse_id')->references('id')->on('branches');
-
-            $table->string('uuid_hacienda', 255);
-
-            $table->dateTime('start_date');
-            $table->dateTime('end_date')->nullable();
-
+            $table->bigInteger('warehouse_id')->references('id')->on('branches');//Sucursal
+            $table->string('uuid_hacienda');
+            $table->datetimes('start_date');
+            $table->datetimes('end_date');
             $table->unsignedBigInteger('contingency_types_id');
-            $table->foreign('contingency_types_id')->references('id')->on('contingency_types');
-
-            $table->string('contingency_motivation', 255)->nullable();
-
-            $table->tinyInteger('is_close')->nullable();
-
-            $table->timestamps(); // created_at, updated_at (nullable por defecto)
+            $table->bigInteger('contingency_types_id')->references('id')->on('contingency_types');//Tipo de contingencia
+            $table->string('continvengy_motivation');
+            $table->datetimes('end_date');
+            $table->timestamps();
         });
     }
 
