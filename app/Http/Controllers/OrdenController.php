@@ -76,8 +76,9 @@ class OrdenController extends Controller
             'ingresos' => $ingresos,
             'egresos' => $egresos,
         ];
+//        dd($caja);
         $formatter = new NumeroALetras();
-        $montoLetras = $formatter->toInvoice($caja->closed_amount, 2, 'DoLARES');
+        $montoLetras = $formatter->toInvoice($caja->closed_amount, 2, 'DóLARES');
         $pdf = Pdf::loadView('print.closedcashbox-print-pdf', compact(
             'datos',
             'empresa',

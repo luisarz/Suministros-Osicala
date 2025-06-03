@@ -130,7 +130,7 @@
                     </table>
                 </td>
                 <td>
-                    <p>Caja Chica: <span class="totals">$0.00</span></p>
+                    <p>Caja Chica: <span class="totals">{{$caja->out_cash_amount}}</span></p>
                 </td>
             </tr>
             </tbody>

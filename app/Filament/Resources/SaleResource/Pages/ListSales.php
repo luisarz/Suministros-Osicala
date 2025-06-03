@@ -81,7 +81,7 @@ class ListSales extends ListRecords
                     } else {
                         $ruta .= 'ccf';
                     }
-                    $ruta.='/' . $startDate . '/' . $endDate;
+                    $ruta .= '/' . $startDate . '/' . $endDate;
 
                     return \Filament\Notifications\Notification::make()
                         ->title('Reporte preparado.')
@@ -128,7 +128,7 @@ class ListSales extends ListRecords
                     $endDate = $data['hasta'];   // Asegurar formato correcto
                     $documentType = $data['documentType'];
 
-                    $ruta = '/sale/'.$documentType.'/' . $startDate . '/' . $endDate;
+                    $ruta = '/sale/' . $documentType . '/' . $startDate . '/' . $endDate;
 
                     return \Filament\Notifications\Notification::make()
                         ->title('Reporte preparado.')
@@ -173,10 +173,13 @@ class ListSales extends ListRecords
     public function getTabs(): array
     {
 
-        $allCount = Sale::withTrashed()->whereIn('sale_status',['Facturada','Finalizado','Anulado'])->count();
-        $send = Sale::withTrashed()->where('is_dte', 1)->whereIn('sale_status',['Facturada','Finalizado','Anulado'])->count();
-        $unSend = Sale::withoutTrashed()->where('is_dte', 0)->whereIn('sale_status',['Facturada','Finalizado'])->count();
-        $deletedCount = Sale::onlyTrashed()->count();
+        $allCount = Sale::whereIn('sale_status', ['Facturada', 'Finalizado', 'Anulado'])
+            ->where('is_invoiced', 1)->count();
+        $send = Sale::where('is_dte', 1)->whereIn('sale_status', ['Facturada', 'Finalizado', 'Anulado'])->count();
+        $unSend = Sale::whereIn('sale_status', ['Facturada', 'Finalizado', 'Anulado'])
+            ->where('is_invoiced', 1)
+            ->where('is_dte', 0)->count();
+
 
         return [
             "All" => Tab::make()
@@ -193,7 +196,7 @@ class ListSales extends ListRecords
                 ->badge($unSend)
                 ->badgeColor('danger')
                 ->icon('heroicon-s-computer-desktop')
-                ->modifyQueryUsing(fn(Builder $query) => $query->withTrashed()->where('is_dte',  0)->whereIn('sale_status',['Facturada','Finalizado'])),
+                ->modifyQueryUsing(fn(Builder $query) => $query->withTrashed()->where('is_dte', 0)->whereIn('sale_status', ['Facturada', 'Finalizado'])),
 
         ];
     }

@@ -607,7 +607,8 @@ class SaleResource extends Resource
                     ->sortable(),
             ])
             ->modifyQueryUsing(fn($query) => $query
-                ->where('is_invoiced', true)
+                ->where('is_invoiced', 1)
+                ->whereIn('sale_status', ['Facturada','Finalizado','Anulado'])
                 ->whereIn('operation_type', ['Sale', 'Order', 'Quote'])
                 ->orderByDesc('created_at')
 //                ->orderByDesc('document_internal_number')

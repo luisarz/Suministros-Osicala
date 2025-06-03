@@ -20,8 +20,8 @@ class ListOrders extends ListRecords
     }
     public function getTabs(): array
     {
-        $allOrders = Sale::withoutTrashed()->where('operation_type','Order')->whereNotIn('sale_status',['Anulado'])->count();
-        $closed = Sale::withoutTrashed()->where('operation_type','Order')->whereIn('sale_status',  ['Finalizado','Facturada','Anulado'])->count();
+        $allOrders = Sale::where('operation_type','Order')->whereIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
+        $closed = Sale::withoutTrashed()->where('operation_type','Order')->whereIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
         $open = Sale::withoutTrashed()->where('operation_type','Order')->whereNotIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
 
         return [

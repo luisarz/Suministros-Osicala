@@ -28,6 +28,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class OrderResource extends Resource
 {
@@ -285,10 +286,10 @@ class OrderResource extends Resource
                     ->suffix('%')
                  ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('discount_money')
-//                    ->label('Taller')
-//                    ->money('USD', locale: 'en_US')
-//                    ->sortable(),
+                Tables\Columns\TextColumn::make('discount_money')
+                    ->label('Taller')
+                    ->money('USD', locale: 'en_US')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_order_after_discount')
                     ->label('Total - Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -346,6 +347,7 @@ class OrderResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make('Exportar'),
                 ]),
             ]);
     }
