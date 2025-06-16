@@ -214,6 +214,7 @@ class EditSale extends EditRecord
                         if ($is_grouped) {
                             //si es compuesto traemos todos los inventario que lo componen
                             $inventoriesGrouped = InventoryGrouped::with('inventoryChild.product')->where('inventory_grouped_id', $item->inventory_id)->get();
+
                             foreach ($inventoriesGrouped as $inventarioHijo) {
 //                                dd($inventoryGrouped->inventoryChild);
                                 $kardex = KardexHelper::createKardexFromInventory(

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdjustementInventory;
 use App\Http\Controllers\ContingencyController;
 use App\Http\Controllers\DTEController;
 use App\Http\Controllers\EmployeesController;
@@ -48,6 +49,8 @@ Route::get('/contingency_close/{uuid_contingence}',[ContingencyController::class
 //ZIP
 Route::get('/sale/json/{starDate}/{endDate}',[ReportsController::class,'downloadJson']);
 Route::get('/sale/pdf/{starDate}/{endDate}',[ReportsController::class,'downloadPdf']);
-
+//Entrada Salia
+//Route::get('/printSalida/{idsalida}', [DTEController::class, 'printDTETicket'])->middleware(['auth'])->name('printSalida');
+Route::get('/salidaPrintTicket/{id}', [AdjustementInventory::class, 'salidaPrintTicket'])->middleware(['auth'])->name('salidaPrintTicket');
 
 require __DIR__ . '/auth.php';

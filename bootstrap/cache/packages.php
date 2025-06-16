@@ -50,6 +50,17 @@
       0 => 'CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider',
     ),
   ),
+  'devonab/filament-easy-footer' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentEasyFooter' => 'Devonab\\FilamentEasyFooter\\Facades\\EasyFooter',
+    ),
+    'providers' => 
+    array (
+      0 => 'Devonab\\FilamentEasyFooter\\EasyFooterServiceProvider',
+    ),
+  ),
   'eightynine/filament-page-alerts' => 
   array (
     'aliases' => 

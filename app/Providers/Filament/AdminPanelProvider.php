@@ -8,6 +8,7 @@ use App\Filament\Resources\SaleResource;
 use App\Models\Contingency;
 use App\Models\DteTransmisionWherehouse;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use EightyNine\FilamentPageAlerts\FilamentPageAlertsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -90,12 +91,30 @@ class AdminPanelProvider extends PanelProvider
                 GlobalSearchModalPlugin::make(),
                 ActivitylogPlugin::make()->label('Bitacora')
                     ->pluralLabel('Bitacora')->navigationSort(3),
-                FilamentPageAlertsPlugin::make()
+                FilamentPageAlertsPlugin::make(),
+                EasyFooterPlugin::make()
+                    ->withBorder()
+                    ->withFooterPosition('footer')
+                    ->withSentence('Desarrollado por')
+                    ->withLogo(
+                        'https://res.cloudinary.com/dt5ncuobe/image/upload/v1745506235/computecLogo_lhe33p.png', // Path to logo
+                        'https://www.facebook.com/Consultores.computec',
+                        null,
+                        '40'
+                    )
+
+                    ->withLinks([
+                        ['title' => 'Contactanos', 'url' => 'https://api.whatsapp.com/send?phone=50379281878&text=Sistema%20de%20inventario%20y%20facturaci%C3%B3n%20electr%C3%B3nica'],
+                    ])
+                    ->withLoadTime(
+                        prefix: 'Tiempo de carga',
+                        enabled: true,
+                    ),
 
             ])
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {
                 $whereHouse = auth()->user()->employee->branch_id ?? null;
-                $DTETransmisionType = Contingency::where('warehouse_id', $whereHouse)->where('is_close',0)->first();
+                $DTETransmisionType = Contingency::where('warehouse_id', $whereHouse)->where('is_close', 0)->first();
                 $labelTransmisionType = "Previo Normal";
                 $labelTransmisionTypeBorderColor = " #52b01e ";
                 if ($DTETransmisionType) {//Previo Normal)
