@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PurchaseResource\Pages;
-use App\Filament\Resources\PurchaseResource\RelationManagers;
+use App\Filament\Resources\CreditNotePurchaseResource\Pages;
+use App\Filament\Resources\CreditNotePurchaseResource\RelationManagers;
 use App\Helpers\KardexHelper;
 use App\Models\Inventory;
 use App\Models\Provider;
@@ -23,7 +23,7 @@ use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
-function updateTotaPurchase(mixed $idItem, array $data): void
+function updateTotaCredtiNotePurchase(mixed $idItem, array $data): void
 {
     $have_perception = $data['have_perception'] ?? false;
     $retentionPorcentage = 1;
@@ -51,10 +51,10 @@ function updateTotaPurchase(mixed $idItem, array $data): void
     }
 }
 
-class PurchaseResource extends Resource
+class CreditNotePurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
-    protected static ?string $label = 'Compras';
+    protected static ?string $label = 'Notas Crédito Compra';
     protected static ?string $navigationGroup = 'Inventario';
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -65,7 +65,7 @@ class PurchaseResource extends Resource
             ->schema([
                 Forms\Components\Section::make('')
                     ->schema([
-                        Forms\Components\Section::make('COMPRA')
+                        Forms\Components\Section::make('Nota de Crédito')
 //                            ->description('Informacion general de la compra')
                             ->icon('heroicon-o-book-open')
                             ->iconColor('danger')
@@ -91,7 +91,7 @@ class PurchaseResource extends Resource
                                     ->preload()
                                     ->required(),
                                 Forms\Components\DatePicker::make('purchase_date')
-                                    ->label('Fecha')
+                                    ->label('Fecha Compra')
                                     ->inlineLabel()
                                     ->default(today())
                                     ->required(),
@@ -108,44 +108,15 @@ class PurchaseResource extends Resource
                                         if ($state === 'Electrónico') {
                                             $set('document_number_label', 'DTE');
                                         } else {
-                                            $set('document_number_label', 'Número CCF');
+                                            $set('document_number_label', 'Número Nota');
                                         }
                                     }),
 
                                 Forms\Components\TextInput::make('document_number')
-                                    ->label(fn(callable $get) => $get('document_number_label') ?? 'Número CCF') // Default label if not set
+                                    ->label(fn(callable $get) => $get('document_number_label') ?? 'Número Nota') // Default label if not set
                                     ->required()
                                     ->maxLength(255),
 
-
-                                Forms\Components\Select::make('pruchase_condition')
-                                    ->label('Condición')
-                                    ->options([
-                                        'Contado' => 'Contado',
-                                        'Crédito' => 'Crédito',
-                                    ])
-                                    ->default('Contado')
-                                    ->required()
-                                    ->live() // Hace el campo reactivo para detectar cambios
-                                    ->afterStateUpdated(function (callable $set, $state) {
-                                        // Cuando se selecciona "Contado", realiza los siguientes cambios:
-                                        if ($state === 'Contado') {
-                                            $set('credit_days', null); // Vacia el campo de días de crédito
-                                            $set('paid', true); // Marca como pagado
-                                            $set('status', 'Finalizado'); // Establece el estado a "Finalizado"
-                                        } else {
-                                            // Cuando se selecciona "Crédito", realiza los siguientes cambios:
-                                            $set('paid', false); // Marca como no pagado
-                                            $set('status', 'Procesando'); // Establece el estado a "Procesando"
-                                        }
-                                    }),
-
-                                Forms\Components\TextInput::make('credit_days')
-                                    ->label('Días de Crédito')
-                                    ->numeric()
-                                    ->default(null)
-                                    ->visible(fn(callable $get) => $get('pruchase_condition') != 'Contado') // Solo visible cuando se selecciona "Crédito"
-                                    ->required(fn(callable $get) => $get('pruchase_condition') != 'Contado'), // Obligatorio solo si "Crédito" es seleccionado
 
                                 Forms\Components\Select::make('status')
                                     ->options([
@@ -172,7 +143,7 @@ class PurchaseResource extends Resource
                                         $data = [
                                             'have_perception' => $state,
                                         ];
-                                        updateTotaPurchase($idItem, $data);
+                                        updateTotaCredtiNotePurchase($idItem, $data);
                                         $livewire->dispatch('refreshPurchase');
                                     }),
                                 Forms\Components\Placeholder::make('net_value')
@@ -227,29 +198,28 @@ class PurchaseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_type')
-                    ->label('Documento')
-                ,
+                    ->label('Documento'),
+                Tables\Columns\TextColumn::make('process_document_type')
+                    ->label('Documento'),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('#')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('pruchase_condition')
-                    ->label('Cond. Compra'),
-                Tables\Columns\TextColumn::make('credit_days')
-                    ->label('Crédito')
-                    ->placeholder('Contado')
-                    ->numeric()
-                    ->sortable(),
+//                Tables\Columns\TextColumn::make('pruchase_condition')
+//                    ->label('Cond. Compra'),
+//                Tables\Columns\TextColumn::make('credit_days')
+//                    ->label('Crédito')
+//                    ->placeholder('Contado')
+//                    ->numeric()
+//                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                ->badge()
-                ->label('Estado')
+                    ->badge()
+                    ->label('Estado')
                     ->color(fn($record) => match ($record->status) {
                         'Anulado' => 'danger',
                         'Procesando' => 'warning',
                         'Finalizado' => 'success',
                         default => 'gray',
-                    })
-
-                ,
+                    }),
                 Tables\Columns\IconColumn::make('have_perception')
                     ->label('Percepción')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -287,14 +257,8 @@ class PurchaseResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->recordUrl(function ($record) {
-                return self::getUrl('purchase',
-                    [
-                        'record' => $record->id
-                    ]);
-            })
             ->modifyQueryUsing(function ($query) {
-                $query->where('process_document_type','=','Compra');
+                $query->where('process_document_type','=','NC');
             })
             ->filters([
                 DateRangeFilter::make('purchase_date')
@@ -308,67 +272,66 @@ class PurchaseResource extends Resource
                     ->modal()
                     ->modalHeading('Ver Compra')
                     ->modalWidth('6xl'),
-
                 Tables\Actions\Action::make('Anular')->label('Anular')
                     ->requiresConfirmation()
                     ->color('danger')
                     ->icon('heroicon-o-trash')
                     ->hidden(fn($record) => $record->status === 'Anulado')
                     ->action(function (Purchase $purchase) {
-                    $purchaseItems = PurchaseItem::where('purchase_id', $purchase->id)->get();
-                    $provider = Provider::with('pais')->find($purchase->provider_id);
-                    $entity = $provider->comercial_name;
-                    $pais = $provider->pais->name;
+                        $purchaseItems = PurchaseItem::where('purchase_id', $purchase->id)->get();
+                        $provider = Provider::with('pais')->find($purchase->provider_id);
+                        $entity = $provider->comercial_name;
+                        $pais = $provider->pais->name;
 
-                    foreach ($purchaseItems as $item) {
-                        $inventory = Inventory::find($item->inventory_id);
+                        foreach ($purchaseItems as $item) {
+                            $inventory = Inventory::find($item->inventory_id);
 
-                        // Verifica si el inventario existe
-                        if (!$inventory) {
-                            \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
-                            continue; // Si no se encuentra el inventario, continua con el siguiente item
+                            // Verifica si el inventario existe
+                            if (!$inventory) {
+                                \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                                continue; // Si no se encuentra el inventario, continua con el siguiente item
+                            }
+
+                            // Actualiza el stock del inventario
+                            $newStock = $inventory->stock - $item->quantity;
+                            $inventory->update(['stock' => $newStock,"cost_without_taxes"=>$item->price]);
+
+                            // Crear el Kardex
+                            $kardex = KardexHelper::createKardexFromInventory(
+                                $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
+                                now(), // date
+                                'Anulacion -NC Compra', // operation_type
+                                $purchase->id, // operation_id
+                                $item->id, // operation_detail_id
+                                'NC', // document_type
+                                $purchase->document_number, // document_number
+                                $entity, // entity
+                                $pais, // nationality
+                                $inventory->id, // inventory_id
+                                $inventory->stock + $item->quantity, // previous_stock
+                                0, // stock_in
+                                $item->quantity, // stock_out
+                                $inventory->stock, // stock_actual
+                                $item->quantity * $item->price, // money_in
+                                0, // money_out
+                                $inventory->stock * $item->price, // money_actual
+                                0, // sale_price
+                                $item->price // purchase_price
+                            );
+
+                            // Verifica si la creación del Kardex fue exitosa
+                            if (!$kardex) {
+                                \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                            }
+                            $purchase->update(['status' =>"Anulado"]);
+                            Notification::make('Anulacion de compra')
+                                ->title('Compra anulada de manera existosa')
+                                ->body('La compra fue anulada de manera existosa')
+                                ->success()
+                                ->send();
                         }
-
-                        // Actualiza el stock del inventario
-                        $newStock = $inventory->stock - $item->quantity;
-                        $inventory->update(['stock' => $newStock,"cost_without_taxes"=>$item->price]);
-
-                        // Crear el Kardex
-                        $kardex = KardexHelper::createKardexFromInventory(
-                            $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
-                            now(), // date
-                            'Anulacion', // operation_type
-                            $purchase->id, // operation_id
-
-                            $item->id, // operation_detail_id
-                            'ANULACION -CCF', // document_type
-                            $purchase->document_number, // document_number
-                            $entity, // entity
-                            $pais, // nationality
-                            $inventory->id, // inventory_id
-                            $inventory->stock + $item->quantity, // previous_stock
-                            0, // stock_in
-                            $item->quantity, // stock_out
-                            $inventory->stock, // stock_actual
-                            $item->quantity * $item->price, // money_in
-                            0, // money_out
-                            $inventory->stock * $item->price, // money_actual
-                            0, // sale_price
-                            $item->price // purchase_price
-                        );
-
-                        // Verifica si la creación del Kardex fue exitosa
-                        if (!$kardex) {
-                            \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
-                        }
-                        $purchase->update(['status' =>"Anulado"]);
-                        Notification::make('Anulacion de compra')
-                            ->title('Compra anulada de manera existosa')
-                            ->body('La compra fue anulada de manera existosa')
-                            ->success()
-                            ->send();
-                    }
-                }),
+                    }),
+//                Tables\Actions\EditAction::make()->label('Modificar'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -380,17 +343,16 @@ class PurchaseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PurchaseItemsRelationManager::class
+            RelationManagers\CreditNotePurchaseItemsRelationManager::class
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPurchases::route('/'),
-            'create' => Pages\CreatePurchase::route('/create'),
-            'edit' => Pages\EditPurchase::route('/{record}/edit'),
-            'purchase' => Pages\ViewPurchase::route('/{record}/sale'),
+            'index' => Pages\ListCreditNotePurchases::route('/'),
+            'create' => Pages\CreateCreditNotePurchase::route('/create'),
+            'edit' => Pages\EditCreditNotePurchase::route('/{record}/edit'),
         ];
     }
 

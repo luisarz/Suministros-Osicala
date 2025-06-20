@@ -74,7 +74,6 @@ class OrderResource extends Resource
                                                 return []; // Return an empty array if no wherehouse selected
                                             })
                                             ->default(fn() => optional(Auth::user()->employee)->id)
-
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
                                         Forms\Components\Select::make('customer_id')
@@ -110,14 +109,13 @@ class OrderResource extends Resource
                                                     ? "{$customer->name} {$customer->last_name} - NRC: {$customer->nrc} - DUI: {$customer->dui} - NIT: {$customer->nit}"
                                                     : 'Cliente no encontrado';
                                             })
-
                                             ->label('Cliente')
                                             ->createOptionForm([
                                                 Section::make('Nuevo Cliente')
                                                     ->schema([
                                                         Select::make('wherehouse_id')
                                                             ->label('Sucursal')
-                                                           ->inlineLabel(false)
+                                                            ->inlineLabel(false)
                                                             ->options(function (callable $get) {
                                                                 $wherehouse = (Auth::user()->employee)->branch_id;
                                                                 if ($wherehouse) {
@@ -141,23 +139,23 @@ class OrderResource extends Resource
                                             })
                                         ,
 
-                                      
-                                         Forms\Components\Select::make('mechanic_id')
-                                             ->label('Mecanico')
-                                             ->preload()
-                                             ->searchable()
-                                             ->live()
-                                             ->options(function (callable $get) {
-                                                 $wherehouse = $get('wherehouse_id');
-                                                 if ($wherehouse) {
-                                                     return Employee::where('branch_id', $wherehouse)
-                                                         ->where('job_title_id',4)
-                                                         ->where('is_active',true)
-                                                         ->pluck('name', 'id');
-                                                 }
-                                                 return []; // Return an empty array if no wherehouse selected
-                                             })
-                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
+
+                                        Forms\Components\Select::make('mechanic_id')
+                                            ->label('Mecanico')
+                                            ->preload()
+                                            ->searchable()
+                                            ->live()
+                                            ->options(function (callable $get) {
+                                                $wherehouse = $get('wherehouse_id');
+                                                if ($wherehouse) {
+                                                    return Employee::where('branch_id', $wherehouse)
+                                                        ->where('job_title_id', 4)
+                                                        ->where('is_active', true)
+                                                        ->pluck('name', 'id');
+                                                }
+                                                return []; // Return an empty array if no wherehouse selected
+                                            })
+                                            ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
                                         Forms\Components\Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
@@ -169,7 +167,7 @@ class OrderResource extends Resource
                                             ->disabled(),
 
                                     ])->columnSpan(9)
-                                    ->extraAttributes([ 'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2'])
+                                    ->extraAttributes(['class' => 'bg-blue-100 border border-blue-500 rounded-md p-2'])
                                     ->columns(2),
 
 //                                Section::make('Orden Total' . ($this->getOrderNumber() ?? 'Sin número'))
@@ -262,12 +260,16 @@ class OrderResource extends Resource
 
                 Tables\Columns\TextColumn::make('sale_status')
                     ->badge()
-                    ->colors([
-                        'success' => 'Finalizado',
-                        'danger' => 'Anulado',
-                        'warning' => 'Pendiente',
-                        'info' => 'En proceso',
-                    ])
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? 'Eliminado' : $state)
+                    ->color(fn ($state) => match ($state) {
+                        'Finalizado' => 'success',
+                        'Pendiente' => 'warning',
+                        'En proceso' => 'info',
+                        'Anulado', 'Eliminado' => 'danger',
+                        default => null, // Sin color
+                    })
                     ->label('Estado'),
 
 
@@ -284,7 +286,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('discount_percentage')
                     ->label('Descuento')
                     ->suffix('%')
-                 ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount_money')
                     ->label('Taller')
@@ -328,20 +330,20 @@ class OrderResource extends Resource
                         'start' => now()->subDays(30)->format('Y-m-d'),
                         'end' => now()->format('Y-m-d'),
                     ]),
+                Tables\Filters\TrashedFilter::make('eliminados')
+                    ->label('Eliminados')
+                    ->query(fn ($query) => $query->withoutGlobalScope(SoftDeletingScope::class))
+                    ->default(false),
 
             ])
             ->actions([
                 orderActions::printOrder(),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
-//                    ->visible(function ($record) {
-//                        return $record->sale_status != 'Finalizado' && $record->sale_status != 'Anulado';
-//                    })
-            ->visible(function ($record) {
-                return $record->sale_status != 'Finalizado' && $record->is_invoiced == false;
-            }),
+                    ->visible(fn($record) =>
+                        $record->sale_status == 'Nueva' && $record->deleted_at == null
+                    ),
                 orderActions::closeOrder(),
                 orderActions::billingOrden(),
-//                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Large)->color('danger'),
                 orderActions::cancelOrder(),
                 Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
             ], position: ActionsPosition::BeforeCells)

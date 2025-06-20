@@ -346,7 +346,7 @@ class SaleResource extends Resource
                                             ->default(1),
                                         Forms\Components\TextInput::make('cash')
                                             ->label('Efectivo')
-                                            ->required()
+//                                            ->required()
                                             ->numeric()
                                             ->default(0.00)
                                             ->live(true)
@@ -378,7 +378,7 @@ class SaleResource extends Resource
                                             }),
                                         Forms\Components\TextInput::make('change')
                                             ->label('Cambio')
-                                            ->required()
+//                                            ->required()
                                             ->readOnly()
                                             ->extraAttributes(['class' => 'bg-gray-100 border border-gray-500 rounded-md '])
                                             ->numeric()

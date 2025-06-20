@@ -49,8 +49,8 @@ class EditOrder extends EditRecord
                 ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading('Confirmación!!')
-                ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
-                ->modalButton('Sí, cancelar venta')
+                ->modalSubheading('¿Estás seguro de que deseas Elimianr esta venta? Esta acción no se puede deshacer.')
+                ->modalButton('Sí, Eliminar Orden')
                 ->action(function (Actions\DeleteAction $delete) {
 //
                     $this->record->delete();

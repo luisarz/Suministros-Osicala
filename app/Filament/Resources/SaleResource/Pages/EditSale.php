@@ -48,7 +48,7 @@ class EditSale extends EditRecord
                 ->modalButton('Sí, Finalizar venta')
                 ->action(function (Actions\EditAction $edit) {
                     if ($this->record->sale_total <= 0) {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar venta')
                             ->body('El monto total de la venta debe ser mayor a 0')
                             ->danger()
@@ -61,7 +61,7 @@ class EditSale extends EditRecord
 
                     $documentType = $this->data['document_type_id'];
                     if ($documentType == "") {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Tipo de documento')
                             ->body('No se puede finalizar la venta, selecciona el tipo de documento a emitir')
                             ->danger()
@@ -71,7 +71,7 @@ class EditSale extends EditRecord
 
                     $operation_condition_id = $this->data['operation_condition_id'];
                     if ($operation_condition_id == "") {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Condición de operación')
                             ->body('No se puede finalizar la venta, selecciona la condicion de la venta')
                             ->danger()
@@ -82,7 +82,7 @@ class EditSale extends EditRecord
                     $payment_method_id = $this->data['payment_method_id'];
 
                     if ($payment_method_id == "") {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Forma de pago')
                             ->body('No se puede finalizar la venta, selecciona la forma de pago')
                             ->danger()
@@ -93,7 +93,7 @@ class EditSale extends EditRecord
 
                     $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(false);
                     if (!$openedCashBox) {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Caja cerrada')
                             ->body('No se puede finalizar la venta porque no hay caja abierta')
                             ->danger()
@@ -103,7 +103,7 @@ class EditSale extends EditRecord
 
 
                     if ($this->record->sale_total <= 0) {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar venta')
                             ->body('El monto total de la venta debe ser mayor a 0')
                             ->danger()
@@ -121,7 +121,7 @@ class EditSale extends EditRecord
                             : 0.0;
 
                         if ($cash < $sale_total) {
-                            PageAlert::make('No se puede finalizar la venta')
+                            Notification::make('No se puede finalizar la venta')
                                 ->title('Error al finalizar venta')
                                 ->body('El monto en efectivo es menor al total de la venta')
                                 ->danger()
@@ -196,12 +196,6 @@ class EditSale extends EditRecord
                     $pais = $client->country->name ?? 'Salvadoreña';
                     foreach ($salesItem as $item) {
                         $inventory = Inventory::with('product')->find($item->inventory_id);
-                        //Buscar si producto compuiesto y descar los inventarios que tenga
-                        //inventoriasGourped;
-//                        foreach ($inventory as $item) {
-//                            //descar los inventario internos
-//                        }
-
                         // Verifica si el inventario existe
                         if (!$inventory) {
                             \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
@@ -291,12 +285,11 @@ class EditSale extends EditRecord
                     $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
                     $correlativo->current_number = $document_internal_number_new;
                     $correlativo->save();
-                    PageAlert::make()
+                    Notification::make()
                         ->title('Venta Finalizada')
                         ->body('Venta finalizada con éxito. # Comprobante **' . $document_internal_number_new . '**')
                         ->success()
                         ->send();
-
                     // Redirigir después de completar el proceso
                     $this->redirect(static::getResource()::getUrl('index'));
                 }),

@@ -53,7 +53,7 @@ function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
             // Crear el Kardex
             $kardex = KardexHelper::createKardexFromInventory(
                 $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
-                $sale->created_at, // Fecha
+                now(), // Fecha
                 $operation . ' Orden ' . $sale->order_number, // Tipo de operación
                 $sale->id, // operation_id
                 $item->id, // operation_detail_id
@@ -99,7 +99,6 @@ class orderActions
                 $print = DteTransmisionWherehouse::where('wherehouse', $idSucursal)->first();
                 $ruta = $print->printer_type == 1 ? 'ordenGenerarTicket' : 'ordenGenerarPdf';
                 return route($ruta, ['idVenta' => $record->id]);
-
             })
             ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
 
@@ -111,10 +110,7 @@ class orderActions
             ->label('Facturar')
             ->icon('heroicon-o-arrow-up-on-square-stack')
             ->iconSize(IconSize::Large)
-//            ->visible(function ($record) {
-//                return $record->sale_status != 'Finalizado' && $record->status != 'Anulado';
-//            })
-            ->visible(fn($record) => !in_array($record->sale_status, ['Finalizado', 'Facturada', 'Anulado']))
+            ->visible(fn($record) => !in_array($record->sale_status, ['Finalizado', 'Facturada', 'Anulado']) && $record->deleted_at == null)
             ->color('primary')
             ->action(function ($record) {
                 $whereHouse = auth()->user()->employee->branch_id ?? null;
@@ -182,8 +178,7 @@ class orderActions
                             ->default(fn($record) => $record?->sale_total),
                     ]),
             ])
-            ->visible(fn($record) => !in_array($record->sale_status, ['Finalizado', 'Facturada', 'Anulado']))
-//            ->hidden(fn($record) => !in_array($record->sale_status, ['Facturada', 'Anulado']))
+            ->visible(fn($record) => !in_array($record->sale_status, ['Finalizado', 'Facturada', 'Anulado']) && $record->deleted_at == null)
             ->modalHeading('Confirmación')
             ->modalSubheading('¿Estás seguro de que deseas cerrar esta orden? Esta acción no se puede deshacer.')
             ->action(function ($record, array $data) {

@@ -234,19 +234,19 @@ class SaleItemsRelationManager extends RelationManager
 //                                            ->afterStateUpdated(function (callable $get, callable $set) {
 //                                                $this->calculateTotal($get, $set);
 //                                            }),
-                                        // Forms\Components\Toggle::make('is_tarjet')
-                                        //     ->label('Con tarjeta')
-                                        //     ->columnSpan(1)
-                                        //     ->live()
-                                        //     ->afterStateUpdated(function (callable $get, callable $set) {
-                                        //         $price = $get('price'); // Obtener el precio actual
-                                        //         if ($get('is_tarjet')) {
-                                        //             $set('price', $price * 1.05);
-                                        //         } else {
-                                        //             $set('price', $price * 0.95);
-                                        //         }
-                                        //         $this->calculateTotal($get, $set);
-                                        //     }),
+                                         Forms\Components\Toggle::make('is_tarjet')
+                                             ->label('Con tarjeta')
+                                             ->columnSpan(1)
+                                             ->live()
+                                             ->afterStateUpdated(function (callable $get, callable $set) {
+                                                 $price = $get('price'); // Obtener el precio actual
+                                                 if ($get('is_tarjet')) {
+                                                     $set('price', $price * 1.05);
+                                                 } else {
+                                                     $set('price', $price * 0.95);
+                                                 }
+                                                 $this->calculateTotal($get, $set);
+                                             }),
 
                                         Forms\Components\TextInput::make('minprice')
                                             ->label('Tributos')
@@ -352,14 +352,14 @@ class SaleItemsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\EditAction::make('edit')
                     ->modalWidth('7xl')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
 
                     }),
-                Tables\Actions\DeleteAction::make()
+                Tables\Actions\DeleteAction::make('delete')
                     ->label('Quitar')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);

@@ -33,8 +33,13 @@ class OrdenController extends Controller
 
         $formatter = new NumeroALetras();
         $montoLetras = $formatter->toInvoice($datos->sale_total, 2, 'DoLARES');
-        $pdf = Pdf::loadView('order.order-print-pdf', compact('datos', 'empresa', 'montoLetras')); // Cargar vista y pasar datos
+        $isLocalhost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']);
 
+        $pdf = Pdf::loadView('order.order-print-pdf', compact('datos', 'empresa', 'montoLetras'))
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => !$isLocalhost,
+            ]); // Cargar vista y pasar datos
 
         return $pdf->stream("Orden-ventas-.{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña
 
@@ -47,6 +52,7 @@ class OrdenController extends Controller
         $empresa = $this->getConfiguracion();
         $logo = auth()->user()->employee->wherehouse->logo;
         $logoPath=\Storage::url($logo);
+        $isLocalhost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']);
 
         $formatter = new NumeroALetras();
         $montoLetras = $formatter->toInvoice($datos->sale_total, 2, 'DoLARES');
@@ -54,9 +60,8 @@ class OrdenController extends Controller
 
         ->setPaper([25, -10, 250, 1000]) // Tamaño personalizado
         ->setOptions([
-//            'isPhpEnabled' => true, // Permite PHP en la vista
-//            'isRemoteEnabled' => true,
-
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => !$isLocalhost,
         ]);
         return $pdf->stream("Orden-ventas-.{$idVenta}.pdf"); // El PDF se abre en una nueva pestaña
 

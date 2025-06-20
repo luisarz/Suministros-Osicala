@@ -102,6 +102,7 @@ class EditAdjustmentInventory extends EditRecord
                                     $child->stock * $precio,                        // money_actual (valor actual del stock)
                                     $precio,                                 // sale_price (precio de venta)
                                     $child->cost_without_taxes ?? 0          // purchase_price (precio de compra)
+
                                 );
 
                                 if (!$kardex) {

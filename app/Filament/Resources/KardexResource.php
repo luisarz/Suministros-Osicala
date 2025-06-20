@@ -175,7 +175,7 @@ class KardexResource extends Resource
                     ->money('USD', locale: 'USD')
                     ->label('Precio Compra')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('promedio_costo')
+                Tables\Columns\TextColumn::make('promedial_cost')
                     ->money('USD', locale: 'USD')
                     ->label('Costo Promedio')
                     ->sortable(),
