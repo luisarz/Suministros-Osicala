@@ -124,14 +124,14 @@ class EditSale extends EditRecord
                                 ? doubleval($this->data['cash'])
                                 : 0.0;
 
-                            if ($cash < $sale_total) {
-                                Notification::make('No se puede finalizar la venta')
-                                    ->title('Error al finalizar venta')
-                                    ->body('El monto en efectivo es menor al total de la venta')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
+//                            if ($cash < $sale_total) {
+//                                Notification::make('No se puede finalizar la venta')
+//                                    ->title('Error al finalizar venta')
+//                                    ->body('El monto en efectivo es menor al total de la venta')
+//                                    ->danger()
+//                                    ->send();
+//                                return;
+//                            }
                         } else {
 //                        $salePayment_status='Pendiente';
                             $status_sale_credit = 1;
