@@ -23,6 +23,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use http\Client;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Mockery\Exception;
 
