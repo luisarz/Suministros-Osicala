@@ -41,6 +41,7 @@ Route::get('/printTransfer/{idTransfer}', [TransferController::class, 'printTran
 Route::get('/employee/sales/{id_employee}/{star_date}/{end_date}', [EmployeesController::class, 'sales'])->middleware(['auth'])->name('employee.sales');
 
 //Libros de excel
+Route::get('/sale/iva/{doctype}/{starDate}/{endDate}',[ReportsController::class,'saleReportFact']);
 Route::get('/sale/iva/libro/fact/{starDate}/{endDate}',[ReportsController::class,'saleReportFact']);
 Route::get('/sale/iva/libro/ccf/{starDate}/{endDate}',[ReportsController::class,'saleReportCCF']);
 Route::get('/sale/iva/libro/ccf/{startDate}/{endDate}', [ReportsController::class, 'saleReportCCF'])->name('sale.iva.libro.ccf');

@@ -239,7 +239,7 @@ class DTEController extends Controller
             "items" => $items
         ];
 
-        return response()->json($dte);
+//        return response()->json($dte);
 
 
         return $this->processDTE($dte, $idVenta);

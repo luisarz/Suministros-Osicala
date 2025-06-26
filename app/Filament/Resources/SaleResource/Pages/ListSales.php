@@ -49,8 +49,8 @@ class ListSales extends ListRecords
                         ->default('fact')
                         ->label('Documentos')
                         ->options([
-                            'fact' => 'Ventas',
-//                            'ccf' => 'CCF',
+                            '1' => 'Factura',
+                            '3' => 'CCF',
                         ])
                         ->required(),
                     Select::make('fileType')
@@ -68,20 +68,8 @@ class ListSales extends ListRecords
                     $fileType = $data['fileType'];
 
                     // Construir la ruta dinámicamente
-                    $ruta = '/sale/iva/'; // Base del nombre de la ruta
+                    $ruta = '/sale/iva/'.$documentType. '/' . $startDate . '/' . $endDate; // Base del nombre de la ruta
 
-                    if ($fileType === 'Libro') {
-                        $ruta .= 'libro/';
-                    } else {
-                        $ruta .= 'csv/';
-                    }
-
-                    if ($documentType === 'fact') {
-                        $ruta .= 'fact';
-                    } else {
-                        $ruta .= 'ccf';
-                    }
-                    $ruta .= '/' . $startDate . '/' . $endDate;
 
                     return \Filament\Notifications\Notification::make()
                         ->title('Reporte preparado.')
