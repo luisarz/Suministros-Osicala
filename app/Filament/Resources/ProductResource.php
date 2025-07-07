@@ -74,10 +74,15 @@ class ProductResource extends Resource
 
                         Forms\Components\Select::make('category_id')
                             ->label('Categoría')
-                            ->relationship('category', 'name')
+                            ->relationship(
+                                name: 'category',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn ($query) => $query->whereNotNull('parent_id')
+                            )
                             ->preload()
                             ->searchable()
                             ->required(),
+
                         Forms\Components\Select::make('marca_id')
                             ->label('Marca')
                             ->preload()
