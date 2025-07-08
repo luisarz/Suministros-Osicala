@@ -101,7 +101,7 @@
         <div class="section-title">Datos de Apertura</div>
         <table>
             <tr><td>Caja</td><td>{{$caja->cashbox->description}}</td></tr>
-            <tr><td>Fecha Apertura</td><td>{{$caja->created_at}}</td></tr>
+            <tr><td>Fecha Apertura</td><td>{{ date('d-m-Y H:i:s', strtotime( $caja->created_at))}}</td></tr>
             <tr><td>Monto Apertura</td><td class="currency">${{number_format($caja->open_amount, 2)}}</td></tr>
             <tr><td>Empleado</td><td>{{$caja->openEmployee->name}} {{$caja->openEmployee->lastname}}</td></tr>
         </table>
@@ -151,7 +151,7 @@
             <tr><td>- Egresos</td><td class="currency">-${{number_format($caja->saldo_egresos_totales, 2)}}</td></tr>
             <tr><td>+ Apertura</td><td class="currency">${{number_format($caja->open_amount, 2)}}</td></tr>
             <tr class="totals"><td>Saldo Total</td><td class="currency">${{number_format($caja->saldo_total_operaciones, 2)}}</td></tr>
-            <tr><td>Fecha Cierre</td><td>{{$caja->updated_at}}</td></tr>
+            <tr><td>Fecha Cierre</td><td>{{ date('d-m-Y H:i:s', strtotime($caja->updated_at))}}</td></tr>
             <tr><td>Empleado</td><td>{{$caja->closeEmployee->name}} {{$caja->closeEmployee->lastname}}</td></tr>
         </table>
     </div>
