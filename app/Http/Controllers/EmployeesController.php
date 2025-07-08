@@ -200,7 +200,7 @@ class EmployeesController extends Controller
         $sucursal = Branch::find($id_sucursal);
         $empleado = Employee::where('id', $id_employee)->select('name', 'lastname')->first();
 
-        $pdf = Pdf::loadView('DTE.comission_sale_pdf',
+        $pdf = Pdf::loadView('DTE.comission_work_pdf',
             compact(
                 'empresa',
                 'sucursal',
