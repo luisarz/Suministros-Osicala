@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filament\Resources\CashboxOpenResource;
 use App\Models\CashBoxOpen;
 use App\Models\Company;
 use App\Models\Sale;
@@ -69,23 +70,17 @@ class OrdenController extends Controller
 
     public function closeClashBoxPrint($idCasboxClose)
     {
-        $sales = Sale::with('customer', 'seller')->where('status', '!=', 'anulado')->where('is_order', false)->where('cashbox_open_id', $idCasboxClose)->where('is_order', false);
-        $orders = Sale::with('customer', 'seller')->where('status', '!=', 'Finalizado')->where('is_order_closed_without_invoiced', false)->where('cashbox_open_id', $idCasboxClose)->where('is_order', false);
-        $ingresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Ingreso')->whereNull('deleted_at');
-        $egresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Egreso')->whereNull('deleted_at');
+
+//        $sales = Sale::with('customer', 'seller')->where('status', '!=', 'anulado')->where('is_order', false)->where('cashbox_open_id', $idCasboxClose)->where('is_order', false);
+//        $orders = Sale::with('customer', 'seller')->where('status', '!=', 'Finalizado')->where('is_order_closed_without_invoiced', false)->where('cashbox_open_id', $idCasboxClose)->where('is_order', false);
+//        $ingresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Ingreso')->whereNull('deleted_at');
+//        $egresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Egreso')->whereNull('deleted_at');
         $caja = CashBoxOpen::with('openEmployee', 'closeEmployee', 'cashbox')->find($idCasboxClose);
         $empresa = $this->getConfiguracion();
-        $datos = [
-            'sales' => $sales,
-            'orders' => $orders,
-            'ingresos' => $ingresos,
-            'egresos' => $egresos,
-        ];
-//        dd($caja);
+
         $formatter = new NumeroALetras();
-        $montoLetras = $formatter->toInvoice($caja->closed_amount, 2, 'DóLARES');
+        $montoLetras = $formatter->toInvoice($caja->saldo_total_operaciones, 2, 'DÓLARES');
         $pdf = Pdf::loadView('print.closedcashbox-print-pdf', compact(
-            'datos',
             'empresa',
             'caja',
             'montoLetras')); // Cargar vista y pasar datos

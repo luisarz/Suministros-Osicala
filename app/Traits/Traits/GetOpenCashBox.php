@@ -20,12 +20,13 @@ trait GetOpenCashBox
         }
         return $cashbox ? $cashBoxOpened->cashbox->id ?? 0 : $cashBoxOpened->id ?? 0;
     }
-    public static function getTotal(bool $isOrder = false, bool $isClosedWithoutInvoiced = false): float
+
+    public static function getTotal(bool $isOrder = false, bool $isClosedWithoutInvoiced = false, $documentType = null, $paymentMethod = null): float
     {
         $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
 
         $query = Sale::where('cashbox_open_id', $idCashBoxOpened)
-            ->whereIn('sale_status',['Facturada','Finalizado'] );
+            ->whereIn('sale_status', ['Facturada', 'Finalizado']);
 
         if ($isOrder) {
             $query->whereIn('operation_type', ['Order']);
@@ -34,14 +35,21 @@ trait GetOpenCashBox
             }
             $column = 'total_order_after_discount'; // For order totals
         } else {
-            $query->whereIn('operation_type', ['Sale','Order','Quote']);
+            $query->whereIn('operation_type', ['Sale', 'Order', 'Quote']);
+            if ($documentType !== null) {
+                $query->where('document_type_id', $documentType);
+            }
+            if ($paymentMethod !== null) {
+//                dd($paymentMethod);
+                $query->whereIn('payment_method_id', $paymentMethod);
+            }
             $query->where('is_dte', true);
             $column = 'sale_total'; // For sale totals
         }
         return $query->sum($column);
     }
 
-    public static function minimalCashBoxTotal(?string $operationType ): float
+    public static function minimalCashBoxTotal(?string $operationType): float
     {
         $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
         return SmallCashBoxOperation::where('cash_box_open_id', $idCashBoxOpened)
@@ -50,7 +58,6 @@ trait GetOpenCashBox
             ->whereNull('deleted_at') // Exclude soft-deleted records
             ->sum('amount');
     }
-
 
 
 }

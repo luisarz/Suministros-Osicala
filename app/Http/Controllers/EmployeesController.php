@@ -120,17 +120,16 @@ class EmployeesController extends Controller
         $startDate = Carbon::createFromFormat('d-m-Y', $star_date)->startOfDay();
         $endDate = Carbon::createFromFormat('d-m-Y', $end_date)->endOfDay();
 
-/// 1. Obtener categorías hijas de 56
+        /// 2. Obtener categorías hijas de 56
         $childIds = DB::table('categories')
             ->where('parent_id', 56)
             ->pluck('id')
             ->toArray();
 
-// 2. Incluir categoría 56 + sus hijas
+        // 3. Incluir categoría 56 + sus hijas
         $includedIds = array_merge([56], $childIds);
-//        dd  ($includedIds);
+        // 4. Consulta principal (solo categoría hija)
 
-// 3. Consulta principal (solo categoría hija)
         $rawData = DB::table('sale_items as si')
             ->join('sales       as s', 's.id', '=', 'si.sale_id')
             ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
@@ -148,17 +147,12 @@ class EmployeesController extends Controller
                 c.commission_percentage     AS commission_percentage,
                 SUM(si.quantity * si.price) AS total_amount,
                 COUNT(DISTINCT s.id)        AS total_operations,
-
-                    GROUP_CONCAT(DISTINCT CAST(s.order_number AS UNSIGNED)) AS order_numbers
-
-
-
+                GROUP_CONCAT(DISTINCT CAST(s.order_number AS UNSIGNED)) AS order_numbers
             ')
             ->groupByRaw('DATE(s.operation_date), c.id, c.name, c.commission_percentage')
             ->orderBy('sale_day')
             ->get();
 //        dd($rawData);
-
         $pivotData = [];
         $categoriesMap = [];
 
