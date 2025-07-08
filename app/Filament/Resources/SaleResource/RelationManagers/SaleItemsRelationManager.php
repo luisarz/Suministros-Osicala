@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources\SaleResource\RelationManagers;
 
 use App\Models\Distrito;
@@ -49,24 +50,35 @@ class SaleItemsRelationManager extends RelationManager
                                     ->compact()
                                     ->schema([
 
-
+                                        Select::make('search_type')
+                                            ->label('Buscar por')
+                                            ->options([
+                                                'name' => 'Descripción',
+                                                'sku' => 'Código',
+                                            ])
+                                            ->inlineLabel(false)
+                                            ->default(
+                                                'name' // Valor por defecto
+                                            ),
                                         Select::make('inventory_id')
                                             ->label('Producto')
                                             ->searchable()
-                                            ->preload(true)
-                                            //                                            ->live()
-                                            ->debounce(300)
-                                            ->columnSpanFull()
                                             ->inlineLabel(false)
+                                            ->preload(true)
+                                            ->debounce(300)
                                             ->getSearchResultsUsing(function (string $query, callable $get) {
                                                 $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
                                                 $aplications = $get('aplications');
+                                                $searchType = $get('search_type');
                                                 if (strlen($query) < 2) {
                                                     return []; // No buscar si el texto es muy corto
                                                 }
-                                                // Dividir el texto ingresado en palabras clave
-                                                //                                                $keywords = explode(' ', $query);
-                                                $keywords = $query;
+                                                if (str_ends_with($query, '-')) {
+                                                    return [];
+                                                }
+//                                                $keywords = $query;
+                                                $keywords = explode(' ', $query); // Convertir string a array
+
 
                                                 return Inventory::with([
                                                     'product:id,name,sku,bar_code,aplications',
@@ -78,13 +90,33 @@ class SaleItemsRelationManager extends RelationManager
                                                     ->whereHas('prices', function ($q) {
                                                         $q->where('is_default', 1); // Verifica que tenga un precio predeterminado
                                                     })
-                                                    ->whereHas('product', function ($q) use ($aplications, $keywords) {
-                                                        $q->where(function ($queryBuilder) use ($keywords) {
-                                                            //                                                            foreach ($keywords as $word) {
-                                                            $queryBuilder->where('name', 'like', "%$keywords%")
-                                                                ->orWhere('sku', 'like', "%$keywords%")
-                                                                ->orWhere('bar_code', 'like', "%$keywords%");
-                                                            //                                                            }
+                                                    ->whereHas('product', function ($q) use ($aplications, $keywords, $searchType) {
+                                                        $q->where(function ($queryBuilder) use ($keywords, $searchType) {
+                                                            foreach ($keywords as $word) {
+                                                                $word = trim($word);
+                                                                switch ($searchType) {
+                                                                    case 'name':
+                                                                        $booleanQuery = collect($keywords)
+                                                                            ->filter(fn($w) => strlen(trim($w)) >= 2)
+                                                                            ->map(fn($w) => '+' . trim($w) . '*')
+                                                                            ->implode(' ');
+                                                                            $queryBuilder->orWhereRaw("MATCH(name) AGAINST (? IN BOOLEAN MODE)", [$booleanQuery]);
+                                                                        break;
+
+                                                                    case 'sku':
+                                                                        $queryBuilder->orWhere('sku', 'like', "%{$word}%");
+                                                                        break;
+
+                                                                    default:
+                                                                        $booleanQuery = collect($keywords)
+                                                                            ->filter(fn($w) => strlen(trim($w)) >= 2)
+                                                                            ->map(fn($w) => '+' . trim($w) . '*')
+                                                                            ->implode(' ');
+                                                                        $queryBuilder->orWhereRaw("MATCH(name) AGAINST (? IN BOOLEAN MODE)", [$booleanQuery])
+                                                                            ->orWhere('sku', 'like', "%{$word}%");
+                                                                        break;
+                                                                }
+                                                            }
                                                         });
 
                                                         if (!empty($aplications)) {
@@ -175,12 +207,6 @@ class SaleItemsRelationManager extends RelationManager
                                             }),
 
 
-
-
-
-
-
-
                                         Forms\Components\TextInput::make('quantity')
                                             ->label('Cantidad')
                                             ->step(1)
@@ -232,15 +258,16 @@ class SaleItemsRelationManager extends RelationManager
                                         //                                                $this->calculateTotal($get, $set);
                                         //                                            }),
                                         Forms\Components\Toggle::make('is_tarjet')
-                                            ->label('Con Turismo')
+                                            ->label('Con Tarjeta')
                                             ->columnSpan(1)
                                             ->live()
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $price = $get('price'); // Obtener el precio actual
                                                 if ($get('is_tarjet')) {
-                                                    $neto=round($price /1.13, 2);
-                                                    $turismo= round($neto * 0.05,2); // Calcular el 5% del neto
-                                                    $newprice = $price + $turismo; // Sumar el 5% al precio
+//                                                    $neto=round($price /1.13, 2);
+                                                    $neto = round($price, 2);
+                                                    $recargoTarjeta = round($neto * 0.05, 2); // Calcular el 5% del neto
+                                                    $newprice = $price + $recargoTarjeta; // Sumar el 5% al precio
                                                     $set('price', $newprice);
                                                 } else {
                                                     $set('price', $price * 0.95);
@@ -336,7 +363,7 @@ class SaleItemsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
-                    ->formatStateUsing(fn ($state) => number_format($state, 4))
+                    ->formatStateUsing(fn($state) => number_format($state, 4))
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('discount')
                     ->label('Descuento')
@@ -345,7 +372,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->columnSpan(1),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
-                    ->formatStateUsing(fn ($state) => number_format($state, 4))
+                    ->formatStateUsing(fn($state) => number_format($state, 4))
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
@@ -418,8 +445,6 @@ class SaleItemsRelationManager extends RelationManager
             }
 
 
-
-
             if ($is_except) {
                 $total -= ($total * 0.13);
             }
@@ -455,8 +480,8 @@ class SaleItemsRelationManager extends RelationManager
                 //            dd($montoTotal);
                 $neto = $ivaRate > 0 ? $montoTotal / (1 + $ivaRate) : $montoTotal;
                 $iva = $montoTotal - $neto;
-                if($documentType==11 || $documentType==14){
-                    $neto=$neto+$iva;
+                if ($documentType == 11 || $documentType == 14) {
+                    $neto = $neto + $iva;
                     $iva = 0;
                 }
                 $retention = $sale->have_retention ? $neto * 0.1 : 0;
@@ -472,7 +497,6 @@ class SaleItemsRelationManager extends RelationManager
 
         }
     }
-
 
 
 }
