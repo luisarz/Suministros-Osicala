@@ -40,6 +40,7 @@ Route::get('/printQuote/{idVenta}', [QuoteController::class, 'printQuote'])->nam
 Route::get('/printTransfer/{idTransfer}', [TransferController::class, 'printTransfer'])->middleware(['auth'])->name('printTransfer');
 Route::get('/employee/sales/{id_employee}/{star_date}/{end_date}', [EmployeesController::class, 'sales'])->middleware(['auth'])->name('employee.sales');
 Route::get('/employee/sales-work/{id_employee}/{star_date}/{end_date}', [EmployeesController::class, 'salesWork'])->middleware(['auth'])->name('employee.sales-work');
+Route::get('/employee/test/{id_employee}/{star_date}/{end_date}', [EmployeesController::class, 'dataEmployee'])->middleware(['auth'])->name('employee.sales-test');
 
 //Libros de excel
 Route::get('/sale/iva/{doctype}/{starDate}/{endDate}',[ReportsController::class,'saleReportFact']);
