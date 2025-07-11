@@ -18,6 +18,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -282,6 +283,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('sale_total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
+                    ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount_percentage')
                     ->label('Descuento')
