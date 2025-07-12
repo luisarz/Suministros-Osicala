@@ -43,13 +43,6 @@
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
     ),
   ),
-  'charrafimed/global-search-modal' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider',
-    ),
-  ),
   'devonab/filament-easy-footer' => 
   array (
     'aliases' => 
@@ -276,13 +269,6 @@
     'providers' => 
     array (
       0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    ),
-  ),
-  'spatie/laravel-login-link' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\LoginLink\\LoginLinkServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 

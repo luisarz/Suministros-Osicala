@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45caa39a921cf07e6049ba6a1ab895d7",
+    "content-hash": "24616b6e2c50828e1d7d0876a9682a18",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -652,58 +652,6 @@
             "time": "2025-02-28T13:11:00+00:00"
         },
         {
-            "name": "calebporzio/sushi",
-            "version": "v2.4.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/calebporzio/sushi.git",
-                "reference": "932d09781bff75c812541d2d269400fd7d730bab"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/calebporzio/sushi/zipball/932d09781bff75c812541d2d269400fd7d730bab",
-                "reference": "932d09781bff75c812541d2d269400fd7d730bab",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/database": "^5.8 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0",
-                "illuminate/support": "^5.8 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0",
-                "php": "^7.1.3|^8.0"
-            },
-            "require-dev": {
-                "doctrine/dbal": "^2.9 || ^3.1.4",
-                "orchestra/testbench": "3.8.* || 3.9.* || ^4.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
-                "phpunit/phpunit": "^7.5 || ^8.4 || ^9.0 || ^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Sushi\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Caleb Porzio",
-                    "email": "calebporzio@gmail.com"
-                }
-            ],
-            "description": "Eloquent's missing \"array\" driver.",
-            "support": {
-                "source": "https://github.com/calebporzio/sushi/tree/v2.4.5"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/calebporzio",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-10-17T14:42:34+00:00"
-        },
-        {
             "name": "carbonphp/carbon-doctrine-types",
             "version": "3.2.0",
             "source": {
@@ -771,53 +719,6 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
-        },
-        {
-            "name": "charrafimed/global-search-modal",
-            "version": "v3.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CharrafiMed/global-search-modal.git",
-                "reference": "ce65e84d196799cbeadd0cfca57a4cbf573a3144"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CharrafiMed/global-search-modal/zipball/ce65e84d196799cbeadd0cfca57a4cbf573a3144",
-                "reference": "ce65e84d196799cbeadd0cfca57a4cbf573a3144",
-                "shasum": ""
-            },
-            "require": {
-                "filament/support": "^3.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "CharrafiMed\\GlobalSearchModal\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CharrafiMed",
-                    "email": "charrafimohamed27@gmail.com"
-                }
-            ],
-            "description": "advanced global search modal",
-            "support": {
-                "issues": "https://github.com/CharrafiMed/global-search-modal/issues",
-                "source": "https://github.com/CharrafiMed/global-search-modal/tree/v3.7.1"
-            },
-            "time": "2025-06-02T12:26:13+00:00"
         },
         {
             "name": "composer/pcre",
@@ -7057,71 +6958,6 @@
                 }
             ],
             "time": "2025-06-15T06:59:49+00:00"
-        },
-        {
-            "name": "spatie/laravel-login-link",
-            "version": "1.6.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/laravel-login-link.git",
-                "reference": "8fd82ccafcf6ee9fbc033b7b273d44e5f6fd5ca4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-login-link/zipball/8fd82ccafcf6ee9fbc033b7b273d44e5f6fd5ca4",
-                "reference": "8fd82ccafcf6ee9fbc033b7b273d44e5f6fd5ca4",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/contracts": "^10.0|^11.0|^12.0",
-                "php": "^8.0",
-                "spatie/laravel-package-tools": "^1.9.2"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.8",
-                "nunomaduro/collision": "^7.0|^8.0",
-                "orchestra/testbench": "^8.0|^9.0|^10.0",
-                "pestphp/pest": "^2.34|^3.7",
-                "pestphp/pest-plugin-laravel": "^1.1|^2.3|^3.1",
-                "spatie/laravel-ray": "^1.26",
-                "spatie/pest-plugin-snapshots": "^1.1|^2.1",
-                "spatie/phpunit-snapshot-assertions": "^4.2.12|^5.1"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Spatie\\LoginLink\\LoginLinkServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\LoginLink\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Freek Van der Herten",
-                    "email": "freek@spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Quickly login to your local environment",
-            "homepage": "https://github.com/spatie/laravel-login-link",
-            "keywords": [
-                "laravel",
-                "laravel-login-link",
-                "spatie"
-            ],
-            "support": {
-                "source": "https://github.com/spatie/laravel-login-link/tree/1.6.3"
-            },
-            "time": "2025-04-16T13:42:34+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",

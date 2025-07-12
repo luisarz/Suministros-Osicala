@@ -10,6 +10,7 @@ class CashBoxResumenService
     public float $ingreso_factura;
     public float $ingreso_ccf;
     public float $ingreso_ordenes;
+    public float $ingreso_taller;
     public float $ingreso_caja_chica;
     public float $ingreso_total;
 
@@ -30,9 +31,11 @@ class CashBoxResumenService
 
         $this->ingreso_factura = $srv->getTotal(false, false, 1);
         $this->ingreso_ccf = $srv->getTotal(false, false, 3);
-        $this->ingreso_ordenes = $srv->getTotal(true, true);
+        $ordenes=$srv->obtenerTotalesOrdenYManoObra();
+        $this->ingreso_ordenes = $ordenes['total_ordenes'];
+        $this->ingreso_taller = $ordenes['total_mano_obra'];
         $this->ingreso_caja_chica = $srv->minimalCashBoxTotal('Ingreso');
-        $this->ingreso_total = $this->ingreso_factura + $this->ingreso_ccf + $this->ingreso_ordenes + $this->ingreso_caja_chica;
+        $this->ingreso_total = $this->ingreso_factura + $this->ingreso_ccf + $this->ingreso_ordenes+$this->ingreso_taller + $this->ingreso_caja_chica;
 
         $this->egreso_caja_chica = $srv->minimalCashBoxTotal('Egreso');
         $this->egreso_nc = $srv->getTotal(false, false, 5);

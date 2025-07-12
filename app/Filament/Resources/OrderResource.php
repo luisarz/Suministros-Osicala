@@ -296,7 +296,7 @@ class OrderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_order_after_discount')
                     ->label('Total - Descuento')
-                    ->toggleable(isToggledHiddenByDefault: true)
+//                    ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cash')

@@ -35,6 +35,7 @@ class CashBoxOpen extends Model
         'ingreso_factura',
         'ingreso_ccf',
         'ingreso_ordenes',
+        'ingreso_taller',
         'ingreso_caja_chica',
         'ingreso_totales',
         'egreso_caja_chica',

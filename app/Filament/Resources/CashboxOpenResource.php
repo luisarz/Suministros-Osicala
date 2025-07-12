@@ -116,7 +116,6 @@ class CashboxOpenResource extends Resource
                                             ->label('CCF')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
-//                                                $ingreso_ccf = (new GetCashBoxOpenedService())->getTotal(false, false, 3);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_ccf, 2) . '</span>');
                                             }),
                                         Forms\Components\Placeholder::make('ingreso_ordenes')
@@ -125,6 +124,13 @@ class CashboxOpenResource extends Resource
                                             ->content(function () use ($resumen) {
 //                                                $ingreso_ordenes = (new GetCashBoxOpenedService())->getTotal(true, true);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_ordenes, 2) . '</span>');
+                                            }),
+                                        Forms\Components\Placeholder::make('ingreso_taller')
+                                            ->label('Taller')
+                                            ->inlineLabel(true)
+                                            ->content(function () use ($resumen) {
+//                                                $ingreso_ordenes = (new GetCashBoxOpenedService())->getTotal(true, true);
+                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_taller, 2) . '</span>');
                                             }),
 
                                         Forms\Components\Placeholder::make('ingreso_caja_chica')

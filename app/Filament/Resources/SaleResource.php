@@ -97,7 +97,6 @@ class SaleResource extends Resource
     protected static ?string $label = 'Ventas';
     protected static ?string $navigationGroup = 'Facturación';
     protected static bool $softDelete = true;
-    protected static ?string $navigationIcon = 'heroicon-s-shopping-cart';
 
     public static function form(Form $form): Form
     {

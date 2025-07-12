@@ -5,6 +5,7 @@ namespace App\Traits\Traits;
 use App\Models\CashBoxOpen;
 use App\Models\Sale;
 use App\Models\SmallCashBoxOperation;
+use Illuminate\Support\Facades\DB;
 
 trait GetOpenCashBox
 {
@@ -57,6 +58,33 @@ trait GetOpenCashBox
 //            ->where('status', 'Finalizado')
             ->whereNull('deleted_at') // Exclude soft-deleted records
             ->sum('amount');
+    }
+    function obtenerTotalesOrdenYManoObra(): array
+    {
+        $categoryIds = [56, 57, 58, 59];
+        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
+        $totalManoObra = DB::table('sale_items as si')
+            ->join('sales as s', 's.id', '=', 'si.sale_id')
+            ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
+            ->join('products as p', 'p.id', '=', 'i.product_id')
+            ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
+            ->whereIn('c.id', $categoryIds)
+            ->where('s.operation_type', 'Order')
+            ->where('s.sale_status', 'Finalizado')
+            ->where('s.cashbox_open_id', $idCashBoxOpened)
+            ->whereNull('s.deleted_at')
+            ->sum('si.total');
+
+        $totalOrdenes = Sale::where('operation_type', 'Order')
+            ->where('sale_status', 'Finalizado')
+            ->where('cashbox_open_id', $idCashBoxOpened)
+            ->whereNull('deleted_at')
+            ->sum('total_order_after_discount');
+
+        return [
+            'total_mano_obra' => $totalManoObra,
+            'total_ordenes' => $totalOrdenes-$totalManoObra,
+        ];
     }
 
 

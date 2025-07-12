@@ -34,6 +34,7 @@ class EditCashboxOpen extends EditRecord
         $cashboxOpen->ingreso_factura = $resumen->ingreso_factura;
         $cashboxOpen->ingreso_ccf = $resumen->ingreso_ccf;
         $cashboxOpen->ingreso_ordenes = $resumen->ingreso_ordenes;
+        $cashboxOpen->ingreso_taller = $resumen->ingreso_taller;
         $cashboxOpen->ingreso_caja_chica = $resumen->ingreso_caja_chica;
         $cashboxOpen->ingreso_totales = $resumen->ingreso_total;
         $cashboxOpen->egreso_caja_chica = $resumen->egreso_caja_chica;

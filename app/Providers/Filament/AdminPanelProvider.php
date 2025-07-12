@@ -7,6 +7,7 @@ use App\Filament\Resources\LogResource;
 use App\Filament\Resources\SaleResource;
 use App\Models\Contingency;
 use App\Models\DteTransmisionWherehouse;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use EightyNine\FilamentPageAlerts\FilamentPageAlertsPlugin;
@@ -88,7 +89,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
-                GlobalSearchModalPlugin::make(),
+//                GlobalSearchModalPlugin::make(),
                 ActivitylogPlugin::make()->label('Bitacora')
                     ->pluralLabel('Bitacora')->navigationSort(3),
                 FilamentPageAlertsPlugin::make(),
@@ -110,6 +111,22 @@ class AdminPanelProvider extends PanelProvider
                         prefix: 'Tiempo de carga',
                         enabled: true,
                     ),
+                FilamentShieldPlugin::make()
+                    ->gridColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'lg' => 3
+                    ])
+                    ->sectionColumnSpan(1)
+                    ->checkboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'lg' => 4,
+                    ])
+                    ->resourceCheckboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                    ]),
 
             ])
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {

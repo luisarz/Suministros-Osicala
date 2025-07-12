@@ -226,8 +226,6 @@ class EmployeesController extends Controller
         $endDate = Carbon::createFromFormat('d-m-Y', $end_date)->endOfDay();
 
 
-
-
         /* 3. Consulta principal */
         $productsByDayAndSale = DB::table('sale_items as si')
             ->join('sales as s', 's.id', '=', 'si.sale_id')
@@ -267,71 +265,9 @@ class EmployeesController extends Controller
             ->orderBy('sale_id')
             ->get()
             ->groupBy([
-                fn ($item) => $item->sale_day,
-                fn ($item) => $item->sale_id,
+                fn($item) => $item->sale_day,
+                fn($item) => $item->sale_id,
             ]);
-
-
-
-
-        $productsByDayAndSale = DB::table('sale_items as si')
-            ->join('sales as s', 's.id', '=', 'si.sale_id')
-            ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
-            ->join('products as p', 'p.id', '=', 'i.product_id')
-            ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')          // categoría hija
-            ->leftJoin('categories as cp', 'cp.id', '=', 'c.parent_id')         // categoría padre
-            ->leftJoin('employees as seller', 'seller.id', '=', 's.seller_id')
-            ->leftJoin('employees as mechanic', 'mechanic.id', '=', 's.mechanic_id')
-            ->select(
-                DB::raw('DATE(s.operation_date) as sale_day'),
-                's.id as sale_id',
-                's.document_internal_number as numero_factura',
-                's.order_number as numero_orden',
-                'p.name as product_name',
-                'p.sku as sku',
-                'si.quantity',
-                'si.price',
-                'si.discount',
-                DB::raw('si.quantity * si.price as total_after_discount'),
-                'si.total as total_item_with_discount',
-                's.total_order_after_discount as total_order_after_discount',
-                DB::raw("CONCAT(seller.name, ' ', seller.lastname) as seller_name"),
-                DB::raw("CONCAT(mechanic.name, ' ', mechanic.lastname) as mechanic_name"),
-                DB::raw("COALESCE(c.name, 'Sin categoría') as category_name"),
-                'c.id as category_id',
-                DB::raw("COALESCE(cp.name, 'Sin categoría padre') as parent_category_name"),
-                'cp.id as parent_category_id'
-            )
-//            ->whereBetween('s.operation_date', [$startDate, $endDate])
-            ->where('s.operation_type', 'Order') // Solo órdenes
-            ->whereIn('s.sale_status', ['Finalizado'])
-            ->where('s.cashbox_open_id', 42)
-            ->whereNull('s.deleted_at')
-            ->orderBy('sale_day')
-            ->orderBy('sale_id')
-            ->get()
-            ->groupBy([
-                fn ($item) => $item->sale_day,
-                fn ($item) => $item->sale_id,
-            ]);
-        $manoObraTotal = 0;
-        $otrosTotales = 0;
-
-        foreach ($productsByDayAndSale as $salesByDay) {
-            foreach ($salesByDay as $saleItems) {
-                foreach ($saleItems as $item) {
-                    if (trim($item->parent_category_name)=== 'MANO DE OBRA') {
-                        $manoObraTotal += $item->total_order_after_discount;
-                    } else {
-                        $otrosTotales += $item->total_order_after_discount;
-                    }
-                }
-            }
-        }
-
-        dd($manoObraTotal, $otrosTotales);
-
-
 
 
 
