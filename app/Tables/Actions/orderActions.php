@@ -20,6 +20,7 @@ use Filament\Tables\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\HtmlString;
 use PhpParser\Node\Stmt\Label;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Service\GetCashBoxOpenedService;
 
@@ -86,6 +87,13 @@ function OrderCloseKardex($record, $isEntry = false, $operation = ''): bool
 
 class orderActions
 {
+    public string $codigo;
+
+    public function __construct()
+    {
+        $this->codigo = Str::upper(Str::random(4));
+    }
+
 
     public static function printOrder(): Action
     {
@@ -249,6 +257,32 @@ class orderActions
 
             ->modalHeading('Confirmación!!')
             ->modalSubheading('¿Estás seguro de que deseas cerrar esta orden? Esta acción no se puede deshacer.')
+            ->modalSubheading("Para cancelar esta venta, escribe el siguiente código:")
+            ->modalButton('Sí, cancelar venta')
+
+            ->form(function () {
+                if (!session()->has('codigo_cancelacion_orden')) {
+                    session(['codigo_cancelacion_orden' => Str::upper(Str::random(4))]);
+                }
+                $codigo = session('codigo_cancelacion_orden');
+                return [
+                    Placeholder::make('codigo_mostrado')
+                        ->label('Código:')
+                        ->inlineLabel(true)
+                        ->content($codigo)
+                        ->extraAttributes(['style' => 'font-weight: bold; color: #dc2626']), // coma aquí
+
+                    TextInput::make('confirmacion')
+                        ->label('Codigo')
+                        ->required()
+                        ->inlineLabel(true)
+                        ->rules(['in:' . $codigo])
+                        ->validationMessages([
+                            'in' => 'El código ingresado no coincide.',
+                        ]),
+                ];
+            })
+
             ->action(function ($record) {
                 //Descargar el inventario antes de procesar la orden
                 // revisar que este finalizada

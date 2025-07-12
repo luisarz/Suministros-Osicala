@@ -19,25 +19,35 @@ use App\Service\GetCashBoxOpenedService;
 use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use http\Client;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Mockery\Exception;
 
 class EditSale extends EditRecord
 {
     protected static string $resource = SaleResource::class;
+    public string $codigoCancelacion;
 
     public function getTitle(): string|Htmlable
     {
         return '';
     }
+    public function mount(...$params): void
+    {
+        parent::mount(...$params);
+        $this->codigoCancelacion = Str::upper(Str::random(4));
+    }
 
     protected function getFormActions(): array
     {
+
         return [
             // Acción para finalizar la venta
             Action::make('save')
@@ -294,14 +304,32 @@ class EditSale extends EditRecord
 
             // Acción para cancelar la venta
             Action::make('cancelSale')
-                ->label('Cancelar venta')
+                ->label('Eliminar Venta')
                 ->icon('heroicon-o-no-symbol')
                 ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading('Confirmación')
-                ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
+                ->modalSubheading("Para cancelar esta venta, escribe el siguiente código:")
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+
+                ->form([
+                    Placeholder::make('codigo_mostrado')
+                        ->label('Código:')
+                        ->inlineLabel(true)
+                        ->content("{$this->codigoCancelacion}")
+                        ->extraAttributes(['style' => 'font-weight: bold; color: #dc2626']), // rojo y negrita
+
+                    TextInput::make('confirmacion')
+                        ->label('Codigo')
+                        ->required()
+                        ->inlineLabel(true)
+                        ->rules(["in:{$this->codigoCancelacion}"])
+                        ->validationMessages([
+                            'in' => 'El código ingresado no coincide.',
+                        ]),
+                ])
+
+                ->action(function (Actions\DeleteAction $delete)  {
                     if ($this->record->is_dte) {
                         PageAlert::make()
                             ->title('Error al anular venta')
@@ -323,6 +351,8 @@ class EditSale extends EditRecord
 
                     $this->redirect(static::getResource()::getUrl('index'));
                 }),
+
+
         ];
     }
 

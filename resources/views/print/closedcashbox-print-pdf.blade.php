@@ -122,7 +122,7 @@
                     <table>
                         <tr><td>Factura</td><td class="currency">${{number_format($caja->ingreso_factura, 2)}}</td></tr>
                         <tr><td>CCF</td><td class="currency">${{number_format($caja->ingreso_ccf, 2)}}</td></tr>
-                        <tr><td>Órdenes</td><td class="currency">${{number_format($caja->ingreso_ordenes, 2)}}</td></tr>
+                        <tr><td>Ordenes</td><td class="currency">${{number_format($caja->ingreso_ordenes, 2)}}</td></tr>
                         <tr><td>Taller</td><td class="currency">${{number_format($caja->ingreso_taller, 2)}}</td></tr>
                         <tr><td>Caja Chica</td><td class="currency">${{number_format($caja->ingreso_caja_chica, 2)}}</td></tr>
                         <tr class="totals"><td>Total Ingresos</td><td class="currency">${{number_format($caja->ingreso_totales, 2)}}</td></tr>
@@ -131,7 +131,7 @@
                 <td>
                     <table>
                         <tr><td>Caja Chica</td><td class="currency">${{number_format($caja->egreso_caja_chica, 2)}}</td></tr>
-                        <tr><td>Notas de Crédito</td><td class="currency">${{number_format($caja->egreso_nc, 2)}}</td></tr>
+                        <tr><td>Notas de Credito</td><td class="currency">${{number_format($caja->egreso_nc, 2)}}</td></tr>
                         <tr class="totals"><td>Total Egresos</td><td class="currency">${{number_format($caja->egresos_totales, 2)}}</td></tr>
                     </table>
                 </td>
