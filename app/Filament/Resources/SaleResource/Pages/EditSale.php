@@ -106,8 +106,8 @@ class EditSale extends EditRecord
                         }
 
 
-                        $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(false);
-                        if (!$openedCashBox) {
+                        $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBox();
+                        if (!$openedCashBox['status']) {
                             Notification::make('No se puede finalizar la venta')
                                 ->title('Caja cerrada')
                                 ->body('No se puede finalizar la venta porque no hay caja abierta')
@@ -117,15 +117,6 @@ class EditSale extends EditRecord
                         }
 
 
-                        if ($this->record->sale_total <= 0) {
-                            Notification::make('No se puede finalizar la venta')
-                                ->title('Error al finalizar venta')
-                                ->body('El monto total de la venta debe ser mayor a 0')
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
 
                         if ($this->data['operation_condition_id'] == 1) {
                             $sale_total = isset($this->data['sale_total'])
@@ -171,14 +162,6 @@ class EditSale extends EditRecord
                         $sale->transmision_type = $transmision_type;
                         $sale->save();
 
-//                    $document_type_id =$this->record->document_type_id;
-                        $document_internal_number_new = 0;
-                        $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
-//                        $CashBoxCOrrelativeOpen = CashBoxCorrelative::where('document_type_id', $documentType)->first();
-                        $CashBoxCOrrelativeOpen = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
-                        if ($CashBoxCOrrelativeOpen) {
-                            $document_internal_number_new = $CashBoxCOrrelativeOpen->current_number + 1;
-                        }
 
 
                         $salesItem = SaleItem::where('sale_id', $sale->id)->get();
@@ -212,7 +195,7 @@ class EditSale extends EditRecord
                                         $sale->id, // operation_id
                                         $item->id, // operation_detail_id
                                         $documnetType, // document_type
-                                        $document_internal_number_new, // document_number
+                                        $sale->id, // document_number
                                         $entity, // entity
                                         $pais, // nationality
                                         $inventarioHijo->inventory_child_id, // inventory_id
@@ -237,7 +220,7 @@ class EditSale extends EditRecord
                                     $sale->id, // operation_id
                                     $item->id, // operation_detail_id
                                     $documnetType, // document_type
-                                    $document_internal_number_new, // document_number
+                                    $sale->id, // document_number
                                     $entity, // entity
                                     $pais, // nationality
                                     $inventory->id, // inventory_id
@@ -265,22 +248,23 @@ class EditSale extends EditRecord
 
 
                         $sale->update([
-                            'cashbox_open_id' => $openedCashBox,
                             'is_invoiced' => true,
                             'sales_payment_status' => $salePayment_status,
                             'sale_status' => 'Facturada',
                             'status_sale_credit' => $status_sale_credit,
                             'operation_date' => $this->data['operation_date'],
-                            'document_internal_number' => $document_internal_number_new
+//                            'document_internal_number' => $document_internal_number_new
+                            'document_internal_number' => 0
                         ]);
 
                         //obtener id de la caja y buscar la caja
 //                        $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
-                        $CashBoxCOrrelativeOpen->current_number = $document_internal_number_new;
-                        $CashBoxCOrrelativeOpen->save();
+//                        $CashBoxCOrrelativeOpen->current_number = $document_internal_number_new;
+//                        $CashBoxCOrrelativeOpen->save();
                         Notification::make()
                             ->title('Venta Finalizada')
-                            ->body('Venta finalizada con éxito. # Comprobante **' . $document_internal_number_new . '**')
+//                            ->body('Venta finalizada con éxito. # Comprobante **' . $document_internal_number_new . '**')
+                            ->body('Venta finalizada con éxito. # Comprobante **0**')
                             ->success()
                             ->send();
                         // Redirigir después de completar el proceso
@@ -289,7 +273,6 @@ class EditSale extends EditRecord
                         $this->redirect(static::getResource()::getUrl('index'));
                     } catch (Exception) {
                         DB::rollBack();
-
                         Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar venta')
                             ->body('Ocurrió un error al intentar finalizar la venta.')

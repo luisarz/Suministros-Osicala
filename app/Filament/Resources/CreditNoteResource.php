@@ -127,10 +127,10 @@ class CreditNoteResource extends Resource
                                             ->default(4)
                                             ->reactive()
                                             ->options(function (callable $get) {
-                                                $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBox();
                                                 if ($openedCashBox > 0) {
                                                     return CashBoxCorrelative::with('document_type')
-                                                        ->where('cash_box_id', $openedCashBox)
+                                                        ->where('cash_box_id', $openedCashBox['id_caja'])
                                                         ->whereIn('document_type_id', [4,5,6])
                                                         ->get()
                                                         ->mapWithKeys(function ($item) {

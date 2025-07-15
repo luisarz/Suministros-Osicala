@@ -52,7 +52,7 @@ class EditOrder extends EditRecord
                 ]),
 
             Action::make('cancelSale')
-                ->label('Elimianr Orden')
+                ->label('Eliminar Orden')
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->requiresConfirmation()

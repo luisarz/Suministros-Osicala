@@ -9,24 +9,30 @@ use Illuminate\Support\Facades\DB;
 
 trait GetOpenCashBox
 {
-    public static function getOpenCashBoxId(?bool $cashbox): int
+    public static function getOpenCashBox(): array
     {
         $whereHouse = auth()->user()->employee->branch_id ?? null;
         $cashBoxOpened = CashBoxOpen::with('cashbox')
             ->where('status', 'open')
             ->whereHas('cashbox', fn($query) => $query->where('branch_id', $whereHouse))
             ->first();
+        $status=true; // Asumimos que hay una caja abierta
         if (!$cashBoxOpened) {
-            return 0; // No hay caja abierta
+            $status= false; // No hay caja abierta
         }
-        return $cashbox ? $cashBoxOpened->cashbox->id ?? 0 : $cashBoxOpened->id ?? 0;
+        return [
+            'status' => $status,
+            'id_apertura_caja' => $cashBoxOpened->id,
+            'id_caja' => $cashBoxOpened->cashbox->id ?? 0,
+        ];
+//        return $cashbox ? $cashBoxOpened->cashbox->id ?? 0 : $cashBoxOpened->id ?? 0;
     }
 
     public static function getTotal(bool $isOrder = false, bool $isClosedWithoutInvoiced = false, $documentType = null, $paymentMethod = null): float
     {
-        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
+        $idCashBoxOpened = self::getOpenCashBox(); // Get the opened cash box ID once
 
-        $query = Sale::where('cashbox_open_id', $idCashBoxOpened)
+        $query = Sale::where('cashbox_open_id', $idCashBoxOpened['id_apertura_caja'])
             ->whereIn('sale_status', ['Facturada', 'Finalizado']);
 
         if ($isOrder) {
@@ -52,8 +58,8 @@ trait GetOpenCashBox
 
     public static function minimalCashBoxTotal(?string $operationType): float
     {
-        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
-        return SmallCashBoxOperation::where('cash_box_open_id', $idCashBoxOpened)
+        $idCashBoxOpened = self::getOpenCashBox(); // Get the opened cash box ID once
+        return SmallCashBoxOperation::where('cash_box_open_id', $idCashBoxOpened['id_apertura_caja'])
             ->where('operation', $operationType)
 //            ->where('status', 'Finalizado')
             ->whereNull('deleted_at') // Exclude soft-deleted records
@@ -62,7 +68,7 @@ trait GetOpenCashBox
     function obtenerTotalesOrdenYManoObra(): array
     {
         $categoryIds = [56, 57, 58, 59];
-        $idCashBoxOpened = self::getOpenCashBoxId(false); // Get the opened cash box ID once
+        $idCashBoxOpened = self::getOpenCashBox(); // Get the opened cash box ID once
         $totalManoObra = DB::table('sale_items as si')
             ->join('sales as s', 's.id', '=', 'si.sale_id')
             ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
@@ -71,13 +77,13 @@ trait GetOpenCashBox
             ->whereIn('c.id', $categoryIds)
             ->where('s.operation_type', 'Order')
             ->where('s.sale_status', 'Finalizado')
-            ->where('s.cashbox_open_id', $idCashBoxOpened)
+            ->where('s.cashbox_open_id', $idCashBoxOpened['id_apertura_caja'])
             ->whereNull('s.deleted_at')
             ->sum('si.total');
 
         $totalOrdenes = Sale::where('operation_type', 'Order')
             ->where('sale_status', 'Finalizado')
-            ->where('cashbox_open_id', $idCashBoxOpened)
+            ->where('cashbox_open_id', $idCashBoxOpened['id_apertura_caja'])
             ->whereNull('deleted_at')
             ->sum('total_order_after_discount');
 

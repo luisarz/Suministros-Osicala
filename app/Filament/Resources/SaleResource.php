@@ -44,6 +44,7 @@ use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Filament\Support\Enums\MaxWidth;
+use function Filament\Support\format_number;
 
 function updateTotalSale(mixed $idItem, array $data): void
 {
@@ -130,10 +131,10 @@ class SaleResource extends Resource
 //                                            ->relationship('documenttype', 'name')
                                             ->default(1)
                                             ->options(function (callable $get) {
-                                                $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
-                                                if ($openedCashBox > 0) {
+                                                $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBox();
+                                                if ($openedCashBox['status']) {
                                                     return CashBoxCorrelative::with('document_type')
-                                                        ->where('cash_box_id', $openedCashBox)
+                                                        ->where('cash_box_id', $openedCashBox['id_caja'])
                                                         ->whereIn('document_type_id', [1, 3, 11, 14])
                                                         ->get()
                                                         ->mapWithKeys(function ($item) {
@@ -432,7 +433,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state,'0','')) // Formatea el número
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('generationCode')

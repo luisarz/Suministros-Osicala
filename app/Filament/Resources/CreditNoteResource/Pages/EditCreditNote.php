@@ -64,15 +64,15 @@ class EditCreditNote extends EditRecord
                     }
 
 
-                    $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(false);
-                    if (!$openedCashBox) {
-                        PageAlert::make('No se puede finalizar la venta')
-                            ->title('Caja cerrada')
-                            ->body('No se puede finalizar la NOTA porque no hay caja abierta')
-                            ->danger()
-                            ->send();
-                        return;
-                    }
+//                    $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBox(false);
+//                    if (!$openedCashBox) {
+//                        PageAlert::make('No se puede finalizar la venta')
+//                            ->title('Caja cerrada')
+//                            ->body('No se puede finalizar la NOTA porque no hay caja abierta')
+//                            ->danger()
+//                            ->send();
+//                        return;
+//                    }
 
 
                     //Obtener tipo de transmision
@@ -94,10 +94,10 @@ class EditCreditNote extends EditRecord
                     $sale->transmision_type = $transmision_type;
                     $sale->save();
                     $document_internal_number_new = 0;
-                    $lastIssuedDocument = CashBoxCorrelative::where('document_type_id', $documentType)->first();
-                    if ($lastIssuedDocument) {
-                        $document_internal_number_new = $lastIssuedDocument->current_number + 1;
-                    }
+//                    $lastIssuedDocument = CashBoxCorrelative::where('document_type_id', $documentType)->first();
+//                    if ($lastIssuedDocument) {
+//                        $document_internal_number_new = $lastIssuedDocument->current_number + 1;
+//                    }
 
 
                     $salesItem = SaleItem::where('sale_id', $sale->id)->get();
@@ -110,11 +110,6 @@ class EditCreditNote extends EditRecord
                     if ($sale->document_type_id == 5) {//Toca el inventario solo si es Nota de credito
                         foreach ($salesItem as $item) {
                             $inventory = Inventory::with('product')->find($item->inventory_id);
-                            //Buscar si producto compuiesto y descar los inventarios que tenga
-                            //inventoriasGourped;
-//                        foreach ($inventory as $item) {
-//                            //descar los inventario internos
-//                        }
 
                             // Verifica si el inventario existe
                             if (!$inventory) {
@@ -189,20 +184,22 @@ class EditCreditNote extends EditRecord
 
 
                     $sale->update([
-                        'cashbox_open_id' => $openedCashBox,
+//                        'cashbox_open_id' => $openedCashBox,
+                        'cashbox_open_id' => 0,
                         'is_invoiced' => true,
                         'sales_payment_status' => $salePayment_status,
                         'sale_status' => 'Facturada',
                         'status_sale_credit' => $status_sale_credit,
                         'operation_date' => $this->data['operation_date'],
-                        'document_internal_number' => $document_internal_number_new
+                        'document_internal_number' => 0
+//                        'document_internal_number' => $document_internal_number_new
                     ]);
 
                     //obtener id de la caja y buscar la caja
-                    $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
-                    $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
-                    $correlativo->current_number = $document_internal_number_new;
-                    $correlativo->save();
+//                    $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBox(true);
+//                    $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
+//                    $correlativo->current_number = $document_internal_number_new;
+//                    $correlativo->save();
                     PageAlert::make()
                         ->title('Nota Finalizada')
                         ->body('Nota finalizada con éxito. # Comprobante **' . $document_internal_number_new . '**')
