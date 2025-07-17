@@ -316,7 +316,7 @@ class CashboxOpenResource extends Resource
                     ->placeholder('Sin cerrar')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('closed_amount')
+                Tables\Columns\TextColumn::make('saldo_total_operaciones')
                     ->label('Monto Cierre')
                     ->money('USD', true, locale: 'es_US')
                     ->placeholder('Sin cerrar')

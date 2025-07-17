@@ -208,6 +208,7 @@
                         $discountMoney = number_format($saleTotal - $discountedTotal, 2, '.', '');
 
                         $order = Sale::find($record->id);
+                        $order->operation_date = now();
                         $order->cashbox_open_id = $openedCashBox['id_apertura_caja'];
                         $order->operation_type = 'Order';
                         $order->is_order_closed_without_invoiced = true;
@@ -280,7 +281,7 @@
 
                 ->action(function ($record) {
                     //Descargar el inventario antes de procesar la orden
-                    // revisar que este finalizada
+                    // revisar que está finalizada
                     if (OrderCloseKardex($record, true, 'Anulacion')) {
                         Notification::make('Orden cerrada')
                             ->title('Orden cerrada')

@@ -22,7 +22,7 @@ trait GetOpenCashBox
         }
         return [
             'status' => $status,
-            'id_apertura_caja' => $cashBoxOpened->id,
+            'id_apertura_caja' => $cashBoxOpened->id??0,
             'id_caja' => $cashBoxOpened->cashbox->id ?? 0,
         ];
 //        return $cashbox ? $cashBoxOpened->cashbox->id ?? 0 : $cashBoxOpened->id ?? 0;
