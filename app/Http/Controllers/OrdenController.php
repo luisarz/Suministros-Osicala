@@ -79,7 +79,7 @@ class OrdenController extends Controller
         $empresa = $this->getConfiguracion();
 
         $formatter = new NumeroALetras();
-        $montoLetras = $formatter->toInvoice($caja->saldo_total_operaciones, 2, 'DÓLARES');
+        $montoLetras = $formatter->toInvoice($caja->saldo_total_operaciones??0, 2, 'DÓLARES');
         $pdf = Pdf::loadView('print.closedcashbox-print-pdf', compact(
             'empresa',
             'caja',

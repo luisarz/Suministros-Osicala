@@ -20,6 +20,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -283,6 +284,15 @@ class OrderResource extends Resource
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
+//                    ->summarize(
+//                        Sum::make()
+//                            ->using(fn (Summarizer $summarizer) => $summarizer
+//                                ->query(fn ($query) => $query->where('sale_status', '!=', 'Anulado','Eliminado') // Exclude canceled or deleted orders)
+//                                )
+//                            )
+//                            ->label('Total')
+//                            ->money('USD', locale: 'en_US')
+//                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount_percentage')
                     ->label('Descuento')

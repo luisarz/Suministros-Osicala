@@ -30,7 +30,7 @@ class ListOrders extends ListRecords
                 ->badge($allOrders)
                 ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
                     return $query->where('operation_type', "Order")
-                        ->whereIn('sale_status', ['Finalizado','Facturada','Anulado']);
+                        ->whereIn('sale_status', ['Finalizado','Facturada','Anulado','Nueva']);
                 }),
             "Cerradas" => Tab::make()
                 ->badge($closed)
@@ -56,6 +56,7 @@ class ListOrders extends ListRecords
                 ->label('Anuladas')
                 ->badge($anuladas)
                 ->badgeColor('danger')
+                ->iconSize('lg')
                 ->icon('heroicon-o-archive-box-x-mark')
                 ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
                     return $query->where('operation_type', "Order")
