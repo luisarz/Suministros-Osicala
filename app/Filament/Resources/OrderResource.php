@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Sale;
 use App\Tables\Actions\dteActions;
 use App\Tables\Actions\orderActions;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -217,13 +218,11 @@ class OrderResource extends Resource
 
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Orden')
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->searchable()
-//                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\columns\TextColumn::make('operation_date')
                     ->label('Fecha')
@@ -265,10 +264,10 @@ class OrderResource extends Resource
                     ->sortable()
                     ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? 'Eliminado' : $state)
                     ->color(fn ($state) => match ($state) {
+                        'Nueva', 'En proceso' => 'info',
                         'Finalizado' => 'success',
                         'Pendiente' => 'warning',
-                        'En proceso' => 'info',
-                        'Anulado', 'Eliminado' => 'danger',
+                        'Anulado', 'Eliminado','Cancelada' => 'danger',
                         default => null, // Sin color
                     })
                     ->label('Estado'),
@@ -321,21 +320,20 @@ class OrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('operation_date', 'desc')
             ->modifyQueryUsing(function ($query) {
-                $query->where('operation_type', "Order")->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
+//                $query->where('operation_type', "Order")->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
             })
             ->recordUrl(null)
             ->filters([
-                DateRangeFilter::make('created_at')->timePicker24()
-                    ->label('Fecha de venta')
-                    ->default([
-                        'start' => now()->subDays(30)->format('Y-m-d'),
-                        'end' => now()->format('Y-m-d'),
-                    ]),
+                DateRangeFilter::make('operation_date')
+                    ->timePicker24()
+                    ->startDate(Carbon::now())
+                    ->endDate(Carbon::now()),
                 Tables\Filters\TrashedFilter::make('eliminados')
                     ->label('Eliminados')
                     ->query(fn ($query) => $query->withoutGlobalScope(SoftDeletingScope::class))
-                    ->default(false),
+                    ->default(true),
 
             ])
             ->actions([

@@ -21,12 +21,17 @@ class ListOrders extends ListRecords
     public function getTabs(): array
     {
         $allOrders = Sale::where('operation_type','Order')->whereIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
-        $closed = Sale::withoutTrashed()->where('operation_type','Order')->whereIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
+        $closed = Sale::withoutTrashed()->where('operation_type','Order')->whereIn('sale_status', ['Finalizado','Facturada'])->count();
         $open = Sale::withoutTrashed()->where('operation_type','Order')->whereNotIn('sale_status', ['Finalizado','Facturada','Anulado'])->count();
+        $anuladas = Sale::withoutTrashed()->where('operation_type','Order')->whereIn('sale_status', ['Anulado'])->count();
 
         return [
             "Todas" => Tab::make()
-                ->badge($allOrders),
+                ->badge($allOrders)
+                ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                    return $query->where('operation_type', "Order")
+                        ->whereIn('sale_status', ['Finalizado','Facturada','Anulado']);
+                }),
             "Cerradas" => Tab::make()
                 ->badge($closed)
                 ->label('Cerradas')
@@ -41,11 +46,20 @@ class ListOrders extends ListRecords
             "Abiertas" => Tab::make()
                 ->label('Abiertas')
                 ->badge($open)
-                ->badgeColor('danger')
+                ->badgeColor('info')
                 ->icon('heroicon-s-lock-open')
                 ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
                     return $query->where('operation_type', "Order")
                         ->whereIn('sale_status', ['Nueva']);
+                }),
+            "Anuladas" => Tab::make()
+                ->label('Anuladas')
+                ->badge($anuladas)
+                ->badgeColor('danger')
+                ->icon('heroicon-o-archive-box-x-mark')
+                ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                    return $query->where('operation_type', "Order")
+                        ->whereIn('sale_status', ['Anulado']);
                 }),
 
 
