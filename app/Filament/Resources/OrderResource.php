@@ -330,10 +330,8 @@ class OrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('operation_date', 'desc')
-            ->modifyQueryUsing(function ($query) {
-//                $query->where('operation_type', "Order")->orderby('operation_date', 'desc')->orderBy('order_number', 'desc');
-            })
+            ->defaultSort('order_number', 'desc')
+
             ->recordUrl(null)
             ->filters([
                 DateRangeFilter::make('operation_date')
@@ -346,6 +344,7 @@ class OrderResource extends Resource
                     ->default(true),
 
             ])
+            ->persistFiltersInSession()
             ->actions([
                 orderActions::printOrder(),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
