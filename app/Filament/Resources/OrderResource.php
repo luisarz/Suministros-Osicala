@@ -219,6 +219,7 @@ class OrderResource extends Resource
 
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Orden')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
@@ -326,11 +327,12 @@ class OrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Modificación')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+//                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('order_number', 'desc')
+            ->defaultSort('updated_at', 'desc')
 
             ->recordUrl(null)
             ->filters([

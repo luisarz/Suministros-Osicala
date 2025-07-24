@@ -5,6 +5,7 @@ namespace App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource;
 use App\Helpers\KardexHelper;
 use App\Models\Inventory;
+use App\Models\Order;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use EightyNine\FilamentPageAlerts\PageAlert;
@@ -26,11 +27,13 @@ class EditOrder extends EditRecord
     {
         return '';
     }
+
     public function mount(...$params): void
     {
         parent::mount(...$params);
         $this->codigoCancelacion = Str::upper(Str::random(4));
     }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -45,11 +48,20 @@ class EditOrder extends EditRecord
                 ->label('Enviar Orden')
                 ->color('success')
                 ->icon('heroicon-o-check')
-                ->action('save')
-                ->extraAttributes([
-                    'class' => 'alig', // Tailwind para ajustar el margen alinearlo a la derecha
+                ->requiresConfirmation()
+                ->modalHeading('Confirmación')
+                ->modalSubheading('¿Estás seguro de que deseas enviar esta orden?')
+                ->modalButton('Sí, enviar orden')
+                ->action(function (Actions\EditAction $edit) {
+                    dd($this->data);
+                    $id = $this->record->id;
+                    $sale = Sale::find($id);
+                    $sale=$this->data['customer_id'];
+                    $sale->updated_at = now();
+                    $sale->save();
+                    $this->redirect(static::getResource()::getUrl('index'));
+                }),
 
-                ]),
 
             Action::make('cancelSale')
                 ->label('Eliminar Orden')
@@ -59,7 +71,6 @@ class EditOrder extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading("Para cancelar esta venta, escribe el siguiente código:")
                 ->modalButton('Sí, cancelar venta')
-
                 ->form([
                     Placeholder::make('codigo_mostrado')
                         ->label('Código:')
@@ -76,8 +87,7 @@ class EditOrder extends EditRecord
                             'in' => 'El código ingresado no coincide.',
                         ]),
                 ])
-
-                ->action(function (Actions\DeleteAction $delete)  {
+                ->action(function (Actions\DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         PageAlert::make()
                             ->title('Error al anular venta')
@@ -103,7 +113,7 @@ class EditOrder extends EditRecord
                 ->color('primary')
                 ->label('Volver')
                 ->icon('heroicon-o-arrow-uturn-left')
-                ->action(function (Actions\DeleteAction $delete)  {
+                ->action(function (Actions\DeleteAction $delete) {
 
                     $this->redirect(static::getResource()::getUrl('index'));
                 }),

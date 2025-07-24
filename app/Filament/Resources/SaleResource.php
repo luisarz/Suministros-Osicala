@@ -185,24 +185,35 @@ class SaleResource extends Resource
                                             ->searchable()
                                             ->debounce(500)
                                             ->relationship('customer', 'name')
-                                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}  {$record->last_name}, dui: {$record->dui}  nit: {$record->nit}  nrc: {$record->nrc}")
+                                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name} {$record->last_name}, dui: {$record->dui}  nit: {$record->nit}  nrc: {$record->nrc}")
+                                            ->getSearchResultsUsing(function (string $search) {
+                                                return Customer::query()
+                                                    ->where('name', 'like', "%{$search}%")
+                                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                                    ->orWhere('dui', 'like', "%{$search}%")
+                                                    ->orWhere('nit', 'like', "%{$search}%")
+                                                    ->limit(50)
+                                                    ->get()
+                                                    ->mapWithKeys(function ($customer) {
+                                                        return [
+                                                            $customer->id => "{$customer->name} {$customer->last_name}, dui: {$customer->dui}  nit: {$customer->nit}  nrc: {$customer->nrc}",
+                                                        ];
+                                                    });
+                                            })
                                             ->preload()
                                             ->required()
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->label('Cliente')
                                             ->createOptionForm(CreateClienteForm::getForm())
-                                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                                                return $action
-                                                    ->label('Crear cliente')
-                                                    ->color('success')
-                                                    ->icon('heroicon-o-plus')
-                                                    ->modalWidth('7xl');
-//                                                    ->size(IconSize::sizeI);
-                                            })
-                                            ->createOptionUsing(function ($data) {
-                                                return Customer::create($data)->id; // Guarda y devuelve el ID del nuevo cliente
-                                            }),
+                                            ->createOptionAction(fn(Forms\Components\Actions\Action $action) =>
+                                            $action
+                                                ->label('Crear cliente')
+                                                ->color('success')
+                                                ->icon('heroicon-o-plus')
+                                                ->modalWidth('7xl')
+                                            )
+                                            ->createOptionUsing(fn($data) => \App\Models\Customer::create($data)->id),
 
 
                                         Forms\Components\Select::make('sales_payment_status')
