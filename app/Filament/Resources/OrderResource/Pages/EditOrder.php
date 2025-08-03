@@ -53,10 +53,11 @@ class EditOrder extends EditRecord
                 ->modalSubheading('¿Estás seguro de que deseas enviar esta orden?')
                 ->modalButton('Sí, enviar orden')
                 ->action(function (Actions\EditAction $edit) {
-                    dd($this->data);
                     $id = $this->record->id;
                     $sale = Sale::find($id);
-                    $sale=$this->data['customer_id'];
+                    $sale->seller_id = $this->data['seller_id'] ?? $sale->seller_id;
+                    $sale->customer_id = $this->data['customer_id'] ?? $sale->customer_id;
+                    $sale->mechanic_id = $this->data['mechanic_id']??null;
                     $sale->updated_at = now();
                     $sale->save();
                     $this->redirect(static::getResource()::getUrl('index'));

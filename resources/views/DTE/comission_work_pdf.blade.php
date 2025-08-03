@@ -65,7 +65,6 @@
         }
 
 
-
         tfoot {
             border: 2px solid black;
         }
@@ -88,11 +87,9 @@
 
                 <h2>{{$empresa->name}} | {{$sucursal->name}}</h2>
                 <h4>REPORTE DE COMISIÓN DE VENTAS
-                Desde: {{date('d-m-Y',strtotime($startDate))}} - Hasta {{date('d-m-Y',strtotime($endDate))}}</h4>
+                    Desde: {{date('d-m-Y',strtotime($startDate))}} - Hasta {{date('d-m-Y',strtotime($endDate))}}</h4>
                 <h4>Vendedor:{{ strtoupper( $empleado->name.' '. $empleado->lastname) }}</h4>
             </td>
-
-
 
 
     </table>
@@ -127,22 +124,26 @@
             <tr>
                 <td style="border: 1px solid black; padding: 6px;">{{ $date }}</td>
                 @foreach ($categories as $category)
+                    <td style="border: 1px solid black; padding: 6px;">{{ $date }}</td>
+                    @foreach ($categories as $category)
+                        <td style="border: 1px solid black; padding: 6px; max-width: 100px; word-wrap: break-word; white-space: normal;">
+                            <b>{{ number_format($row[$category]['operations'] ?? 0, 0) }}</b>
+                            @if (!empty($row[$category]['orders']))
+                                <small>({{ $row[$category]['orders'] }})</small>
+                            @endif
+                        </td>
+                        <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['amount'] ?? 0, 2) }}</td>
+                        <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['commission'] ?? 0, 2) }}</td>
+                    @endforeach
                     <td style="border: 1px solid black; padding: 6px;">
-                        <b>{{ number_format($row[$category]['operations'] ?? 0, 0) }}</b>
-                        @if (!empty($row[$category]['orders']))
-                            <small>({{ $row[$category]['orders'] }})</small>
-                        @endif
-                    </td>
-                    <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['amount'] ?? 0, 2) }}</td>
-                    <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['commission'] ?? 0, 2) }}</td>
-                @endforeach
-                <td style="border: 1px solid black; padding: 6px;"><strong>{{ number_format($row['Total Día'], 2) }}</strong></td>
-                <td style="border: 1px solid black; padding: 6px;"><strong>{{ number_format($row['Total Comisión'], 2) }}</strong></td>
+                        <strong>{{ number_format($row['Total Día'], 2) }}</strong></td>
+                    <td style="border: 1px solid black; padding: 6px;">
+                        <strong>{{ number_format($row['Total Comisión'], 2) }}</strong></td>
 
-                @php
-                    $totalGeneral['amount'] += $row['Total Día'];
-                    $totalGeneral['commission'] += $row['Total Comisión'];
-                @endphp
+                    @php
+                        $totalGeneral['amount'] += $row['Total Día'];
+                        $totalGeneral['commission'] += $row['Total Comisión'];
+                    @endphp
             </tr>
         @endforeach
         </tbody>
@@ -167,7 +168,6 @@
     <p style="text-align: left">
         F:Recibido: _____________________________
     </p>
-
 
 
 </div>
