@@ -1,0 +1,126 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 1,
+        "ambiente": "01",
+        "tipoDte": "01",
+        "numeroControl": "DTE-01-48677894-000000000000213",
+        "codigoGeneracion": "EFE4CC05-4868-45C2-A49C-667611208204",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-05",
+        "horEmi": "11:47:52",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "tipoDocumento": null,
+        "numDocumento": null,
+        "nrc": null,
+        "nombre": "VARIOS ",
+        "codActividad": "10004",
+        "descActividad": "Desempleado",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "OSICALA"
+        },
+        "telefono": "50360620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 1.25,
+            "noGravado": 0,
+            "ivaItem": 0.14380531,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000005170",
+            "codTributo": null,
+            "descripcion": "SELLADOR DE EMPAQUE P\/ MOTOR SHELLAG",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 1.25,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 1.25,
+            "tributos": null
+        }
+    ],
+    "resumen": {
+        "totalIva": 0.14,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 1.25,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 1.25,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 1.25,
+        "subTotalVentas": 1.25,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": null,
+        "subTotal": 1.25,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 1.25,
+        "totalLetras": "UNO DÓLAR CON 25\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "2025512FAD6FEE9142DFB2B9A6263BFABDACMGCL",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "EFE4CC05-4868-45C2-A49C-667611208204",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "05\/06\/2025 11:47:53",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgInRpcG9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJudW1Eb2N1bWVudG8iIDogbnVsbCwKICAgICJucmMiIDogbnVsbCwKICAgICJub21icmUiIDogIlZBUklPUyAiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiMTAwMDQiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIkRlc2VtcGxlYWRvIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJPU0lDQUxBIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNTAzNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogMS4yNSwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJpdmFJdGVtIiA6IDAuMTQzODA1MzEsCiAgICAidGlwb0l0ZW0iIDogMSwKICAgICJudW1JdGVtIiA6IDEsCiAgICAibnVtZXJvRG9jdW1lbnRvIiA6IG51bGwsCiAgICAiY29kaWdvIiA6ICIwMDAwMDA1MTcwIiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIlNFTExBRE9SIERFIEVNUEFRVUUgUC8gTU9UT1IgU0hFTExBRyIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMS4yNSwKICAgICJtb250b0Rlc2N1IiA6IDAsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDEuMjUsCiAgICAidHJpYnV0b3MiIDogbnVsbAogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAidG90YWxJdmEiIDogMC4xNCwKICAgICJudW1QYWdvRWxlY3Ryb25pY28iIDogbnVsbCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIiA6IDAsCiAgICAidG90YWxOb0dyYXZhZG8iIDogMCwKICAgICJ0b3RhbFBhZ2FyIiA6IDEuMjUsCiAgICAic2FsZG9GYXZvciIgOiAwLAogICAgInBhZ29zIiA6IFsgewogICAgICAiY29kaWdvIiA6ICIwMSIsCiAgICAgICJtb250b1BhZ28iIDogMS4yNSwKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogMS4yNSwKICAgICJzdWJUb3RhbFZlbnRhcyIgOiAxLjI1LAogICAgImRlc2N1Tm9TdWoiIDogMCwKICAgICJkZXNjdUV4ZW50YSIgOiAwLAogICAgImRlc2N1R3JhdmFkYSIgOiAwLAogICAgInRvdGFsRGVzY3UiIDogMCwKICAgICJ0cmlidXRvcyIgOiBudWxsLAogICAgInN1YlRvdGFsIiA6IDEuMjUsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDEuMjUsCiAgICAidG90YWxMZXRyYXMiIDogIlVOTyBEw5NMQVIgQ09OIDI1LzEwMCIsCiAgICAiY29uZGljaW9uT3BlcmFjaW9uIiA6IDEKICB9LAogICJleHRlbnNpb24iIDogewogICAgInBsYWNhVmVoaWN1bG8iIDogbnVsbCwKICAgICJub21iRW50cmVnYSIgOiAiQWxmb25zbyAiLAogICAgImRvY3VFbnRyZWdhIiA6ICIwMzU3NzgxMTciLAogICAgIm5vbWJSZWNpYmUiIDogbnVsbCwKICAgICJkb2N1UmVjaWJlIiA6IG51bGwsCiAgICAib2JzZXJ2YWNpb25lcyIgOiBudWxsCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiaWRlbnRpZmljYWNpb24iIDogewogICAgIm1vdGl2b0NvbnRpbiIgOiBudWxsLAogICAgInZlcnNpb24iIDogMSwKICAgICJhbWJpZW50ZSIgOiAiMDEiLAogICAgInRpcG9EdGUiIDogIjAxIiwKICAgICJudW1lcm9Db250cm9sIiA6ICJEVEUtMDEtNDg2Nzc4OTQtMDAwMDAwMDAwMDAwMjEzIiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIiA6ICJFRkU0Q0MwNS00ODY4LTQ1QzItQTQ5Qy02Njc2MTEyMDgyMDQiLAogICAgInRpcG9Nb2RlbG8iIDogMSwKICAgICJ0aXBvT3BlcmFjaW9uIiA6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSIgOiBudWxsLAogICAgImZlY0VtaSIgOiAiMjAyNS0wNi0wNSIsCiAgICAiaG9yRW1pIiA6ICIxMTo0Nzo1MiIsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIgogIH0sCiAgImVtaXNvciIgOiB7CiAgICAiY29kRXN0YWJsZU1IIiA6IG51bGwsCiAgICAiY29kRXN0YWJsZSIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGFNSCIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGEiIDogbnVsbCwKICAgICJuaXQiIDogIjEzMDIyMDA5ODQxMDE5IiwKICAgICJucmMiIDogIjIyODQyMTMiLAogICAgIm5vbWJyZSIgOiAiTUFSTExPUlkgTUFSSUVMQSBNT0xJTkEgUEFSRURFUyIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0NTMwMSIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVmVudGEgZGUgcGFydGVzLCBwaWV6YXMgeSBhY2Nlc29yaW9zIG51ZXZvcyBwYXJhIHZlaMOtY3Vsb3MgYXV0b21vdG9yZXMiLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iIDogIjAxIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJDZXJybyBlbCBDb3lvbCwgQ2FzZXLDrW8gbG9zIFJhbcOtcmV6LCBDYXJyZXRlcmEgYSBQZXJxdWluLCBPc2ljYWxhLCBNb3JhesOhbiBTdXIsIE1vcmF6w6FuIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImFwZW5kaWNlIiA6IG51bGwsCiAgInZlbnRhVGVyY2VybyIgOiBudWxsCn0.W9u9RxJOCJMNCjjAWBueEBOlpEHUd-t9A7NozZ4m_Z6HNkIM8gpeDTs4XsvEDVfo6q8p39rX0uYd8GQsYVV1fb-56ZXfJ9jX3d5VQPxTo4DWksJ2SDxviea33fygKWJ69bXeL0henJgYyyxhQT0-hW1DZfl0goeVWbzinAaNpGa3muRzu06fGF7hGtzdi5AXzZOBN-A0KccgMRljiGBrNFnLz4fCnhaqe-cw8ywafUVTPzydzZjURq1Ox098QApEzZmV6qggraRbHHUVI5aWrv61pr0DCPRuMc-utPbxNSeqPEv03PRxMdQnaH93WQ94ZknxodRb4jPcnyEMJjKssA"
+}

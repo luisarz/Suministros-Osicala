@@ -1,0 +1,126 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 1,
+        "ambiente": "01",
+        "tipoDte": "01",
+        "numeroControl": "DTE-01-58399667-000000000000895",
+        "codigoGeneracion": "CD6B747A-EDDC-4133-B86A-4BCCD97DF17E",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-17",
+        "horEmi": "13:21:34",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "tipoDocumento": null,
+        "numDocumento": null,
+        "nrc": null,
+        "nombre": "VARIOS ",
+        "codActividad": "10004",
+        "descActividad": "Desempleado",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "OSICALA"
+        },
+        "telefono": "50360620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 5.25,
+            "noGravado": 0,
+            "ivaItem": 1.2079646,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000004807",
+            "codTributo": null,
+            "descripcion": "1\/4 20W50 SUPREME",
+            "cantidad": 2,
+            "uniMedida": 1,
+            "precioUni": 5.25,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 10.5,
+            "tributos": null
+        }
+    ],
+    "resumen": {
+        "totalIva": 1.21,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 10.5,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 10.5,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 10.5,
+        "subTotalVentas": 10.5,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": null,
+        "subTotal": 10.5,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 10.5,
+        "totalLetras": "DIEZ DÓLARES CON 50\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "DILVER ",
+        "docuEntrega": "051021091",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "20250EC39AE36BC6498F8767EC080D0647BEAA8G",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "CD6B747A-EDDC-4133-B86A-4BCCD97DF17E",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "17\/06\/2025 13:21:35",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgInRpcG9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJudW1Eb2N1bWVudG8iIDogbnVsbCwKICAgICJucmMiIDogbnVsbCwKICAgICJub21icmUiIDogIlZBUklPUyAiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiMTAwMDQiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIkRlc2VtcGxlYWRvIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJPU0lDQUxBIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNTAzNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogNS4yNSwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJpdmFJdGVtIiA6IDEuMjA3OTY0NiwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMSwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMDQ4MDciLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiMS80IDIwVzUwIFNVUFJFTUUiLAogICAgImNhbnRpZGFkIiA6IDIsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDUuMjUsCiAgICAibW9udG9EZXNjdSIgOiAwLAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiAxMC41LAogICAgInRyaWJ1dG9zIiA6IG51bGwKICB9IF0sCiAgInJlc3VtZW4iIDogewogICAgInRvdGFsSXZhIiA6IDEuMjEsCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiAxMC41LAogICAgInNhbGRvRmF2b3IiIDogMCwKICAgICJwYWdvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMDEiLAogICAgICAibW9udG9QYWdvIiA6IDEwLjUsCiAgICAgICJyZWZlcmVuY2lhIiA6IG51bGwsCiAgICAgICJwbGF6byIgOiBudWxsLAogICAgICAicGVyaW9kbyIgOiBudWxsCiAgICB9IF0sCiAgICAidG90YWxOb1N1aiIgOiAwLAogICAgInRvdGFsRXhlbnRhIiA6IDAsCiAgICAidG90YWxHcmF2YWRhIiA6IDEwLjUsCiAgICAic3ViVG90YWxWZW50YXMiIDogMTAuNSwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDAsCiAgICAidHJpYnV0b3MiIDogbnVsbCwKICAgICJzdWJUb3RhbCIgOiAxMC41LAogICAgIml2YVJldGUxIiA6IDAsCiAgICAicmV0ZVJlbnRhIiA6IDAsCiAgICAibW9udG9Ub3RhbE9wZXJhY2lvbiIgOiAxMC41LAogICAgInRvdGFsTGV0cmFzIiA6ICJESUVaIETDk0xBUkVTIENPTiA1MC8xMDAiLAogICAgImNvbmRpY2lvbk9wZXJhY2lvbiIgOiAxCiAgfSwKICAiZXh0ZW5zaW9uIiA6IHsKICAgICJwbGFjYVZlaGljdWxvIiA6IG51bGwsCiAgICAibm9tYkVudHJlZ2EiIDogIkRJTFZFUiAiLAogICAgImRvY3VFbnRyZWdhIiA6ICIwNTEwMjEwOTEiLAogICAgIm5vbWJSZWNpYmUiIDogbnVsbCwKICAgICJkb2N1UmVjaWJlIiA6IG51bGwsCiAgICAib2JzZXJ2YWNpb25lcyIgOiBudWxsCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiaWRlbnRpZmljYWNpb24iIDogewogICAgIm1vdGl2b0NvbnRpbiIgOiBudWxsLAogICAgInZlcnNpb24iIDogMSwKICAgICJhbWJpZW50ZSIgOiAiMDEiLAogICAgInRpcG9EdGUiIDogIjAxIiwKICAgICJudW1lcm9Db250cm9sIiA6ICJEVEUtMDEtNTgzOTk2NjctMDAwMDAwMDAwMDAwODk1IiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIiA6ICJDRDZCNzQ3QS1FRERDLTQxMzMtQjg2QS00QkNDRDk3REYxN0UiLAogICAgInRpcG9Nb2RlbG8iIDogMSwKICAgICJ0aXBvT3BlcmFjaW9uIiA6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSIgOiBudWxsLAogICAgImZlY0VtaSIgOiAiMjAyNS0wNi0xNyIsCiAgICAiaG9yRW1pIiA6ICIxMzoyMTozNCIsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIgogIH0sCiAgImVtaXNvciIgOiB7CiAgICAiY29kRXN0YWJsZU1IIiA6IG51bGwsCiAgICAiY29kRXN0YWJsZSIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGFNSCIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGEiIDogbnVsbCwKICAgICJuaXQiIDogIjEzMDIyMDA5ODQxMDE5IiwKICAgICJucmMiIDogIjIyODQyMTMiLAogICAgIm5vbWJyZSIgOiAiTUFSTExPUlkgTUFSSUVMQSBNT0xJTkEgUEFSRURFUyIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0NTMwMSIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVmVudGEgZGUgcGFydGVzLCBwaWV6YXMgeSBhY2Nlc29yaW9zIG51ZXZvcyBwYXJhIHZlaMOtY3Vsb3MgYXV0b21vdG9yZXMiLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iIDogIjAxIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJDZXJybyBlbCBDb3lvbCwgQ2FzZXLDrW8gbG9zIFJhbcOtcmV6LCBDYXJyZXRlcmEgYSBQZXJxdWluLCBPc2ljYWxhLCBNb3JhesOhbiBTdXIsIE1vcmF6w6FuIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImFwZW5kaWNlIiA6IG51bGwsCiAgInZlbnRhVGVyY2VybyIgOiBudWxsCn0.ryvaAeOZPKw__qQ1jbt20xemxxufha-dQ_-UIZOLGM7HhFiOiNDuUq9tZFSFjiy2hYdUOPopgNnuXTWXuhFfdTs964hA1CSaMen08sVh70C_GsJBPp0U6FG3Nq7U0KtIg7wGUD_ClwnZa2DHGynZoxSQPeJF2vRA11BCcqdhxnMXzo-cK64fQFx2a05GbTMOjhvBoLyN26Jkcndc090sODeVRNOCMxXFyDQQxJCGZaBo8nyXUtIMDvbqNtd_Iu25QV0NRN7yaJ9mnkOD2hnk4fBT2R2uENIunZcHLY6JLjmuDgE-Np3zYZDpQcPomwc3sNKcUePVwI7n8hals8rKRw"
+}

@@ -1,0 +1,145 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 1,
+        "ambiente": "01",
+        "tipoDte": "01",
+        "numeroControl": "DTE-01-23192055-000000000001719",
+        "codigoGeneracion": "0BEE9E85-F119-46B8-911B-6AE61B815534",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-07-03",
+        "horEmi": "11:31:54",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "tipoDocumento": null,
+        "numDocumento": null,
+        "nrc": null,
+        "nombre": "VARIOS ",
+        "codActividad": "10004",
+        "descActividad": "Desempleado",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "OSICALA"
+        },
+        "telefono": "50360620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 11.33,
+            "noGravado": 0,
+            "ivaItem": 1.01507714,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000016381",
+            "codTributo": null,
+            "descripcion": "ESPEJO INTERIOR P-PEGAR",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 11.33,
+            "montoDescu": 2.50663717,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 8.82336283,
+            "tributos": null
+        },
+        {
+            "psv": 52,
+            "noGravado": 0,
+            "ivaItem": 9.31756598,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000004324",
+            "codTributo": null,
+            "descripcion": "AMORTIGUADOR TRASERO DE GAS P\/ TOYOTA PICK UP 2WD TODOS, NISSAN PICK UP 2WD 86-03 4WD 82-03, CHEVROL",
+            "cantidad": 2,
+            "uniMedida": 1,
+            "precioUni": 52,
+            "montoDescu": 23.00884956,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 80.99115044,
+            "tributos": null
+        }
+    ],
+    "resumen": {
+        "totalIva": 10.33,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 89.81,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 89.81,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 89.81,
+        "subTotalVentas": 89.81,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 25.52,
+        "tributos": null,
+        "subTotal": 89.81,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 89.81,
+        "totalLetras": "OCHENTA NUEVE DÓLARES CON 81\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "20258A58AC33726D4D3C8748F4F35684D9A1ESA1",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "0BEE9E85-F119-46B8-911B-6AE61B815534",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "03\/07\/2025 11:31:55",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgInRpcG9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJudW1Eb2N1bWVudG8iIDogbnVsbCwKICAgICJucmMiIDogbnVsbCwKICAgICJub21icmUiIDogIlZBUklPUyAiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiMTAwMDQiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIkRlc2VtcGxlYWRvIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJPU0lDQUxBIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNTAzNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogMTEuMzMsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAiaXZhSXRlbSIgOiAxLjAxNTA3NzE0LAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAxNjM4MSIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJFU1BFSk8gSU5URVJJT1IgUC1QRUdBUiIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMTEuMzMsCiAgICAibW9udG9EZXNjdSIgOiAyLjUwNjYzNzE3LAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiA4LjgyMzM2MjgzLAogICAgInRyaWJ1dG9zIiA6IG51bGwKICB9LCB7CiAgICAicHN2IiA6IDUyLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgIml2YUl0ZW0iIDogOS4zMTc1NjU5OCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMiwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMDQzMjQiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiQU1PUlRJR1VBRE9SIFRSQVNFUk8gREUgR0FTIFAvIFRPWU9UQSBQSUNLIFVQIDJXRCBUT0RPUywgTklTU0FOIFBJQ0sgVVAgMldEIDg2LTAzIDRXRCA4Mi0wMywgQ0hFVlJPTCIsCiAgICAiY2FudGlkYWQiIDogMiwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogNTIsCiAgICAibW9udG9EZXNjdSIgOiAyMy4wMDg4NDk1NiwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogODAuOTkxMTUwNDQsCiAgICAidHJpYnV0b3MiIDogbnVsbAogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAidG90YWxJdmEiIDogMTAuMzMsCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiA4OS44MSwKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgIm1vbnRvUGFnbyIgOiA4OS44MSwKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogODkuODEsCiAgICAic3ViVG90YWxWZW50YXMiIDogODkuODEsCiAgICAiZGVzY3VOb1N1aiIgOiAwLAogICAgImRlc2N1RXhlbnRhIiA6IDAsCiAgICAiZGVzY3VHcmF2YWRhIiA6IDAsCiAgICAidG90YWxEZXNjdSIgOiAyNS41MiwKICAgICJ0cmlidXRvcyIgOiBudWxsLAogICAgInN1YlRvdGFsIiA6IDg5LjgxLAogICAgIml2YVJldGUxIiA6IDAsCiAgICAicmV0ZVJlbnRhIiA6IDAsCiAgICAibW9udG9Ub3RhbE9wZXJhY2lvbiIgOiA4OS44MSwKICAgICJ0b3RhbExldHJhcyIgOiAiT0NIRU5UQSBOVUVWRSBEw5NMQVJFUyBDT04gODEvMTAwIiwKICAgICJjb25kaWNpb25PcGVyYWNpb24iIDogMQogIH0sCiAgImV4dGVuc2lvbiIgOiB7CiAgICAicGxhY2FWZWhpY3VsbyIgOiBudWxsLAogICAgIm5vbWJFbnRyZWdhIiA6ICJBbGZvbnNvICIsCiAgICAiZG9jdUVudHJlZ2EiIDogIjAzNTc3ODExNyIsCiAgICAibm9tYlJlY2liZSIgOiBudWxsLAogICAgImRvY3VSZWNpYmUiIDogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIiA6IG51bGwKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyIgOiBudWxsLAogICJpZGVudGlmaWNhY2lvbiIgOiB7CiAgICAibW90aXZvQ29udGluIiA6IG51bGwsCiAgICAidmVyc2lvbiIgOiAxLAogICAgImFtYmllbnRlIiA6ICIwMSIsCiAgICAidGlwb0R0ZSIgOiAiMDEiLAogICAgIm51bWVyb0NvbnRyb2wiIDogIkRURS0wMS0yMzE5MjA1NS0wMDAwMDAwMDAwMDE3MTkiLAogICAgImNvZGlnb0dlbmVyYWNpb24iIDogIjBCRUU5RTg1LUYxMTktNDZCOC05MTFCLTZBRTYxQjgxNTUzNCIsCiAgICAidGlwb01vZGVsbyIgOiAxLAogICAgInRpcG9PcGVyYWNpb24iIDogMSwKICAgICJ0aXBvQ29udGluZ2VuY2lhIiA6IG51bGwsCiAgICAiZmVjRW1pIiA6ICIyMDI1LTA3LTAzIiwKICAgICJob3JFbWkiIDogIjExOjMxOjU0IiwKICAgICJ0aXBvTW9uZWRhIiA6ICJVU0QiCiAgfSwKICAiZW1pc29yIiA6IHsKICAgICJjb2RFc3RhYmxlTUgiIDogbnVsbCwKICAgICJjb2RFc3RhYmxlIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YU1IIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YSIgOiBudWxsLAogICAgIm5pdCIgOiAiMTMwMjIwMDk4NDEwMTkiLAogICAgIm5yYyIgOiAiMjI4NDIxMyIsCiAgICAibm9tYnJlIiA6ICJNQVJMTE9SWSBNQVJJRUxBIE1PTElOQSBQQVJFREVTIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ1MzAxIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBwYXJ0ZXMsIHBpZXphcyB5IGFjY2Vzb3Jpb3MgbnVldm9zIHBhcmEgdmVow61jdWxvcyBhdXRvbW90b3JlcyIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAidGlwb0VzdGFibGVjaW1pZW50byIgOiAiMDEiLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIkNlcnJvIGVsIENveW9sLCBDYXNlcsOtbyBsb3MgUmFtw61yZXosIENhcnJldGVyYSBhIFBlcnF1aW4sIE9zaWNhbGEsIE1vcmF6w6FuIFN1ciwgTW9yYXrDoW4iCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI2MDYyMDkxMCIsCiAgICAiY29ycmVvIiA6ICJzdW1pbmlzdHJvcy5vc2ljYWxhLmR0ZUBnbWFpbC5jb20iCiAgfSwKICAiYXBlbmRpY2UiIDogbnVsbCwKICAidmVudGFUZXJjZXJvIiA6IG51bGwKfQ.hAua8QwnFmqD6N-CascwRqo_dxA7_eqlf78ChgkNMFVwUR2ZwB94cGPiH6u-q1ARcZAp6xHNg8oL7PtRmo3exxlc3eZA2S-4WpMCF6T7LdegmdQL2Ms80w2x8kvSN2-yzvqwwFONJ9NpAaao4ItUX4s-U4cr17k8J_q4OQ5VBn7DOlHz11w1NefQgElcqe-uByJOmiakC8wJbgQZxm3MN8eY1D8ndKkj1tUnIF3mQqLQRG-P4ar8noJI3AApeLlcXKNGMDF5EkqW3Kam5xcMI5iokrX3ic0M_Zb7GwJVd36B6k4RCKtEcHHjK3G6IZ22lrdR7nDnRCVstBEiCA_wMA"
+}

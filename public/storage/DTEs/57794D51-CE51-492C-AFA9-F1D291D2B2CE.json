@@ -1,0 +1,153 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-28886482-000000000000032",
+        "codigoGeneracion": "57794D51-CE51-492C-AFA9-F1D291D2B2CE",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-19",
+        "horEmi": "12:58:28",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "004068319",
+        "nrc": "3650237",
+        "nombre": "JOSE JUAN SANCHEZ LUNA",
+        "codActividad": "10004",
+        "descActividad": "Desempleado",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "13",
+            "municipio": "27",
+            "complemento": "JOCOAITIQUE"
+        },
+        "telefono": "50377992373",
+        "correo": "juansanchez503sv@protonmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 40,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000020609",
+            "codTributo": null,
+            "descripcion": "4LT 10W30 MOTUL 4100 PROTEC ESPECIAL",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 35.39823009,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 35.39823009,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 4.25,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000004906",
+            "codTributo": null,
+            "descripcion": "SILICON PERMATEX",
+            "cantidad": 2,
+            "uniMedida": 1,
+            "precioUni": 3.76106195,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 7.5221239,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 48.5,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 48.5,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 42.92,
+        "subTotalVentas": 42.92,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 5.58
+            }
+        ],
+        "subTotal": 42.92,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 48.5,
+        "totalLetras": "CUARENTA OCHO DÓLARES CON 50\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Luis Arnulfo ",
+        "docuEntrega": "037316717",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "202596A3337B80324422B37F0758B1896F22DUMZ",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "57794D51-CE51-492C-AFA9-F1D291D2B2CE",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "19\/06\/2025 12:58:28",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMDA0MDY4MzE5IiwKICAgICJucmMiIDogIjM2NTAyMzciLAogICAgIm5vbWJyZSIgOiAiSk9TRSBKVUFOIFNBTkNIRVogTFVOQSIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICIxMDAwNCIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiRGVzZW1wbGVhZG8iLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjciLAogICAgICAiY29tcGxlbWVudG8iIDogIkpPQ09BSVRJUVVFIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNTAzNzc5OTIzNzMiLAogICAgImNvcnJlbyIgOiAianVhbnNhbmNoZXo1MDNzdkBwcm90b25tYWlsLmNvbSIKICB9LAogICJjdWVycG9Eb2N1bWVudG8iIDogWyB7CiAgICAicHN2IiA6IDQwLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAyMDYwOSIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICI0TFQgMTBXMzAgTU9UVUwgNDEwMCBQUk9URUMgRVNQRUNJQUwiLAogICAgImNhbnRpZGFkIiA6IDEsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDM1LjM5ODIzMDA5LAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogMzUuMzk4MjMwMDksCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9LCB7CiAgICAicHN2IiA6IDQuMjUsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAidGlwb0l0ZW0iIDogMSwKICAgICJudW1JdGVtIiA6IDIsCiAgICAibnVtZXJvRG9jdW1lbnRvIiA6IG51bGwsCiAgICAiY29kaWdvIiA6ICIwMDAwMDA0OTA2IiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIlNJTElDT04gUEVSTUFURVgiLAogICAgImNhbnRpZGFkIiA6IDIsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDMuNzYxMDYxOTUsCiAgICAibW9udG9EZXNjdSIgOiAwLAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiA3LjUyMjEyMzksCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9IF0sCiAgInJlc3VtZW4iIDogewogICAgIml2YVBlcmNpMSIgOiAwLAogICAgIm51bVBhZ29FbGVjdHJvbmljbyIgOiBudWxsLAogICAgInBvcmNlbnRhamVEZXNjdWVudG8iIDogMCwKICAgICJ0b3RhbE5vR3JhdmFkbyIgOiAwLAogICAgInRvdGFsUGFnYXIiIDogNDguNSwKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgIm1vbnRvUGFnbyIgOiA0OC41LAogICAgICAicmVmZXJlbmNpYSIgOiBudWxsLAogICAgICAicGxhem8iIDogbnVsbCwKICAgICAgInBlcmlvZG8iIDogbnVsbAogICAgfSBdLAogICAgInRvdGFsTm9TdWoiIDogMCwKICAgICJ0b3RhbEV4ZW50YSIgOiAwLAogICAgInRvdGFsR3JhdmFkYSIgOiA0Mi45MiwKICAgICJzdWJUb3RhbFZlbnRhcyIgOiA0Mi45MiwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDAsCiAgICAidHJpYnV0b3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjIwIiwKICAgICAgImRlc2NyaXBjaW9uIiA6ICJJbXB1ZXN0byBhbCBWYWxvciBBZ3JlZ2FkbyAxMyUiLAogICAgICAidmFsb3IiIDogNS41OAogICAgfSBdLAogICAgInN1YlRvdGFsIiA6IDQyLjkyLAogICAgIml2YVJldGUxIiA6IDAsCiAgICAicmV0ZVJlbnRhIiA6IDAsCiAgICAibW9udG9Ub3RhbE9wZXJhY2lvbiIgOiA0OC41LAogICAgInRvdGFsTGV0cmFzIiA6ICJDVUFSRU5UQSBPQ0hPIETDk0xBUkVTIENPTiA1MC8xMDAiLAogICAgImNvbmRpY2lvbk9wZXJhY2lvbiIgOiAxCiAgfSwKICAiZXh0ZW5zaW9uIiA6IHsKICAgICJwbGFjYVZlaGljdWxvIiA6IG51bGwsCiAgICAibm9tYkVudHJlZ2EiIDogIkx1aXMgQXJudWxmbyAiLAogICAgImRvY3VFbnRyZWdhIiA6ICIwMzczMTY3MTciLAogICAgIm5vbWJSZWNpYmUiIDogbnVsbCwKICAgICJkb2N1UmVjaWJlIiA6IG51bGwsCiAgICAib2JzZXJ2YWNpb25lcyIgOiBudWxsCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiaWRlbnRpZmljYWNpb24iIDogewogICAgIm1vdGl2b0NvbnRpbiIgOiBudWxsLAogICAgInZlcnNpb24iIDogMywKICAgICJhbWJpZW50ZSIgOiAiMDEiLAogICAgInRpcG9EdGUiIDogIjAzIiwKICAgICJudW1lcm9Db250cm9sIiA6ICJEVEUtMDMtMjg4ODY0ODItMDAwMDAwMDAwMDAwMDMyIiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIiA6ICI1Nzc5NEQ1MS1DRTUxLTQ5MkMtQUZBOS1GMUQyOTFEMkIyQ0UiLAogICAgInRpcG9Nb2RlbG8iIDogMSwKICAgICJ0aXBvT3BlcmFjaW9uIiA6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSIgOiBudWxsLAogICAgImZlY0VtaSIgOiAiMjAyNS0wNi0xOSIsCiAgICAiaG9yRW1pIiA6ICIxMjo1ODoyOCIsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIgogIH0sCiAgImVtaXNvciIgOiB7CiAgICAiY29kRXN0YWJsZU1IIiA6IG51bGwsCiAgICAiY29kRXN0YWJsZSIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGFNSCIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGEiIDogbnVsbCwKICAgICJuaXQiIDogIjEzMDIyMDA5ODQxMDE5IiwKICAgICJucmMiIDogIjIyODQyMTMiLAogICAgIm5vbWJyZSIgOiAiTUFSTExPUlkgTUFSSUVMQSBNT0xJTkEgUEFSRURFUyIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0NTMwMSIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVmVudGEgZGUgcGFydGVzLCBwaWV6YXMgeSBhY2Nlc29yaW9zIG51ZXZvcyBwYXJhIHZlaMOtY3Vsb3MgYXV0b21vdG9yZXMiLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iIDogIjAxIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJDZXJybyBlbCBDb3lvbCwgQ2FzZXLDrW8gbG9zIFJhbcOtcmV6LCBDYXJyZXRlcmEgYSBQZXJxdWluLCBPc2ljYWxhLCBNb3JhesOhbiBTdXIsIE1vcmF6w6FuIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImFwZW5kaWNlIiA6IG51bGwsCiAgInZlbnRhVGVyY2VybyIgOiBudWxsCn0.i928zNa3-Xe5aAh7H9pGPQTrbIXI8tN20mUqB4OBiCu7F3GyvAjqaFRFfoyI5-oSkLQUH10g7k9L9Djh8CWV6MS3CZn5lRZ9bwJNAwvw6MXYuEVOfp-5Vlzjo9e6KX4a_TjzTT4eGF3p9AT51HeQZt6ncX795Hhx5mYf-zKkU7IvwBALTl0HL9EptiXcCHEtdBaoQ7ry5EwAztunHnM9QBcLhw48nKWIqhWA4-l8veo0mNpoTY2vm4vpIMZnWyWpuPFN4l5VKaEPfpaZXu0Z5hvCDfZ_N7lJoQgLhUPN9zxyXUMwtAsSHY_VjZlCpOu4q7r-CGaKcha8DODYpGQqLg"
+}

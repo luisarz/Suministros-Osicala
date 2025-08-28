@@ -1,0 +1,145 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 1,
+        "ambiente": "01",
+        "tipoDte": "01",
+        "numeroControl": "DTE-01-26848325-000000000000713",
+        "codigoGeneracion": "3210E9DB-CD39-44CD-BDEB-9E522F66AEC4",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-13",
+        "horEmi": "15:11:48",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "tipoDocumento": null,
+        "numDocumento": null,
+        "nrc": null,
+        "nombre": "KEVIN OSMIN GARCIA HERNANDEZ",
+        "codActividad": "45201",
+        "descActividad": "Reparación mecánica de vehículos automotores",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "OSICALA"
+        },
+        "telefono": "50360674111",
+        "correo": "osmingarcia050@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 33.67,
+            "noGravado": 0,
+            "ivaItem": 2.90515487,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000009006",
+            "codTributo": null,
+            "descripcion": "PASTILLA P\/ FRENO DELANTERA ROGUE XTRAIL 2010",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 33.67,
+            "montoDescu": 8.4175,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 25.2525,
+            "tributos": null
+        },
+        {
+            "psv": 32.67,
+            "noGravado": 0,
+            "ivaItem": 2.81887168,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000013478",
+            "codTributo": null,
+            "descripcion": "PASTILLA P\/ FRENO TRASERA  NISSAN ROGUE   X-TRAIL 02-09, ALTIMA, SENTRA 06-, SUZUKI GRAN VITARA TRAS",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 32.67,
+            "montoDescu": 8.1675,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 24.5025,
+            "tributos": null
+        }
+    ],
+    "resumen": {
+        "totalIva": 5.72,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 49.76,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 49.76,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 49.76,
+        "subTotalVentas": 49.76,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 16.59,
+        "tributos": null,
+        "subTotal": 49.76,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 49.76,
+        "totalLetras": "CUARENTA NUEVE DÓLARES CON 76\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "2025E74A10F8195642C4B8DAEDFD0EF98C7EMCED",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "3210E9DB-CD39-44CD-BDEB-9E522F66AEC4",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "13\/06\/2025 15:11:49",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgInRpcG9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJudW1Eb2N1bWVudG8iIDogbnVsbCwKICAgICJucmMiIDogbnVsbCwKICAgICJub21icmUiIDogIktFVklOIE9TTUlOIEdBUkNJQSBIRVJOQU5ERVoiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiNDUyMDEiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIlJlcGFyYWNpw7NuIG1lY8OhbmljYSBkZSB2ZWjDrWN1bG9zIGF1dG9tb3RvcmVzIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJPU0lDQUxBIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNTAzNjA2NzQxMTEiLAogICAgImNvcnJlbyIgOiAib3NtaW5nYXJjaWEwNTBAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogMzMuNjcsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAiaXZhSXRlbSIgOiAyLjkwNTE1NDg3LAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAwOTAwNiIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJQQVNUSUxMQSBQLyBGUkVOTyBERUxBTlRFUkEgUk9HVUUgWFRSQUlMIDIwMTAiLAogICAgImNhbnRpZGFkIiA6IDEsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDMzLjY3LAogICAgIm1vbnRvRGVzY3UiIDogOC40MTc1LAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiAyNS4yNTI1LAogICAgInRyaWJ1dG9zIiA6IG51bGwKICB9LCB7CiAgICAicHN2IiA6IDMyLjY3LAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgIml2YUl0ZW0iIDogMi44MTg4NzE2OCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMiwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMTM0NzgiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiUEFTVElMTEEgUC8gRlJFTk8gVFJBU0VSQSAgTklTU0FOIFJPR1VFICAgWC1UUkFJTCAwMi0wOSwgQUxUSU1BLCBTRU5UUkEgMDYtLCBTVVpVS0kgR1JBTiBWSVRBUkEgVFJBUyIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMzIuNjcsCiAgICAibW9udG9EZXNjdSIgOiA4LjE2NzUsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDI0LjUwMjUsCiAgICAidHJpYnV0b3MiIDogbnVsbAogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAidG90YWxJdmEiIDogNS43MiwKICAgICJudW1QYWdvRWxlY3Ryb25pY28iIDogbnVsbCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIiA6IDAsCiAgICAidG90YWxOb0dyYXZhZG8iIDogMCwKICAgICJ0b3RhbFBhZ2FyIiA6IDQ5Ljc2LAogICAgInNhbGRvRmF2b3IiIDogMCwKICAgICJwYWdvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMDEiLAogICAgICAibW9udG9QYWdvIiA6IDQ5Ljc2LAogICAgICAicmVmZXJlbmNpYSIgOiBudWxsLAogICAgICAicGxhem8iIDogbnVsbCwKICAgICAgInBlcmlvZG8iIDogbnVsbAogICAgfSBdLAogICAgInRvdGFsTm9TdWoiIDogMCwKICAgICJ0b3RhbEV4ZW50YSIgOiAwLAogICAgInRvdGFsR3JhdmFkYSIgOiA0OS43NiwKICAgICJzdWJUb3RhbFZlbnRhcyIgOiA0OS43NiwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDE2LjU5LAogICAgInRyaWJ1dG9zIiA6IG51bGwsCiAgICAic3ViVG90YWwiIDogNDkuNzYsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDQ5Ljc2LAogICAgInRvdGFsTGV0cmFzIiA6ICJDVUFSRU5UQSBOVUVWRSBEw5NMQVJFUyBDT04gNzYvMTAwIiwKICAgICJjb25kaWNpb25PcGVyYWNpb24iIDogMQogIH0sCiAgImV4dGVuc2lvbiIgOiB7CiAgICAicGxhY2FWZWhpY3VsbyIgOiBudWxsLAogICAgIm5vbWJFbnRyZWdhIiA6ICJBbGZvbnNvICIsCiAgICAiZG9jdUVudHJlZ2EiIDogIjAzNTc3ODExNyIsCiAgICAibm9tYlJlY2liZSIgOiBudWxsLAogICAgImRvY3VSZWNpYmUiIDogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIiA6IG51bGwKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyIgOiBudWxsLAogICJpZGVudGlmaWNhY2lvbiIgOiB7CiAgICAibW90aXZvQ29udGluIiA6IG51bGwsCiAgICAidmVyc2lvbiIgOiAxLAogICAgImFtYmllbnRlIiA6ICIwMSIsCiAgICAidGlwb0R0ZSIgOiAiMDEiLAogICAgIm51bWVyb0NvbnRyb2wiIDogIkRURS0wMS0yNjg0ODMyNS0wMDAwMDAwMDAwMDA3MTMiLAogICAgImNvZGlnb0dlbmVyYWNpb24iIDogIjMyMTBFOURCLUNEMzktNDRDRC1CREVCLTlFNTIyRjY2QUVDNCIsCiAgICAidGlwb01vZGVsbyIgOiAxLAogICAgInRpcG9PcGVyYWNpb24iIDogMSwKICAgICJ0aXBvQ29udGluZ2VuY2lhIiA6IG51bGwsCiAgICAiZmVjRW1pIiA6ICIyMDI1LTA2LTEzIiwKICAgICJob3JFbWkiIDogIjE1OjExOjQ4IiwKICAgICJ0aXBvTW9uZWRhIiA6ICJVU0QiCiAgfSwKICAiZW1pc29yIiA6IHsKICAgICJjb2RFc3RhYmxlTUgiIDogbnVsbCwKICAgICJjb2RFc3RhYmxlIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YU1IIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YSIgOiBudWxsLAogICAgIm5pdCIgOiAiMTMwMjIwMDk4NDEwMTkiLAogICAgIm5yYyIgOiAiMjI4NDIxMyIsCiAgICAibm9tYnJlIiA6ICJNQVJMTE9SWSBNQVJJRUxBIE1PTElOQSBQQVJFREVTIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ1MzAxIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBwYXJ0ZXMsIHBpZXphcyB5IGFjY2Vzb3Jpb3MgbnVldm9zIHBhcmEgdmVow61jdWxvcyBhdXRvbW90b3JlcyIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAidGlwb0VzdGFibGVjaW1pZW50byIgOiAiMDEiLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIkNlcnJvIGVsIENveW9sLCBDYXNlcsOtbyBsb3MgUmFtw61yZXosIENhcnJldGVyYSBhIFBlcnF1aW4sIE9zaWNhbGEsIE1vcmF6w6FuIFN1ciwgTW9yYXrDoW4iCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI2MDYyMDkxMCIsCiAgICAiY29ycmVvIiA6ICJzdW1pbmlzdHJvcy5vc2ljYWxhLmR0ZUBnbWFpbC5jb20iCiAgfSwKICAiYXBlbmRpY2UiIDogbnVsbCwKICAidmVudGFUZXJjZXJvIiA6IG51bGwKfQ.VWBDIsQQiIRZlLbisfP06U88McPzCeq_NRFBLipHP1oJvjk374zJcQvx0OTQqmP7PZfd7XPCMHwcQD6V7L6AOKivEEqVuu3Z1ZMIDwcin2MxsvansIzZ1_yIkp9UvwS9H0xxex4mEllzN51OEYm6Vjkzl927GfojAf-9_fyc-ijRO-u1k6V_I3IebBP7sdRDJ2X1w6_5HyhlsXFd2gnP7RaEXwhdt7wy9KNOz_9KQGxIewlmUoKbe3R7NAdF_WYV3x-G_RXMbPkC8J6zwLLvvGXSxjhVcsoporvWb2P7vFAOPO9Lrke_WFCu0OdMEMHofnefIBSeP-ETtmecfgzAnA"
+}

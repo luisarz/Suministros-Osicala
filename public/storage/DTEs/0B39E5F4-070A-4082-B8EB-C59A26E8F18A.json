@@ -1,0 +1,153 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-56983137-000000000000001",
+        "codigoGeneracion": "0B39E5F4-070A-4082-B8EB-C59A26E8F18A",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-02",
+        "horEmi": "08:28:00",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "014233835",
+        "nrc": "3467847",
+        "nombre": "KARLA MARIA REYES REALES",
+        "codActividad": "72199",
+        "descActividad": "Investigaciones científicas",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "06",
+            "municipio": "23",
+            "complemento": "col. satelite pasaje venus"
+        },
+        "telefono": "50379235008",
+        "correo": "karlareyessv@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 10.33,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000019389",
+            "codTributo": null,
+            "descripcion": "ESCOBILLAS 17 BOSCH",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 9.14159292,
+            "montoDescu": 2.28539823,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 6.85619469,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 10.33,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000019869",
+            "codTributo": null,
+            "descripcion": "ESCOBILLAS BOSCH 22",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 9.14159292,
+            "montoDescu": 2.28539823,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 6.85619469,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 15.49,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 15.5,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 13.71,
+        "subTotalVentas": 13.71,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 4.57,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 1.78
+            }
+        ],
+        "subTotal": 13.71,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 15.49,
+        "totalLetras": "QUINCE DÓLARES CON 49\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "2025DD98A3456662485598E9AD17A3C3D46ADWJK",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "0B39E5F4-070A-4082-B8EB-C59A26E8F18A",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "02\/06\/2025 08:28:01",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMDE0MjMzODM1IiwKICAgICJucmMiIDogIjM0Njc4NDciLAogICAgIm5vbWJyZSIgOiAiS0FSTEEgTUFSSUEgUkVZRVMgUkVBTEVTIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjcyMTk5IiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJJbnZlc3RpZ2FjaW9uZXMgY2llbnTDrWZpY2FzIiwKICAgICJub21icmVDb21lcmNpYWwiIDogbnVsbCwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIwNiIsCiAgICAgICJtdW5pY2lwaW8iIDogIjIzIiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJjb2wuIHNhdGVsaXRlIHBhc2FqZSB2ZW51cyIKICAgIH0sCiAgICAidGVsZWZvbm8iIDogIjUwMzc5MjM1MDA4IiwKICAgICJjb3JyZW8iIDogImthcmxhcmV5ZXNzdkBnbWFpbC5jb20iCiAgfSwKICAiY3VlcnBvRG9jdW1lbnRvIiA6IFsgewogICAgInBzdiIgOiAxMC4zMywKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMSwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMTkzODkiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiRVNDT0JJTExBUyAxNyBCT1NDSCIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogOS4xNDE1OTI5MiwKICAgICJtb250b0Rlc2N1IiA6IDIuMjg1Mzk4MjMsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDYuODU2MTk0NjksCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9LCB7CiAgICAicHN2IiA6IDEwLjMzLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAyLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAxOTg2OSIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJFU0NPQklMTEFTIEJPU0NIIDIyIiwKICAgICJjYW50aWRhZCIgOiAxLAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiA5LjE0MTU5MjkyLAogICAgIm1vbnRvRGVzY3UiIDogMi4yODUzOTgyMywKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogNi44NTYxOTQ2OSwKICAgICJ0cmlidXRvcyIgOiBbICIyMCIgXQogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAiaXZhUGVyY2kxIiA6IDAsCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiAxNS40OSwKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgIm1vbnRvUGFnbyIgOiAxNS41LAogICAgICAicmVmZXJlbmNpYSIgOiBudWxsLAogICAgICAicGxhem8iIDogbnVsbCwKICAgICAgInBlcmlvZG8iIDogbnVsbAogICAgfSBdLAogICAgInRvdGFsTm9TdWoiIDogMCwKICAgICJ0b3RhbEV4ZW50YSIgOiAwLAogICAgInRvdGFsR3JhdmFkYSIgOiAxMy43MSwKICAgICJzdWJUb3RhbFZlbnRhcyIgOiAxMy43MSwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDQuNTcsCiAgICAidHJpYnV0b3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjIwIiwKICAgICAgImRlc2NyaXBjaW9uIiA6ICJJbXB1ZXN0byBhbCBWYWxvciBBZ3JlZ2FkbyAxMyUiLAogICAgICAidmFsb3IiIDogMS43OAogICAgfSBdLAogICAgInN1YlRvdGFsIiA6IDEzLjcxLAogICAgIml2YVJldGUxIiA6IDAsCiAgICAicmV0ZVJlbnRhIiA6IDAsCiAgICAibW9udG9Ub3RhbE9wZXJhY2lvbiIgOiAxNS40OSwKICAgICJ0b3RhbExldHJhcyIgOiAiUVVJTkNFIETDk0xBUkVTIENPTiA0OS8xMDAiLAogICAgImNvbmRpY2lvbk9wZXJhY2lvbiIgOiAxCiAgfSwKICAiZXh0ZW5zaW9uIiA6IHsKICAgICJwbGFjYVZlaGljdWxvIiA6IG51bGwsCiAgICAibm9tYkVudHJlZ2EiIDogIkFsZm9uc28gIiwKICAgICJkb2N1RW50cmVnYSIgOiAiMDM1Nzc4MTE3IiwKICAgICJub21iUmVjaWJlIiA6IG51bGwsCiAgICAiZG9jdVJlY2liZSIgOiBudWxsLAogICAgIm9ic2VydmFjaW9uZXMiIDogbnVsbAogIH0sCiAgImRvY3VtZW50b1JlbGFjaW9uYWRvIiA6IG51bGwsCiAgImlkZW50aWZpY2FjaW9uIiA6IHsKICAgICJtb3Rpdm9Db250aW4iIDogbnVsbCwKICAgICJ2ZXJzaW9uIiA6IDMsCiAgICAiYW1iaWVudGUiIDogIjAxIiwKICAgICJ0aXBvRHRlIiA6ICIwMyIsCiAgICAibnVtZXJvQ29udHJvbCIgOiAiRFRFLTAzLTU2OTgzMTM3LTAwMDAwMDAwMDAwMDAwMSIsCiAgICAiY29kaWdvR2VuZXJhY2lvbiIgOiAiMEIzOUU1RjQtMDcwQS00MDgyLUI4RUItQzU5QTI2RThGMThBIiwKICAgICJ0aXBvTW9kZWxvIiA6IDEsCiAgICAidGlwb09wZXJhY2lvbiIgOiAxLAogICAgInRpcG9Db250aW5nZW5jaWEiIDogbnVsbCwKICAgICJmZWNFbWkiIDogIjIwMjUtMDYtMDIiLAogICAgImhvckVtaSIgOiAiMDg6Mjg6MDAiLAogICAgInRpcG9Nb25lZGEiIDogIlVTRCIKICB9LAogICJlbWlzb3IiIDogewogICAgImNvZEVzdGFibGVNSCIgOiBudWxsLAogICAgImNvZEVzdGFibGUiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhTUgiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhIiA6IG51bGwsCiAgICAibml0IiA6ICIxMzAyMjAwOTg0MTAxOSIsCiAgICAibnJjIiA6ICIyMjg0MjEzIiwKICAgICJub21icmUiIDogIk1BUkxMT1JZIE1BUklFTEEgTU9MSU5BIFBBUkVERVMiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiNDUzMDEiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIlZlbnRhIGRlIHBhcnRlcywgcGllemFzIHkgYWNjZXNvcmlvcyBudWV2b3MgcGFyYSB2ZWjDrWN1bG9zIGF1dG9tb3RvcmVzIiwKICAgICJub21icmVDb21lcmNpYWwiIDogbnVsbCwKICAgICJ0aXBvRXN0YWJsZWNpbWllbnRvIiA6ICIwMSIsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMTMiLAogICAgICAibXVuaWNpcGlvIiA6ICIyOCIsCiAgICAgICJjb21wbGVtZW50byIgOiAiQ2Vycm8gZWwgQ295b2wsIENhc2Vyw61vIGxvcyBSYW3DrXJleiwgQ2FycmV0ZXJhIGEgUGVycXVpbiwgT3NpY2FsYSwgTW9yYXrDoW4gU3VyLCBNb3JhesOhbiIKICAgIH0sCiAgICAidGVsZWZvbm8iIDogIjYwNjIwOTEwIiwKICAgICJjb3JyZW8iIDogInN1bWluaXN0cm9zLm9zaWNhbGEuZHRlQGdtYWlsLmNvbSIKICB9LAogICJhcGVuZGljZSIgOiBudWxsLAogICJ2ZW50YVRlcmNlcm8iIDogbnVsbAp9.g-pUbdMp-Q1gYq1bYH06P32n8urHgnvj80GDRZHktg6VGpTyxYUXcvXPJ6fBmNZ0UymZrOsRSXbE4klN6awW8SrvcwQsfzp_NTieBm1FUgWVwV-wNANRgcRb9hLrjRN_8gh-IwnqF8rIEvXRQoYWq-mtRMeNgZaweR8_l_ruaq5b2UfF24Sf0fLbd627zBspe9jeWX5UQYrCQjRQ_oigyeKE-xrkwxIX-qCbxJPAgbUSa_dH4xcryotcFvJFDeSLI_Ku2RSqdfw1MO0iztAT5Vi9_nfsCNXyK-o26LgZ1CGE3QBwZnkYDyHVF9KgzeOKNMwE9wEIk6QsqNRfdFtjWA"
+}

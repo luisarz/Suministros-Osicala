@@ -1,0 +1,153 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-23427657-000000000000028",
+        "codigoGeneracion": "9A142E4D-994A-4EA5-A628-81AD37AEC0CB",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-18",
+        "horEmi": "09:52:59",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "06142807081013",
+        "nrc": "1886297",
+        "nombre": "INVERSIONES EL ROBLE, S.A DE C.V ",
+        "codActividad": "10005",
+        "descActividad": "Otros",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "06",
+            "municipio": "23",
+            "complemento": "SAN SALVADOR"
+        },
+        "telefono": "50377300141",
+        "correo": "jearguetag@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 6.83,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000019984",
+            "codTributo": null,
+            "descripcion": "FILTRO P\/ ACEITE HC-303 MAHINDRA",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 6.04424779,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 6.04424779,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 42,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000020609",
+            "codTributo": null,
+            "descripcion": "4LT 10W30 MOTUL 4100 PROTEC ESPECIAL",
+            "cantidad": 2,
+            "uniMedida": 1,
+            "precioUni": 37.16814159,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 74.33628318,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 90.83,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 90.83,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 80.38,
+        "subTotalVentas": 80.38,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 10.45
+            }
+        ],
+        "subTotal": 80.38,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 90.83,
+        "totalLetras": "NOVENTA DÓLARES CON 83\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "2025FEEE1B823ECA4588A3EF0852BA6D7557J9PV",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "9A142E4D-994A-4EA5-A628-81AD37AEC0CB",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "18\/06\/2025 09:52:59",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMDYxNDI4MDcwODEwMTMiLAogICAgIm5yYyIgOiAiMTg4NjI5NyIsCiAgICAibm9tYnJlIiA6ICJJTlZFUlNJT05FUyBFTCBST0JMRSwgUy5BIERFIEMuViAiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiMTAwMDUiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIk90cm9zIiwKICAgICJub21icmVDb21lcmNpYWwiIDogbnVsbCwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIwNiIsCiAgICAgICJtdW5pY2lwaW8iIDogIjIzIiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJTQU4gU0FMVkFET1IiCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI1MDM3NzMwMDE0MSIsCiAgICAiY29ycmVvIiA6ICJqZWFyZ3VldGFnQGdtYWlsLmNvbSIKICB9LAogICJjdWVycG9Eb2N1bWVudG8iIDogWyB7CiAgICAicHN2IiA6IDYuODMsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAidGlwb0l0ZW0iIDogMSwKICAgICJudW1JdGVtIiA6IDEsCiAgICAibnVtZXJvRG9jdW1lbnRvIiA6IG51bGwsCiAgICAiY29kaWdvIiA6ICIwMDAwMDE5OTg0IiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIkZJTFRSTyBQLyBBQ0VJVEUgSEMtMzAzIE1BSElORFJBIiwKICAgICJjYW50aWRhZCIgOiAxLAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiA2LjA0NDI0Nzc5LAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogNi4wNDQyNDc3OSwKICAgICJ0cmlidXRvcyIgOiBbICIyMCIgXQogIH0sIHsKICAgICJwc3YiIDogNDIsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAidGlwb0l0ZW0iIDogMSwKICAgICJudW1JdGVtIiA6IDIsCiAgICAibnVtZXJvRG9jdW1lbnRvIiA6IG51bGwsCiAgICAiY29kaWdvIiA6ICIwMDAwMDIwNjA5IiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIjRMVCAxMFczMCBNT1RVTCA0MTAwIFBST1RFQyBFU1BFQ0lBTCIsCiAgICAiY2FudGlkYWQiIDogMiwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMzcuMTY4MTQxNTksCiAgICAibW9udG9EZXNjdSIgOiAwLAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiA3NC4zMzYyODMxOCwKICAgICJ0cmlidXRvcyIgOiBbICIyMCIgXQogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAiaXZhUGVyY2kxIiA6IDAsCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiA5MC44MywKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgIm1vbnRvUGFnbyIgOiA5MC44MywKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogODAuMzgsCiAgICAic3ViVG90YWxWZW50YXMiIDogODAuMzgsCiAgICAiZGVzY3VOb1N1aiIgOiAwLAogICAgImRlc2N1RXhlbnRhIiA6IDAsCiAgICAiZGVzY3VHcmF2YWRhIiA6IDAsCiAgICAidG90YWxEZXNjdSIgOiAwLAogICAgInRyaWJ1dG9zIiA6IFsgewogICAgICAiY29kaWdvIiA6ICIyMCIsCiAgICAgICJkZXNjcmlwY2lvbiIgOiAiSW1wdWVzdG8gYWwgVmFsb3IgQWdyZWdhZG8gMTMlIiwKICAgICAgInZhbG9yIiA6IDEwLjQ1CiAgICB9IF0sCiAgICAic3ViVG90YWwiIDogODAuMzgsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDkwLjgzLAogICAgInRvdGFsTGV0cmFzIiA6ICJOT1ZFTlRBIETDk0xBUkVTIENPTiA4My8xMDAiLAogICAgImNvbmRpY2lvbk9wZXJhY2lvbiIgOiAxCiAgfSwKICAiZXh0ZW5zaW9uIiA6IHsKICAgICJwbGFjYVZlaGljdWxvIiA6IG51bGwsCiAgICAibm9tYkVudHJlZ2EiIDogIkFsZm9uc28gIiwKICAgICJkb2N1RW50cmVnYSIgOiAiMDM1Nzc4MTE3IiwKICAgICJub21iUmVjaWJlIiA6IG51bGwsCiAgICAiZG9jdVJlY2liZSIgOiBudWxsLAogICAgIm9ic2VydmFjaW9uZXMiIDogbnVsbAogIH0sCiAgImRvY3VtZW50b1JlbGFjaW9uYWRvIiA6IG51bGwsCiAgImlkZW50aWZpY2FjaW9uIiA6IHsKICAgICJtb3Rpdm9Db250aW4iIDogbnVsbCwKICAgICJ2ZXJzaW9uIiA6IDMsCiAgICAiYW1iaWVudGUiIDogIjAxIiwKICAgICJ0aXBvRHRlIiA6ICIwMyIsCiAgICAibnVtZXJvQ29udHJvbCIgOiAiRFRFLTAzLTIzNDI3NjU3LTAwMDAwMDAwMDAwMDAyOCIsCiAgICAiY29kaWdvR2VuZXJhY2lvbiIgOiAiOUExNDJFNEQtOTk0QS00RUE1LUE2MjgtODFBRDM3QUVDMENCIiwKICAgICJ0aXBvTW9kZWxvIiA6IDEsCiAgICAidGlwb09wZXJhY2lvbiIgOiAxLAogICAgInRpcG9Db250aW5nZW5jaWEiIDogbnVsbCwKICAgICJmZWNFbWkiIDogIjIwMjUtMDYtMTgiLAogICAgImhvckVtaSIgOiAiMDk6NTI6NTkiLAogICAgInRpcG9Nb25lZGEiIDogIlVTRCIKICB9LAogICJlbWlzb3IiIDogewogICAgImNvZEVzdGFibGVNSCIgOiBudWxsLAogICAgImNvZEVzdGFibGUiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhTUgiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhIiA6IG51bGwsCiAgICAibml0IiA6ICIxMzAyMjAwOTg0MTAxOSIsCiAgICAibnJjIiA6ICIyMjg0MjEzIiwKICAgICJub21icmUiIDogIk1BUkxMT1JZIE1BUklFTEEgTU9MSU5BIFBBUkVERVMiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiNDUzMDEiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIlZlbnRhIGRlIHBhcnRlcywgcGllemFzIHkgYWNjZXNvcmlvcyBudWV2b3MgcGFyYSB2ZWjDrWN1bG9zIGF1dG9tb3RvcmVzIiwKICAgICJub21icmVDb21lcmNpYWwiIDogbnVsbCwKICAgICJ0aXBvRXN0YWJsZWNpbWllbnRvIiA6ICIwMSIsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMTMiLAogICAgICAibXVuaWNpcGlvIiA6ICIyOCIsCiAgICAgICJjb21wbGVtZW50byIgOiAiQ2Vycm8gZWwgQ295b2wsIENhc2Vyw61vIGxvcyBSYW3DrXJleiwgQ2FycmV0ZXJhIGEgUGVycXVpbiwgT3NpY2FsYSwgTW9yYXrDoW4gU3VyLCBNb3JhesOhbiIKICAgIH0sCiAgICAidGVsZWZvbm8iIDogIjYwNjIwOTEwIiwKICAgICJjb3JyZW8iIDogInN1bWluaXN0cm9zLm9zaWNhbGEuZHRlQGdtYWlsLmNvbSIKICB9LAogICJhcGVuZGljZSIgOiBudWxsLAogICJ2ZW50YVRlcmNlcm8iIDogbnVsbAp9.bAdyoVqqESXkNlwXDbLxbJ1fXDLphtx_kkzy7-b9_BNLMCxpWa4KxbVyoaOly70-BY_Dit-pYOrrkmxykgJDyKpwr4J5nmgUoEnYl4FpHUmEx-s3KR8F9e_NEla5Aw_CcXilq3iVKbIq_ff-Gmlrsjc9nrHfYNU0mZy9qfssgYc__CVYPAM7dUatTbt9zfZJvRX2cOKJk41xrwFuYgIee9x0Rd7AqyqGfGYB-1WVhyRGjiAixMXz9RfrOaM__WbRLsYaAP977YjWOiRPptwJMeqtOXgbG2Bw4AP0C628c1ONFsR3GiBT9HS3IbqS1NNq6ztraXRMuURCF52qNkN9zA"
+}

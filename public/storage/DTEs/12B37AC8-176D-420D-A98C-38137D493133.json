@@ -1,0 +1,133 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-M001P001-000000000000092",
+        "codigoGeneracion": "12B37AC8-176D-420D-A98C-38137D493133",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-07-14",
+        "horEmi": "14:50:38",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "13053011181010",
+        "nrc": "2759691",
+        "nombre": "CONSTRUCCION Y SERVICIOS DELICIAS DE CONCEPCION S.A DE C.V ",
+        "codActividad": "10004",
+        "descActividad": "Desempleado",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "osicala"
+        },
+        "telefono": "50364491903",
+        "correo": "construserviddc19@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 44,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000004495",
+            "codTributo": null,
+            "descripcion": "PASTILLA P\/ FRENO KIA PREGIO 2004, HYUNDAI H100 07- KIA BONGO 2015 ",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 38.9380531,
+            "montoDescu": 9.73451327,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 29.20353983,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 33,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 33,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 29.2,
+        "subTotalVentas": 29.2,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 9.73,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 3.8
+            }
+        ],
+        "subTotal": 29.2,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 33,
+        "totalLetras": "TREINTA TRES DÓLARES CON 00\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "DILVER ",
+        "docuEntrega": "051021091",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "20250BD1C7C5D9754887878E15E2C2AB70F9ESJH",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "12B37AC8-176D-420D-A98C-38137D493133",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "14\/07\/2025 14:50:39",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMTMwNTMwMTExODEwMTAiLAogICAgIm5yYyIgOiAiMjc1OTY5MSIsCiAgICAibm9tYnJlIiA6ICJDT05TVFJVQ0NJT04gWSBTRVJWSUNJT1MgREVMSUNJQVMgREUgQ09OQ0VQQ0lPTiBTLkEgREUgQy5WICIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICIxMDAwNCIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiRGVzZW1wbGVhZG8iLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIm9zaWNhbGEiCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI1MDM2NDQ5MTkwMyIsCiAgICAiY29ycmVvIiA6ICJjb25zdHJ1c2VydmlkZGMxOUBnbWFpbC5jb20iCiAgfSwKICAiY3VlcnBvRG9jdW1lbnRvIiA6IFsgewogICAgInBzdiIgOiA0NCwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMSwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMDQ0OTUiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiUEFTVElMTEEgUC8gRlJFTk8gS0lBIFBSRUdJTyAyMDA0LCBIWVVOREFJIEgxMDAgMDctIEtJQSBCT05HTyAyMDE1ICIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMzguOTM4MDUzMSwKICAgICJtb250b0Rlc2N1IiA6IDkuNzM0NTEzMjcsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDI5LjIwMzUzOTgzLAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSBdLAogICJyZXN1bWVuIiA6IHsKICAgICJpdmFQZXJjaTEiIDogMCwKICAgICJudW1QYWdvRWxlY3Ryb25pY28iIDogbnVsbCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIiA6IDAsCiAgICAidG90YWxOb0dyYXZhZG8iIDogMCwKICAgICJ0b3RhbFBhZ2FyIiA6IDMzLjAsCiAgICAic2FsZG9GYXZvciIgOiAwLAogICAgInBhZ29zIiA6IFsgewogICAgICAiY29kaWdvIiA6ICIwMSIsCiAgICAgICJtb250b1BhZ28iIDogMzMuMCwKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogMjkuMiwKICAgICJzdWJUb3RhbFZlbnRhcyIgOiAyOS4yLAogICAgImRlc2N1Tm9TdWoiIDogMCwKICAgICJkZXNjdUV4ZW50YSIgOiAwLAogICAgImRlc2N1R3JhdmFkYSIgOiAwLAogICAgInRvdGFsRGVzY3UiIDogOS43MywKICAgICJ0cmlidXRvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMjAiLAogICAgICAiZGVzY3JpcGNpb24iIDogIkltcHVlc3RvIGFsIFZhbG9yIEFncmVnYWRvIDEzJSIsCiAgICAgICJ2YWxvciIgOiAzLjgKICAgIH0gXSwKICAgICJzdWJUb3RhbCIgOiAyOS4yLAogICAgIml2YVJldGUxIiA6IDAsCiAgICAicmV0ZVJlbnRhIiA6IDAsCiAgICAibW9udG9Ub3RhbE9wZXJhY2lvbiIgOiAzMy4wLAogICAgInRvdGFsTGV0cmFzIiA6ICJUUkVJTlRBIFRSRVMgRMOTTEFSRVMgQ09OIDAwLzEwMCIsCiAgICAiY29uZGljaW9uT3BlcmFjaW9uIiA6IDEKICB9LAogICJleHRlbnNpb24iIDogewogICAgInBsYWNhVmVoaWN1bG8iIDogbnVsbCwKICAgICJub21iRW50cmVnYSIgOiAiRElMVkVSICIsCiAgICAiZG9jdUVudHJlZ2EiIDogIjA1MTAyMTA5MSIsCiAgICAibm9tYlJlY2liZSIgOiBudWxsLAogICAgImRvY3VSZWNpYmUiIDogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIiA6IG51bGwKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyIgOiBudWxsLAogICJpZGVudGlmaWNhY2lvbiIgOiB7CiAgICAibW90aXZvQ29udGluIiA6IG51bGwsCiAgICAidmVyc2lvbiIgOiAzLAogICAgImFtYmllbnRlIiA6ICIwMSIsCiAgICAidGlwb0R0ZSIgOiAiMDMiLAogICAgIm51bWVyb0NvbnRyb2wiIDogIkRURS0wMy1NMDAxUDAwMS0wMDAwMDAwMDAwMDAwOTIiLAogICAgImNvZGlnb0dlbmVyYWNpb24iIDogIjEyQjM3QUM4LTE3NkQtNDIwRC1BOThDLTM4MTM3RDQ5MzEzMyIsCiAgICAidGlwb01vZGVsbyIgOiAxLAogICAgInRpcG9PcGVyYWNpb24iIDogMSwKICAgICJ0aXBvQ29udGluZ2VuY2lhIiA6IG51bGwsCiAgICAiZmVjRW1pIiA6ICIyMDI1LTA3LTE0IiwKICAgICJob3JFbWkiIDogIjE0OjUwOjM4IiwKICAgICJ0aXBvTW9uZWRhIiA6ICJVU0QiCiAgfSwKICAiZW1pc29yIiA6IHsKICAgICJjb2RFc3RhYmxlTUgiIDogbnVsbCwKICAgICJjb2RFc3RhYmxlIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YU1IIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YSIgOiBudWxsLAogICAgIm5pdCIgOiAiMTMwMjIwMDk4NDEwMTkiLAogICAgIm5yYyIgOiAiMjI4NDIxMyIsCiAgICAibm9tYnJlIiA6ICJNQVJMTE9SWSBNQVJJRUxBIE1PTElOQSBQQVJFREVTIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ1MzAxIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBwYXJ0ZXMsIHBpZXphcyB5IGFjY2Vzb3Jpb3MgbnVldm9zIHBhcmEgdmVow61jdWxvcyBhdXRvbW90b3JlcyIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAidGlwb0VzdGFibGVjaW1pZW50byIgOiAiMDEiLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIkNlcnJvIGVsIENveW9sLCBDYXNlcsOtbyBsb3MgUmFtw61yZXosIENhcnJldGVyYSBhIFBlcnF1aW4sIE9zaWNhbGEsIE1vcmF6w6FuIFN1ciwgTW9yYXrDoW4iCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI2MDYyMDkxMCIsCiAgICAiY29ycmVvIiA6ICJzdW1pbmlzdHJvcy5vc2ljYWxhLmR0ZUBnbWFpbC5jb20iCiAgfSwKICAiYXBlbmRpY2UiIDogbnVsbCwKICAidmVudGFUZXJjZXJvIiA6IG51bGwKfQ.ZhbMokPjixwvdj7ZNfMdnx5MNVlQtS7Oc0khv9vnsVten9TgLbPwTMp7UXXb5PBaH5QEQkl4-LJqogQ_XuG9ndMPU6b6JTqqJQgRGdatKDc6hVMknDWIWbA6cRJ7sdioKa45DMiDVt3blWxYYquKtBtU8nANjkubS-t4jUoZJBEpxEu3PsOxtRr9fTHaCqfxFdUby-YbNBpp74Y26EqH4SLnbQySzk2piVyfHXtj-iJjuj-W4lmsxXCjADO_pIaEk8hRCFOfjWgyc1ymeysCto5bUy8EI-EpaWi2oSatTyPer-W_gj_HQiaNNVT2g-CaGCOZJ5XCo4GwIYTPj8AsgQ"
+}

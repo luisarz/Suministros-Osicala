@@ -20,7 +20,10 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationGroup = "Facturación";
     protected static ?string $label = 'Clientes';
-
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'last_name', 'nrc', 'dui', 'nit', 'email', 'phone'];
+    }
     public static function form(Form $form): Form
     {
         return $form

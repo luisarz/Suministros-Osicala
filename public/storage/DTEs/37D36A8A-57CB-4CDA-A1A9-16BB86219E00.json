@@ -1,0 +1,133 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-65170590-000000000000022",
+        "codigoGeneracion": "37D36A8A-57CB-4CDA-A1A9-16BB86219E00",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-12",
+        "horEmi": "09:41:39",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "12171711091020",
+        "nrc": "2008651",
+        "nombre": "INVERSIONES NOLASCO, SOCIEDAD ANONIMA DE CAPITAL VARIABLE ",
+        "codActividad": "47199",
+        "descActividad": "Venta de establecimientos no especializados con surtido compuesto principalmente de alimentos, bebidas y tabaco",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "osicala"
+        },
+        "telefono": "50360620910",
+        "correo": "asistenciamultisuperosicala@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 130,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000016658",
+            "codTributo": null,
+            "descripcion": "BATERIA LTH HI TEC H-48",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 115.04424779,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 115.04424779,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 130,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 130,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 115.04,
+        "subTotalVentas": 115.04,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 14.96
+            }
+        ],
+        "subTotal": 115.04,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 130,
+        "totalLetras": "CIENTO TREINTA DÓLARES CON 00\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "2025B1D8AA7C8B3D4078909C6178E6437C38TYVB",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "37D36A8A-57CB-4CDA-A1A9-16BB86219E00",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "12\/06\/2025 09:41:39",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMTIxNzE3MTEwOTEwMjAiLAogICAgIm5yYyIgOiAiMjAwODY1MSIsCiAgICAibm9tYnJlIiA6ICJJTlZFUlNJT05FUyBOT0xBU0NPLCBTT0NJRURBRCBBTk9OSU1BIERFIENBUElUQUwgVkFSSUFCTEUgIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ3MTk5IiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBlc3RhYmxlY2ltaWVudG9zIG5vIGVzcGVjaWFsaXphZG9zIGNvbiBzdXJ0aWRvIGNvbXB1ZXN0byBwcmluY2lwYWxtZW50ZSBkZSBhbGltZW50b3MsIGJlYmlkYXMgeSB0YWJhY28iLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIm9zaWNhbGEiCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI1MDM2MDYyMDkxMCIsCiAgICAiY29ycmVvIiA6ICJhc2lzdGVuY2lhbXVsdGlzdXBlcm9zaWNhbGFAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogMTMwLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAxNjY1OCIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJCQVRFUklBIExUSCBISSBURUMgSC00OCIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMTE1LjA0NDI0Nzc5LAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogMTE1LjA0NDI0Nzc5LAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSBdLAogICJyZXN1bWVuIiA6IHsKICAgICJpdmFQZXJjaTEiIDogMCwKICAgICJudW1QYWdvRWxlY3Ryb25pY28iIDogbnVsbCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIiA6IDAsCiAgICAidG90YWxOb0dyYXZhZG8iIDogMCwKICAgICJ0b3RhbFBhZ2FyIiA6IDEzMC4wLAogICAgInNhbGRvRmF2b3IiIDogMCwKICAgICJwYWdvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMDEiLAogICAgICAibW9udG9QYWdvIiA6IDEzMCwKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogMTE1LjA0LAogICAgInN1YlRvdGFsVmVudGFzIiA6IDExNS4wNCwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDAsCiAgICAidHJpYnV0b3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjIwIiwKICAgICAgImRlc2NyaXBjaW9uIiA6ICJJbXB1ZXN0byBhbCBWYWxvciBBZ3JlZ2FkbyAxMyUiLAogICAgICAidmFsb3IiIDogMTQuOTYKICAgIH0gXSwKICAgICJzdWJUb3RhbCIgOiAxMTUuMDQsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDEzMC4wLAogICAgInRvdGFsTGV0cmFzIiA6ICJDSUVOVE8gVFJFSU5UQSBEw5NMQVJFUyBDT04gMDAvMTAwIiwKICAgICJjb25kaWNpb25PcGVyYWNpb24iIDogMQogIH0sCiAgImV4dGVuc2lvbiIgOiB7CiAgICAicGxhY2FWZWhpY3VsbyIgOiBudWxsLAogICAgIm5vbWJFbnRyZWdhIiA6ICJBbGZvbnNvICIsCiAgICAiZG9jdUVudHJlZ2EiIDogIjAzNTc3ODExNyIsCiAgICAibm9tYlJlY2liZSIgOiBudWxsLAogICAgImRvY3VSZWNpYmUiIDogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIiA6IG51bGwKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyIgOiBudWxsLAogICJpZGVudGlmaWNhY2lvbiIgOiB7CiAgICAibW90aXZvQ29udGluIiA6IG51bGwsCiAgICAidmVyc2lvbiIgOiAzLAogICAgImFtYmllbnRlIiA6ICIwMSIsCiAgICAidGlwb0R0ZSIgOiAiMDMiLAogICAgIm51bWVyb0NvbnRyb2wiIDogIkRURS0wMy02NTE3MDU5MC0wMDAwMDAwMDAwMDAwMjIiLAogICAgImNvZGlnb0dlbmVyYWNpb24iIDogIjM3RDM2QThBLTU3Q0ItNENEQS1BMUE5LTE2QkI4NjIxOUUwMCIsCiAgICAidGlwb01vZGVsbyIgOiAxLAogICAgInRpcG9PcGVyYWNpb24iIDogMSwKICAgICJ0aXBvQ29udGluZ2VuY2lhIiA6IG51bGwsCiAgICAiZmVjRW1pIiA6ICIyMDI1LTA2LTEyIiwKICAgICJob3JFbWkiIDogIjA5OjQxOjM5IiwKICAgICJ0aXBvTW9uZWRhIiA6ICJVU0QiCiAgfSwKICAiZW1pc29yIiA6IHsKICAgICJjb2RFc3RhYmxlTUgiIDogbnVsbCwKICAgICJjb2RFc3RhYmxlIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YU1IIiA6IG51bGwsCiAgICAiY29kUHVudG9WZW50YSIgOiBudWxsLAogICAgIm5pdCIgOiAiMTMwMjIwMDk4NDEwMTkiLAogICAgIm5yYyIgOiAiMjI4NDIxMyIsCiAgICAibm9tYnJlIiA6ICJNQVJMTE9SWSBNQVJJRUxBIE1PTElOQSBQQVJFREVTIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ1MzAxIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBkZSBwYXJ0ZXMsIHBpZXphcyB5IGFjY2Vzb3Jpb3MgbnVldm9zIHBhcmEgdmVow61jdWxvcyBhdXRvbW90b3JlcyIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAidGlwb0VzdGFibGVjaW1pZW50byIgOiAiMDEiLAogICAgImRpcmVjY2lvbiIgOiB7CiAgICAgICJkZXBhcnRhbWVudG8iIDogIjEzIiwKICAgICAgIm11bmljaXBpbyIgOiAiMjgiLAogICAgICAiY29tcGxlbWVudG8iIDogIkNlcnJvIGVsIENveW9sLCBDYXNlcsOtbyBsb3MgUmFtw61yZXosIENhcnJldGVyYSBhIFBlcnF1aW4sIE9zaWNhbGEsIE1vcmF6w6FuIFN1ciwgTW9yYXrDoW4iCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI2MDYyMDkxMCIsCiAgICAiY29ycmVvIiA6ICJzdW1pbmlzdHJvcy5vc2ljYWxhLmR0ZUBnbWFpbC5jb20iCiAgfSwKICAiYXBlbmRpY2UiIDogbnVsbCwKICAidmVudGFUZXJjZXJvIiA6IG51bGwKfQ.J4DwNc_fpcAgdaJPg9MIGqb9dFJkVR3i7fdlC3xFjNIwkRUtRWzVrRaD3GOMBOPZlC04SqjpsZQWJAoSlzBfyKVKz7yoUX54Zj3jEIxLS2QbSklBRR-qHZshXxFt5U4gQSUB4eoM2qrxSVSPxEl3VjVFosUVACItXKS1f_g6YJ824J_n07XIHAX9XclrTFXhPzRVa3_gCV7HFtaBEYd6ucOT9sbxAD1H8nweC-tv_yhpgSDOc7wWRnXpvlvMiPdGVyf-sKIhCEl1G81V83-TIdxv6DsJP05qRiAWutiGzUqYEXDZQfGwpQ78ue1Y7X00_QF2mXFG0XSW3MLyq1f8pg"
+}

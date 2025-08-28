@@ -1,0 +1,173 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-M001P001-000000000000086",
+        "codigoGeneracion": "E1D20BC3-762A-4BF3-B5EC-423450408589",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-07-12",
+        "horEmi": "11:29:31",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "13110509791014",
+        "nrc": "3104142",
+        "nombre": "JUAN ANGEL MARTINEZ HERNANDEZ",
+        "codActividad": "49232",
+        "descActividad": "Transporte nacional de carga",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "06",
+            "municipio": "20",
+            "complemento": "URBANIZACION DISTRITO ITALIA"
+        },
+        "telefono": "50377788865",
+        "correo": "transporteescobar70@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 8.4,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000001646",
+            "codTributo": null,
+            "descripcion": "FILTRO P\/ ACEITE KIA PREGIO,K2700 PBA-010 ",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 7.43362832,
+            "montoDescu": 1.85840708,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 5.57522124,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 12.6,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000018725",
+            "codTributo": null,
+            "descripcion": "FILTRO P\/ COMBUSTIBLE  ",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 11.15044248,
+            "montoDescu": 2.78761062,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 8.36283186,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 97.65,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 3,
+            "numeroDocumento": null,
+            "codigo": "0000004803",
+            "codTributo": null,
+            "descripcion": "1\/5 SAE 40 ALL FLEET ",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 86.4159292,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 86.4159292,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 113.4,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 113.4,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 100.35,
+        "subTotalVentas": 100.35,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 4.65,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 13.05
+            }
+        ],
+        "subTotal": 100.35,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 113.4,
+        "totalLetras": "CIENTO TRECE DÓLARES CON 40\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "20256F0E24706AD74A6D95BAED00CECFBCFBJSW6",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "E1D20BC3-762A-4BF3-B5EC-423450408589",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "12\/07\/2025 11:29:31",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMTMxMTA1MDk3OTEwMTQiLAogICAgIm5yYyIgOiAiMzEwNDE0MiIsCiAgICAibm9tYnJlIiA6ICJKVUFOIEFOR0VMIE1BUlRJTkVaIEhFUk5BTkRFWiIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0OTIzMiIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVHJhbnNwb3J0ZSBuYWNpb25hbCBkZSBjYXJnYSIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMDYiLAogICAgICAibXVuaWNpcGlvIiA6ICIyMCIsCiAgICAgICJjb21wbGVtZW50byIgOiAiVVJCQU5JWkFDSU9OIERJU1RSSVRPIElUQUxJQSIKICAgIH0sCiAgICAidGVsZWZvbm8iIDogIjUwMzc3Nzg4ODY1IiwKICAgICJjb3JyZW8iIDogInRyYW5zcG9ydGVlc2NvYmFyNzBAZ21haWwuY29tIgogIH0sCiAgImN1ZXJwb0RvY3VtZW50byIgOiBbIHsKICAgICJwc3YiIDogOC40LAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAwMTY0NiIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJGSUxUUk8gUC8gQUNFSVRFIEtJQSBQUkVHSU8sSzI3MDAgUEJBLTAxMCAiLAogICAgImNhbnRpZGFkIiA6IDEsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDcuNDMzNjI4MzIsCiAgICAibW9udG9EZXNjdSIgOiAxLjg1ODQwNzA4LAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiA1LjU3NTIyMTI0LAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSwgewogICAgInBzdiIgOiAxMi42LAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAyLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAxODcyNSIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJGSUxUUk8gUC8gQ09NQlVTVElCTEUgICIsCiAgICAiY2FudGlkYWQiIDogMSwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMTEuMTUwNDQyNDgsCiAgICAibW9udG9EZXNjdSIgOiAyLjc4NzYxMDYyLAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiA4LjM2MjgzMTg2LAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSwgewogICAgInBzdiIgOiA5Ny42NSwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMywKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMDQ4MDMiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiMS81IFNBRSA0MCBBTEwgRkxFRVQgIiwKICAgICJjYW50aWRhZCIgOiAxLAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiA4Ni40MTU5MjkyLAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogODYuNDE1OTI5MiwKICAgICJ0cmlidXRvcyIgOiBbICIyMCIgXQogIH0gXSwKICAicmVzdW1lbiIgOiB7CiAgICAiaXZhUGVyY2kxIiA6IDAsCiAgICAibnVtUGFnb0VsZWN0cm9uaWNvIiA6IG51bGwsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byIgOiAwLAogICAgInRvdGFsTm9HcmF2YWRvIiA6IDAsCiAgICAidG90YWxQYWdhciIgOiAxMTMuNCwKICAgICJzYWxkb0Zhdm9yIiA6IDAsCiAgICAicGFnb3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjAxIiwKICAgICAgIm1vbnRvUGFnbyIgOiAxMTMuNCwKICAgICAgInJlZmVyZW5jaWEiIDogbnVsbCwKICAgICAgInBsYXpvIiA6IG51bGwsCiAgICAgICJwZXJpb2RvIiA6IG51bGwKICAgIH0gXSwKICAgICJ0b3RhbE5vU3VqIiA6IDAsCiAgICAidG90YWxFeGVudGEiIDogMCwKICAgICJ0b3RhbEdyYXZhZGEiIDogMTAwLjM1LAogICAgInN1YlRvdGFsVmVudGFzIiA6IDEwMC4zNSwKICAgICJkZXNjdU5vU3VqIiA6IDAsCiAgICAiZGVzY3VFeGVudGEiIDogMCwKICAgICJkZXNjdUdyYXZhZGEiIDogMCwKICAgICJ0b3RhbERlc2N1IiA6IDQuNjUsCiAgICAidHJpYnV0b3MiIDogWyB7CiAgICAgICJjb2RpZ28iIDogIjIwIiwKICAgICAgImRlc2NyaXBjaW9uIiA6ICJJbXB1ZXN0byBhbCBWYWxvciBBZ3JlZ2FkbyAxMyUiLAogICAgICAidmFsb3IiIDogMTMuMDUKICAgIH0gXSwKICAgICJzdWJUb3RhbCIgOiAxMDAuMzUsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDExMy40LAogICAgInRvdGFsTGV0cmFzIiA6ICJDSUVOVE8gVFJFQ0UgRMOTTEFSRVMgQ09OIDQwLzEwMCIsCiAgICAiY29uZGljaW9uT3BlcmFjaW9uIiA6IDEKICB9LAogICJleHRlbnNpb24iIDogewogICAgInBsYWNhVmVoaWN1bG8iIDogbnVsbCwKICAgICJub21iRW50cmVnYSIgOiAiQWxmb25zbyAiLAogICAgImRvY3VFbnRyZWdhIiA6ICIwMzU3NzgxMTciLAogICAgIm5vbWJSZWNpYmUiIDogbnVsbCwKICAgICJkb2N1UmVjaWJlIiA6IG51bGwsCiAgICAib2JzZXJ2YWNpb25lcyIgOiBudWxsCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiaWRlbnRpZmljYWNpb24iIDogewogICAgIm1vdGl2b0NvbnRpbiIgOiBudWxsLAogICAgInZlcnNpb24iIDogMywKICAgICJhbWJpZW50ZSIgOiAiMDEiLAogICAgInRpcG9EdGUiIDogIjAzIiwKICAgICJudW1lcm9Db250cm9sIiA6ICJEVEUtMDMtTTAwMVAwMDEtMDAwMDAwMDAwMDAwMDg2IiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIiA6ICJFMUQyMEJDMy03NjJBLTRCRjMtQjVFQy00MjM0NTA0MDg1ODkiLAogICAgInRpcG9Nb2RlbG8iIDogMSwKICAgICJ0aXBvT3BlcmFjaW9uIiA6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSIgOiBudWxsLAogICAgImZlY0VtaSIgOiAiMjAyNS0wNy0xMiIsCiAgICAiaG9yRW1pIiA6ICIxMToyOTozMSIsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIgogIH0sCiAgImVtaXNvciIgOiB7CiAgICAiY29kRXN0YWJsZU1IIiA6IG51bGwsCiAgICAiY29kRXN0YWJsZSIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGFNSCIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGEiIDogbnVsbCwKICAgICJuaXQiIDogIjEzMDIyMDA5ODQxMDE5IiwKICAgICJucmMiIDogIjIyODQyMTMiLAogICAgIm5vbWJyZSIgOiAiTUFSTExPUlkgTUFSSUVMQSBNT0xJTkEgUEFSRURFUyIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0NTMwMSIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVmVudGEgZGUgcGFydGVzLCBwaWV6YXMgeSBhY2Nlc29yaW9zIG51ZXZvcyBwYXJhIHZlaMOtY3Vsb3MgYXV0b21vdG9yZXMiLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iIDogIjAxIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJDZXJybyBlbCBDb3lvbCwgQ2FzZXLDrW8gbG9zIFJhbcOtcmV6LCBDYXJyZXRlcmEgYSBQZXJxdWluLCBPc2ljYWxhLCBNb3JhesOhbiBTdXIsIE1vcmF6w6FuIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImFwZW5kaWNlIiA6IG51bGwsCiAgInZlbnRhVGVyY2VybyIgOiBudWxsCn0.QGwOZ7LsIAFJOP8y_GAmY4TglOJnqjzGOSz7Gh-t8x8muqjlNuNwpg36tgyx9D0zF9mrvSx8LpOOgz5z7G_XdUVG4DPXVlvhNovvl7Ocqk54qL1Lnaj8hcgEbXzJkcVq6L5vFsJyKH4xvxrFbizGrhep4mxI3PgmoHzIGecdYKjyyJhzrOCWdFnjCQ0SYN_NIPlDJul6F5sPAt_Sj4QKLZ4X4E1uIJBuPqwokdkGIM7-jTbpLGztr8C7R0SEmL3Mp0DuOJxp46N6UzTTI1Xt7SQT0mAW2iCBiFdT1SR8c-jGGaDHdyyh1BUCJEelleZoUMWuDP7ERtCJqZ914ukfCg"
+}

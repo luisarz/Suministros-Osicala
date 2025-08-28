@@ -1,0 +1,213 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-29368840-000000000000021",
+        "codigoGeneracion": "9E6ACA1D-7A57-4986-A0F5-C075F32D6052",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-06-11",
+        "horEmi": "12:38:37",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "MARLLORY MARIELA MOLINA PAREDES",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "Cerro el Coyol, Caserío los Ramírez, Carretera a Perquin, Osicala, Morazán Sur, Morazán"
+        },
+        "telefono": "60620910",
+        "correo": "suministros.osicala.dte@gmail.com"
+    },
+    "receptor": {
+        "nit": "059262081",
+        "nrc": "3619803",
+        "nombre": "ERICK JEFTE SOLIS SANCHEZ",
+        "codActividad": "49232",
+        "descActividad": "Transporte nacional de carga",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "13",
+            "municipio": "28",
+            "complemento": "GUALOCOCTI"
+        },
+        "telefono": "50370088057",
+        "correo": "Jefte08solis@gmail.com"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 0.5,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000001243",
+            "codTributo": null,
+            "descripcion": "ABRAZADERA METALICA SC6 AB6-AP",
+            "cantidad": 4,
+            "uniMedida": 1,
+            "precioUni": 0.44247788,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 1.76991152,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 1.5,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 2,
+            "numeroDocumento": null,
+            "codigo": "0000008514",
+            "codTributo": null,
+            "descripcion": "MANGUERA P\/ COMBUSTIBLE 1\/4",
+            "cantidad": 4,
+            "uniMedida": 1,
+            "precioUni": 1.32743363,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 5.30973452,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 1.75,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 3,
+            "numeroDocumento": null,
+            "codigo": "0000010144",
+            "codTributo": null,
+            "descripcion": "MANGUERA  DE 1\/2",
+            "cantidad": 10,
+            "uniMedida": 1,
+            "precioUni": 1.54867257,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 15.4867257,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 3,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 4,
+            "numeroDocumento": null,
+            "codigo": "0000005543",
+            "codTributo": null,
+            "descripcion": "GLN REFRIGERANTE",
+            "cantidad": 4,
+            "uniMedida": 1,
+            "precioUni": 2.65486726,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 10.61946904,
+            "tributos": [
+                "20"
+            ]
+        },
+        {
+            "psv": 18,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 5,
+            "numeroDocumento": null,
+            "codigo": "0000021167",
+            "codTributo": null,
+            "descripcion": "GLN 40 GOHNER",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 15.92920354,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 15.92920354,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 55.51,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 55.5,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 49.12,
+        "subTotalVentas": 49.12,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 6.38
+            }
+        ],
+        "subTotal": 49.12,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 55.51,
+        "totalLetras": "CINCUENTA CINCO DÓLARES CON 51\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Alfonso ",
+        "docuEntrega": "035778117",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "01",
+        "versionApp": "2",
+        "selloRecibido": "202532F78392FA564D848CB9CDEA30561B5F5RPO",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "9E6ACA1D-7A57-4986-A0F5-C075F32D6052",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "11\/06\/2025 12:38:37",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMDU5MjYyMDgxIiwKICAgICJucmMiIDogIjM2MTk4MDMiLAogICAgIm5vbWJyZSIgOiAiRVJJQ0sgSkVGVEUgU09MSVMgU0FOQ0hFWiIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0OTIzMiIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVHJhbnNwb3J0ZSBuYWNpb25hbCBkZSBjYXJnYSIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMTMiLAogICAgICAibXVuaWNpcGlvIiA6ICIyOCIsCiAgICAgICJjb21wbGVtZW50byIgOiAiR1VBTE9DT0NUSSIKICAgIH0sCiAgICAidGVsZWZvbm8iIDogIjUwMzcwMDg4MDU3IiwKICAgICJjb3JyZW8iIDogIkplZnRlMDhzb2xpc0BnbWFpbC5jb20iCiAgfSwKICAiY3VlcnBvRG9jdW1lbnRvIiA6IFsgewogICAgInBzdiIgOiAwLjUsCiAgICAibm9HcmF2YWRvIiA6IDAsCiAgICAidGlwb0l0ZW0iIDogMSwKICAgICJudW1JdGVtIiA6IDEsCiAgICAibnVtZXJvRG9jdW1lbnRvIiA6IG51bGwsCiAgICAiY29kaWdvIiA6ICIwMDAwMDAxMjQzIiwKICAgICJjb2RUcmlidXRvIiA6IG51bGwsCiAgICAiZGVzY3JpcGNpb24iIDogIkFCUkFaQURFUkEgTUVUQUxJQ0EgU0M2IEFCNi1BUCIsCiAgICAiY2FudGlkYWQiIDogNCwKICAgICJ1bmlNZWRpZGEiIDogMSwKICAgICJwcmVjaW9VbmkiIDogMC40NDI0Nzc4OCwKICAgICJtb250b0Rlc2N1IiA6IDAsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDEuNzY5OTExNTIsCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9LCB7CiAgICAicHN2IiA6IDEuNSwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMiwKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMDg1MTQiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiTUFOR1VFUkEgUC8gQ09NQlVTVElCTEUgMS80IiwKICAgICJjYW50aWRhZCIgOiA0LAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiAxLjMyNzQzMzYzLAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogNS4zMDk3MzQ1MiwKICAgICJ0cmlidXRvcyIgOiBbICIyMCIgXQogIH0sIHsKICAgICJwc3YiIDogMS43NSwKICAgICJub0dyYXZhZG8iIDogMCwKICAgICJ0aXBvSXRlbSIgOiAxLAogICAgIm51bUl0ZW0iIDogMywKICAgICJudW1lcm9Eb2N1bWVudG8iIDogbnVsbCwKICAgICJjb2RpZ28iIDogIjAwMDAwMTAxNDQiLAogICAgImNvZFRyaWJ1dG8iIDogbnVsbCwKICAgICJkZXNjcmlwY2lvbiIgOiAiTUFOR1VFUkEgIERFIDEvMiIsCiAgICAiY2FudGlkYWQiIDogMTAsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDEuNTQ4NjcyNTcsCiAgICAibW9udG9EZXNjdSIgOiAwLAogICAgInZlbnRhTm9TdWoiIDogMCwKICAgICJ2ZW50YUV4ZW50YSIgOiAwLAogICAgInZlbnRhR3JhdmFkYSIgOiAxNS40ODY3MjU3LAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSwgewogICAgInBzdiIgOiAzLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiA0LAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAwNTU0MyIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJHTE4gUkVGUklHRVJBTlRFIiwKICAgICJjYW50aWRhZCIgOiA0LAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiAyLjY1NDg2NzI2LAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogMTAuNjE5NDY5MDQsCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9LCB7CiAgICAicHN2IiA6IDE4LAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiA1LAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAyMTE2NyIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJHTE4gNDAgR09ITkVSIiwKICAgICJjYW50aWRhZCIgOiAxLAogICAgInVuaU1lZGlkYSIgOiAxLAogICAgInByZWNpb1VuaSIgOiAxNS45MjkyMDM1NCwKICAgICJtb250b0Rlc2N1IiA6IDAsCiAgICAidmVudGFOb1N1aiIgOiAwLAogICAgInZlbnRhRXhlbnRhIiA6IDAsCiAgICAidmVudGFHcmF2YWRhIiA6IDE1LjkyOTIwMzU0LAogICAgInRyaWJ1dG9zIiA6IFsgIjIwIiBdCiAgfSBdLAogICJyZXN1bWVuIiA6IHsKICAgICJpdmFQZXJjaTEiIDogMCwKICAgICJudW1QYWdvRWxlY3Ryb25pY28iIDogbnVsbCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIiA6IDAsCiAgICAidG90YWxOb0dyYXZhZG8iIDogMCwKICAgICJ0b3RhbFBhZ2FyIiA6IDU1LjUxLAogICAgInNhbGRvRmF2b3IiIDogMCwKICAgICJwYWdvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMDEiLAogICAgICAibW9udG9QYWdvIiA6IDU1LjUsCiAgICAgICJyZWZlcmVuY2lhIiA6IG51bGwsCiAgICAgICJwbGF6byIgOiBudWxsLAogICAgICAicGVyaW9kbyIgOiBudWxsCiAgICB9IF0sCiAgICAidG90YWxOb1N1aiIgOiAwLAogICAgInRvdGFsRXhlbnRhIiA6IDAsCiAgICAidG90YWxHcmF2YWRhIiA6IDQ5LjEyLAogICAgInN1YlRvdGFsVmVudGFzIiA6IDQ5LjEyLAogICAgImRlc2N1Tm9TdWoiIDogMCwKICAgICJkZXNjdUV4ZW50YSIgOiAwLAogICAgImRlc2N1R3JhdmFkYSIgOiAwLAogICAgInRvdGFsRGVzY3UiIDogMCwKICAgICJ0cmlidXRvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMjAiLAogICAgICAiZGVzY3JpcGNpb24iIDogIkltcHVlc3RvIGFsIFZhbG9yIEFncmVnYWRvIDEzJSIsCiAgICAgICJ2YWxvciIgOiA2LjM4CiAgICB9IF0sCiAgICAic3ViVG90YWwiIDogNDkuMTIsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDU1LjUxLAogICAgInRvdGFsTGV0cmFzIiA6ICJDSU5DVUVOVEEgQ0lOQ08gRMOTTEFSRVMgQ09OIDUxLzEwMCIsCiAgICAiY29uZGljaW9uT3BlcmFjaW9uIiA6IDEKICB9LAogICJleHRlbnNpb24iIDogewogICAgInBsYWNhVmVoaWN1bG8iIDogbnVsbCwKICAgICJub21iRW50cmVnYSIgOiAiQWxmb25zbyAiLAogICAgImRvY3VFbnRyZWdhIiA6ICIwMzU3NzgxMTciLAogICAgIm5vbWJSZWNpYmUiIDogbnVsbCwKICAgICJkb2N1UmVjaWJlIiA6IG51bGwsCiAgICAib2JzZXJ2YWNpb25lcyIgOiBudWxsCiAgfSwKICAiZG9jdW1lbnRvUmVsYWNpb25hZG8iIDogbnVsbCwKICAiaWRlbnRpZmljYWNpb24iIDogewogICAgIm1vdGl2b0NvbnRpbiIgOiBudWxsLAogICAgInZlcnNpb24iIDogMywKICAgICJhbWJpZW50ZSIgOiAiMDEiLAogICAgInRpcG9EdGUiIDogIjAzIiwKICAgICJudW1lcm9Db250cm9sIiA6ICJEVEUtMDMtMjkzNjg4NDAtMDAwMDAwMDAwMDAwMDIxIiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIiA6ICI5RTZBQ0ExRC03QTU3LTQ5ODYtQTBGNS1DMDc1RjMyRDYwNTIiLAogICAgInRpcG9Nb2RlbG8iIDogMSwKICAgICJ0aXBvT3BlcmFjaW9uIiA6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSIgOiBudWxsLAogICAgImZlY0VtaSIgOiAiMjAyNS0wNi0xMSIsCiAgICAiaG9yRW1pIiA6ICIxMjozODozNyIsCiAgICAidGlwb01vbmVkYSIgOiAiVVNEIgogIH0sCiAgImVtaXNvciIgOiB7CiAgICAiY29kRXN0YWJsZU1IIiA6IG51bGwsCiAgICAiY29kRXN0YWJsZSIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGFNSCIgOiBudWxsLAogICAgImNvZFB1bnRvVmVudGEiIDogbnVsbCwKICAgICJuaXQiIDogIjEzMDIyMDA5ODQxMDE5IiwKICAgICJucmMiIDogIjIyODQyMTMiLAogICAgIm5vbWJyZSIgOiAiTUFSTExPUlkgTUFSSUVMQSBNT0xJTkEgUEFSRURFUyIsCiAgICAiY29kQWN0aXZpZGFkIiA6ICI0NTMwMSIsCiAgICAiZGVzY0FjdGl2aWRhZCIgOiAiVmVudGEgZGUgcGFydGVzLCBwaWV6YXMgeSBhY2Nlc29yaW9zIG51ZXZvcyBwYXJhIHZlaMOtY3Vsb3MgYXV0b21vdG9yZXMiLAogICAgIm5vbWJyZUNvbWVyY2lhbCIgOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iIDogIjAxIiwKICAgICJkaXJlY2Npb24iIDogewogICAgICAiZGVwYXJ0YW1lbnRvIiA6ICIxMyIsCiAgICAgICJtdW5pY2lwaW8iIDogIjI4IiwKICAgICAgImNvbXBsZW1lbnRvIiA6ICJDZXJybyBlbCBDb3lvbCwgQ2FzZXLDrW8gbG9zIFJhbcOtcmV6LCBDYXJyZXRlcmEgYSBQZXJxdWluLCBPc2ljYWxhLCBNb3JhesOhbiBTdXIsIE1vcmF6w6FuIgogICAgfSwKICAgICJ0ZWxlZm9ubyIgOiAiNjA2MjA5MTAiLAogICAgImNvcnJlbyIgOiAic3VtaW5pc3Ryb3Mub3NpY2FsYS5kdGVAZ21haWwuY29tIgogIH0sCiAgImFwZW5kaWNlIiA6IG51bGwsCiAgInZlbnRhVGVyY2VybyIgOiBudWxsCn0.bT9NF-b9m7mvwsSllOyxQrdz9kxN2empB-4KlQOwffYIx46RJSuPayTF14sTgrTmnzlXn8THKRAqVCZpcRSpDhHE9-6TZAf2UBpkwtxo_nUOKPwfe27VViByx7jVVBhd6LJdzgjbZHe5xMr79ZC8Um2wBpPGkB0k5smy7t0wYk0l_-AYaSddcmGXygus7IZ429yJzbfXNNxq15EedOOJTxJKQHNoRHJDhwbaLMbUo2aRqGiim8V1MfU6KE4WqrRE-lh8OYUeUg8_IyIEaExV-LWqQVzC81zPbMackBoT-uep8sno1-I5JiPtinbzslimKXwQ2WILx8gpODDDITjOng"
+}

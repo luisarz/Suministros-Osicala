@@ -14,12 +14,14 @@ use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
+use mysql_xdevapi\Exception;
 
 class CashboxOpenResource extends Resource
 {
@@ -221,6 +223,156 @@ class CashboxOpenResource extends Resource
                                                 return new HtmlString('<span style=" border-top: #1e2c2e solid 1px; color:green; font-weight:  bold; font-size: 15px;">$ ' . number_format($resumen->saldo_total, 2) . '</span>');
                                             }),
                                     ])->columnSpan(1),
+                                Forms\Components\Section::make('Datos de cierre')
+                                    ->compact()
+                                    ->icon('heroicon-o-shield-check')
+                                    ->iconColor('danger')
+                                    ->hidden(function (?CashBoxOpen $record = null) {
+                                        if ($record === null) {
+                                            return true;
+                                        }
+                                    })
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('cant_cien')
+                                            ->label('100')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cincuenta')
+                                            ->label('50')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_veinte')
+                                            ->label('20')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_diez')
+                                            ->label('10')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cinco')
+                                            ->label('5')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_uno')
+                                            ->label('1')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cora')
+                                            ->label('0.25')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cero_diez')
+                                            ->label('0.10')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cero_cinco')
+                                            ->label('0.05')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('cant_cero_cero_uno')
+                                            ->label('0.01')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function (Get $get, callable $set) {
+                                                static::calcularTotal($get, $set);
+                                            })
+
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                        Forms\Components\TextInput::make('total_efectivo')
+                                            ->label('Total Efectivo')
+                                            ->prefix('$')
+                                            ->default(0)
+                                            ->readonly()
+                                            ->required()
+                                            ->inlineLabel(true),
+
+                                    ])->columnSpan(1)->columns(2),
 
 
                             ])->columns(2)
@@ -389,6 +541,32 @@ class CashboxOpenResource extends Resource
             'create' => Pages\CreateCashboxOpen::route('/create'),
             'edit' => Pages\EditCashboxOpen::route('/{record}/edit'),
         ];
+    }
+    public static function calcularTotal(Get $get, callable $set): void
+    {
+        // Necesitamos acceso a los valores del formulario
+
+
+        try {
+            $total =
+                ($get('cant_cien') ?? 0) * 100 +
+                ($get('cant_cincuenta') ?? 0) * 50 +
+                ($get('cant_veinte') ?? 0) * 20 +
+                ($get('cant_diez') ?? 0) * 10 +
+                ($get('cant_cinco') ?? 0) * 5 +
+                ($get('cant_uno') ?? 0) * 1 +
+                ($get('cant_cora') ?? 0) * 0.25 +
+                ($get('cant_cero_diez') ?? 0) * 0.10 +
+                ($get('cant_cero_cinco') ?? 0) * 0.05 +
+                ($get('cant_cero_cero_uno') ?? 0) * 0.01;
+
+            $set('total_efectivo', number_format($total, 2, '.', ''));
+        }catch (\Exception $e){
+
+        }
+
+
+
     }
 
 

@@ -42,7 +42,7 @@ trait GetOpenCashBox
             }
             $column = 'total_order_after_discount'; // For order totals
         } else {
-            $query->whereIn('operation_type', ['Sale', 'Order', 'Quote']);
+            $query->whereIn('operation_type', ['Sale', 'Order', 'Quote','NC']);
             if ($documentType !== null) {
                 $query->where('document_type_id', $documentType);
             }

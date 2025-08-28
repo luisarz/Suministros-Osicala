@@ -76,6 +76,8 @@ class OrdenController extends Controller
 //        $ingresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Ingreso')->whereNull('deleted_at');
 //        $egresos = SmallCashBoxOperation::where('cash_box_open_id', $idCasboxClose)->where('operation', 'Egreso')->whereNull('deleted_at');
         $caja = CashBoxOpen::with('openEmployee', 'closeEmployee', 'cashbox')->find($idCasboxClose);
+
+//        dd($caja);
         $empresa = $this->getConfiguracion();
 
         $formatter = new NumeroALetras();

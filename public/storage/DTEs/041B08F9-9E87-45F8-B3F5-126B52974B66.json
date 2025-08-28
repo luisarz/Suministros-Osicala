@@ -1,0 +1,133 @@
+{
+    "identificacion": {
+        "motivoContin": null,
+        "version": 3,
+        "ambiente": "00",
+        "tipoDte": "03",
+        "numeroControl": "DTE-03-M001P001-000000000000085",
+        "codigoGeneracion": "041B08F9-9E87-45F8-B3F5-126B52974B66",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "fecEmi": "2025-07-14",
+        "horEmi": "08:06:06",
+        "tipoMoneda": "USD"
+    },
+    "emisor": {
+        "codEstableMH": null,
+        "codEstable": null,
+        "codPuntoVentaMH": null,
+        "codPuntoVenta": null,
+        "nit": "13022009841019",
+        "nrc": "2284213",
+        "nombre": "Marllory Mariela Molina Paredes",
+        "codActividad": "45301",
+        "descActividad": "Venta de partes, piezas y accesorios nuevos para vehículos automotores",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "01",
+        "direccion": {
+            "departamento": "13",
+            "municipio": "27",
+            "complemento": "asdad"
+        },
+        "telefono": "79281878",
+        "correo": "svcomputec@gmail.com"
+    },
+    "receptor": {
+        "nit": "13141205871014",
+        "nrc": "2323450",
+        "nombre": "LUIS ARNULFO MARQUEZ ARGUETA",
+        "codActividad": "46510",
+        "descActividad": "Venta al por mayor de computadoras, equipo periférico y programas informáticos",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "13",
+            "municipio": "27",
+            "complemento": "bARRIO EL CENTROS"
+        },
+        "telefono": "50379281878",
+        "correo": "SVCOMPUTEC@GMAIL.COM"
+    },
+    "cuerpoDocumento": [
+        {
+            "psv": 58.93,
+            "noGravado": 0,
+            "tipoItem": 1,
+            "numItem": 1,
+            "numeroDocumento": null,
+            "codigo": "0000000001",
+            "codTributo": null,
+            "descripcion": "DISCO P\/ CLUTCH HONDA D15\/D16 90-00\" CIVIC 212mm X 20 DIENTES ",
+            "cantidad": 1,
+            "uniMedida": 1,
+            "precioUni": 52.15044248,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 52.15044248,
+            "tributos": [
+                "20"
+            ]
+        }
+    ],
+    "resumen": {
+        "ivaPerci1": 0,
+        "numPagoElectronico": null,
+        "porcentajeDescuento": 0,
+        "totalNoGravado": 0,
+        "totalPagar": 58.93,
+        "saldoFavor": 0,
+        "pagos": [
+            {
+                "codigo": "01",
+                "montoPago": 58.93,
+                "referencia": null,
+                "plazo": null,
+                "periodo": null
+            }
+        ],
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 52.15,
+        "subTotalVentas": 52.15,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "totalDescu": 0,
+        "tributos": [
+            {
+                "codigo": "20",
+                "descripcion": "Impuesto al Valor Agregado 13%",
+                "valor": 6.78
+            }
+        ],
+        "subTotal": 52.15,
+        "ivaRete1": 0,
+        "reteRenta": 0,
+        "montoTotalOperacion": 58.93,
+        "totalLetras": "CINCUENTA OCHO DÓLARES CON 93\/100",
+        "condicionOperacion": 1
+    },
+    "extension": {
+        "placaVehiculo": null,
+        "nombEntrega": "Luis Arnulfo ",
+        "docuEntrega": "037316717",
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": null
+    },
+    "respuestaHacienda": {
+        "version": "2",
+        "ambiente": "00",
+        "versionApp": "2",
+        "selloRecibido": "20259DCB833D48CA49ECA81FF39101A2EEDDYMYF",
+        "estado": "PROCESADO",
+        "codigoGeneracion": "041B08F9-9E87-45F8-B3F5-126B52974B66",
+        "descripcionMsg": "RECIBIDO",
+        "fhProcesamiento": "14\/07\/2025 08:06:09",
+        "clasificaMsg": "10",
+        "codigoMsg": "001",
+        "observaciones": []
+    },
+    "firmaElectronica": "eyJhbGciOiJSUzUxMiJ9.ewogICJvdHJvc0RvY3VtZW50b3MiIDogbnVsbCwKICAicmVjZXB0b3IiIDogewogICAgIm5pdCIgOiAiMTMxNDEyMDU4NzEwMTQiLAogICAgIm5yYyIgOiAiMjMyMzQ1MCIsCiAgICAibm9tYnJlIiA6ICJMVUlTIEFSTlVMRk8gTUFSUVVFWiBBUkdVRVRBIiwKICAgICJjb2RBY3RpdmlkYWQiIDogIjQ2NTEwIiwKICAgICJkZXNjQWN0aXZpZGFkIiA6ICJWZW50YSBhbCBwb3IgbWF5b3IgZGUgY29tcHV0YWRvcmFzLCBlcXVpcG8gcGVyaWbDqXJpY28geSBwcm9ncmFtYXMgaW5mb3Jtw6F0aWNvcyIsCiAgICAibm9tYnJlQ29tZXJjaWFsIiA6IG51bGwsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMTMiLAogICAgICAibXVuaWNpcGlvIiA6ICIyNyIsCiAgICAgICJjb21wbGVtZW50byIgOiAiYkFSUklPIEVMIENFTlRST1MiCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI1MDM3OTI4MTg3OCIsCiAgICAiY29ycmVvIiA6ICJTVkNPTVBVVEVDQEdNQUlMLkNPTSIKICB9LAogICJjdWVycG9Eb2N1bWVudG8iIDogWyB7CiAgICAicHN2IiA6IDU4LjkzLAogICAgIm5vR3JhdmFkbyIgOiAwLAogICAgInRpcG9JdGVtIiA6IDEsCiAgICAibnVtSXRlbSIgOiAxLAogICAgIm51bWVyb0RvY3VtZW50byIgOiBudWxsLAogICAgImNvZGlnbyIgOiAiMDAwMDAwMDAwMSIsCiAgICAiY29kVHJpYnV0byIgOiBudWxsLAogICAgImRlc2NyaXBjaW9uIiA6ICJESVNDTyBQLyBDTFVUQ0ggSE9OREEgRDE1L0QxNiA5MC0wMFwiIENJVklDIDIxMm1tIFggMjAgRElFTlRFUyAiLAogICAgImNhbnRpZGFkIiA6IDEsCiAgICAidW5pTWVkaWRhIiA6IDEsCiAgICAicHJlY2lvVW5pIiA6IDUyLjE1MDQ0MjQ4LAogICAgIm1vbnRvRGVzY3UiIDogMCwKICAgICJ2ZW50YU5vU3VqIiA6IDAsCiAgICAidmVudGFFeGVudGEiIDogMCwKICAgICJ2ZW50YUdyYXZhZGEiIDogNTIuMTUwNDQyNDgsCiAgICAidHJpYnV0b3MiIDogWyAiMjAiIF0KICB9IF0sCiAgInJlc3VtZW4iIDogewogICAgIml2YVBlcmNpMSIgOiAwLAogICAgIm51bVBhZ29FbGVjdHJvbmljbyIgOiBudWxsLAogICAgInBvcmNlbnRhamVEZXNjdWVudG8iIDogMCwKICAgICJ0b3RhbE5vR3JhdmFkbyIgOiAwLAogICAgInRvdGFsUGFnYXIiIDogNTguOTMsCiAgICAic2FsZG9GYXZvciIgOiAwLAogICAgInBhZ29zIiA6IFsgewogICAgICAiY29kaWdvIiA6ICIwMSIsCiAgICAgICJtb250b1BhZ28iIDogNTguOTMsCiAgICAgICJyZWZlcmVuY2lhIiA6IG51bGwsCiAgICAgICJwbGF6byIgOiBudWxsLAogICAgICAicGVyaW9kbyIgOiBudWxsCiAgICB9IF0sCiAgICAidG90YWxOb1N1aiIgOiAwLAogICAgInRvdGFsRXhlbnRhIiA6IDAsCiAgICAidG90YWxHcmF2YWRhIiA6IDUyLjE1LAogICAgInN1YlRvdGFsVmVudGFzIiA6IDUyLjE1LAogICAgImRlc2N1Tm9TdWoiIDogMCwKICAgICJkZXNjdUV4ZW50YSIgOiAwLAogICAgImRlc2N1R3JhdmFkYSIgOiAwLAogICAgInRvdGFsRGVzY3UiIDogMCwKICAgICJ0cmlidXRvcyIgOiBbIHsKICAgICAgImNvZGlnbyIgOiAiMjAiLAogICAgICAiZGVzY3JpcGNpb24iIDogIkltcHVlc3RvIGFsIFZhbG9yIEFncmVnYWRvIDEzJSIsCiAgICAgICJ2YWxvciIgOiA2Ljc4CiAgICB9IF0sCiAgICAic3ViVG90YWwiIDogNTIuMTUsCiAgICAiaXZhUmV0ZTEiIDogMCwKICAgICJyZXRlUmVudGEiIDogMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIiA6IDU4LjkzLAogICAgInRvdGFsTGV0cmFzIiA6ICJDSU5DVUVOVEEgT0NITyBEw5NMQVJFUyBDT04gOTMvMTAwIiwKICAgICJjb25kaWNpb25PcGVyYWNpb24iIDogMQogIH0sCiAgImV4dGVuc2lvbiIgOiB7CiAgICAicGxhY2FWZWhpY3VsbyIgOiBudWxsLAogICAgIm5vbWJFbnRyZWdhIiA6ICJMdWlzIEFybnVsZm8gIiwKICAgICJkb2N1RW50cmVnYSIgOiAiMDM3MzE2NzE3IiwKICAgICJub21iUmVjaWJlIiA6IG51bGwsCiAgICAiZG9jdVJlY2liZSIgOiBudWxsLAogICAgIm9ic2VydmFjaW9uZXMiIDogbnVsbAogIH0sCiAgImRvY3VtZW50b1JlbGFjaW9uYWRvIiA6IG51bGwsCiAgImlkZW50aWZpY2FjaW9uIiA6IHsKICAgICJtb3Rpdm9Db250aW4iIDogbnVsbCwKICAgICJ2ZXJzaW9uIiA6IDMsCiAgICAiYW1iaWVudGUiIDogIjAwIiwKICAgICJ0aXBvRHRlIiA6ICIwMyIsCiAgICAibnVtZXJvQ29udHJvbCIgOiAiRFRFLTAzLU0wMDFQMDAxLTAwMDAwMDAwMDAwMDA4NSIsCiAgICAiY29kaWdvR2VuZXJhY2lvbiIgOiAiMDQxQjA4RjktOUU4Ny00NUY4LUIzRjUtMTI2QjUyOTc0QjY2IiwKICAgICJ0aXBvTW9kZWxvIiA6IDEsCiAgICAidGlwb09wZXJhY2lvbiIgOiAxLAogICAgInRpcG9Db250aW5nZW5jaWEiIDogbnVsbCwKICAgICJmZWNFbWkiIDogIjIwMjUtMDctMTQiLAogICAgImhvckVtaSIgOiAiMDg6MDY6MDYiLAogICAgInRpcG9Nb25lZGEiIDogIlVTRCIKICB9LAogICJlbWlzb3IiIDogewogICAgImNvZEVzdGFibGVNSCIgOiBudWxsLAogICAgImNvZEVzdGFibGUiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhTUgiIDogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhIiA6IG51bGwsCiAgICAibml0IiA6ICIxMzAyMjAwOTg0MTAxOSIsCiAgICAibnJjIiA6ICIyMjg0MjEzIiwKICAgICJub21icmUiIDogIk1hcmxsb3J5IE1hcmllbGEgTW9saW5hIFBhcmVkZXMiLAogICAgImNvZEFjdGl2aWRhZCIgOiAiNDUzMDEiLAogICAgImRlc2NBY3RpdmlkYWQiIDogIlZlbnRhIGRlIHBhcnRlcywgcGllemFzIHkgYWNjZXNvcmlvcyBudWV2b3MgcGFyYSB2ZWjDrWN1bG9zIGF1dG9tb3RvcmVzIiwKICAgICJub21icmVDb21lcmNpYWwiIDogbnVsbCwKICAgICJ0aXBvRXN0YWJsZWNpbWllbnRvIiA6ICIwMSIsCiAgICAiZGlyZWNjaW9uIiA6IHsKICAgICAgImRlcGFydGFtZW50byIgOiAiMTMiLAogICAgICAibXVuaWNpcGlvIiA6ICIyNyIsCiAgICAgICJjb21wbGVtZW50byIgOiAiYXNkYWQiCiAgICB9LAogICAgInRlbGVmb25vIiA6ICI3OTI4MTg3OCIsCiAgICAiY29ycmVvIiA6ICJzdmNvbXB1dGVjQGdtYWlsLmNvbSIKICB9LAogICJhcGVuZGljZSIgOiBudWxsLAogICJ2ZW50YVRlcmNlcm8iIDogbnVsbAp9.LjuPSCGKudsI4eiqCYjjKNh6Gsz-e4oPE8nuRbzGlQuTyftR0JSO35Mb1bc6-WOrPxMVkvCOcvab9mFNOw8ThWh6RCpLheylcSBFpNvTnE_Rt9LQEU7-57Q48HbN76J4Mamvr7ZVdCOuOEl_oUJ7NavKazLMDKxm_3tNVd1M_G-w7YFGnr_P44huq2YJaryzygx9nc0y68UrtJ5AxlRbBYf2ZE4HS7BqclsAuHK8jckByT54g2x-lCDxDneISKLMsabzjzxG8zz7TINr2m1nFezupyeIysenFRh6B8tVHNGl3v1wYjwekmdADrXbz76egw2PVyonXBxkphLzsea1uA"
+}

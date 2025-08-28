@@ -38,7 +38,7 @@ class CashBoxResumenService
         $this->ingreso_total = $this->ingreso_factura + $this->ingreso_ccf + $this->ingreso_ordenes+$this->ingreso_taller + $this->ingreso_caja_chica;
 
         $this->egreso_caja_chica = $srv->minimalCashBoxTotal('Egreso');
-        $this->egreso_nc = $srv->getTotal(false, false, 5);
+        $this->egreso_nc = $srv->getTotal(false, false, 5,null);
         $this->egreso_total = $this->egreso_caja_chica + $this->egreso_nc;
 
         $this->saldo_efectivo_ventas = $srv->getTotal(false, false, null, [1]);

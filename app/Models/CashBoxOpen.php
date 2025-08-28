@@ -50,7 +50,18 @@ class CashBoxOpen extends Model
         'saldo_total_operaciones',
         'closed_at',
         'close_employee_id',
-        'status'
+        'status',
+        'cant_cien',
+        'cant_cincuenta',
+        'cant_veinte',
+        'cant_diez',
+        'cant_cinco',
+        'cant_uno',
+        'cant_cora',
+        'cant_cero_diez',
+        'cant_cero_cinco',
+        'cant_cero_cero_uno',
+        'total_efectivo',
     ];
 
 //    public function getActivitylogOptions(): LogOptions
