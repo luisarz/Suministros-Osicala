@@ -46,11 +46,12 @@ class ListSales extends ListRecords
                         ->default(now()->endOfMonth())
                         ->required(),
                     Select::make('documentType')
-                        ->default('fact')
+                        ->default('1')
                         ->label('Documentos')
                         ->options([
                             '1' => 'Factura',
                             '3' => 'CCF',
+                            '4' => 'NC',
                         ])
                         ->required(),
                     Select::make('fileType')
@@ -68,7 +69,7 @@ class ListSales extends ListRecords
                     $fileType = $data['fileType'];
 
                     // Construir la ruta dinámicamente
-                    $ruta = '/sale/iva/'.$documentType. '/' . $startDate . '/' . $endDate; // Base del nombre de la ruta
+                    $ruta = '/sale/iva/' . $documentType . '/' . $startDate . '/' . $endDate; // Base del nombre de la ruta
 
 
                     return \Filament\Notifications\Notification::make()
@@ -102,6 +103,15 @@ class ListSales extends ListRecords
                         ->inlineLabel(true)
                         ->default(now()->endOfMonth())
                         ->required(),
+                    Select::make('saleType')
+                        ->default('1')
+                        ->label('Documentos')
+                        ->options([
+                            '1' => 'Factura',
+                            '3' => 'CCF',
+                            '4' => 'NC',
+                        ])
+                        ->required(),
                     Select::make('documentType')
                         ->default('json')
                         ->label('Documentos')
@@ -115,8 +125,9 @@ class ListSales extends ListRecords
                     $startDate = $data['desde']; // Asegurar formato correcto
                     $endDate = $data['hasta'];   // Asegurar formato correcto
                     $documentType = $data['documentType'];
+                    $saleType = $data['saleType'];
 
-                    $ruta = '/sale/' . $documentType . '/' . $startDate . '/' . $endDate;
+                    $ruta = '/sale/' . $documentType . '/' . $saleType . '/' . $startDate . '/' . $endDate;
 
                     return \Filament\Notifications\Notification::make()
                         ->title('Reporte preparado.')

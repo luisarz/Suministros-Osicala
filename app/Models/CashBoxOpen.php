@@ -62,6 +62,9 @@ class CashBoxOpen extends Model
         'cant_cero_cinco',
         'cant_cero_cero_uno',
         'total_efectivo',
+        'dh_cierre',
+        'hay_cierre',
+        'dif_cierre',
     ];
 
 //    public function getActivitylogOptions(): LogOptions

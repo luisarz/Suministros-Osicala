@@ -88,7 +88,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Cantidad')
                             ->step(1)
                             ->numeric()
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->columnSpan(1)
                             ->required()
                             ->afterStateUpdated(function (callable $get, callable $set) {
@@ -101,7 +101,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->numeric()
                             ->columnSpan(1)
                             ->required()
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -114,7 +114,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpan(1)
                             ->required()
                             ->default(0)
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $this->calculateTotal($get, $set);
                             }),
@@ -123,12 +123,12 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->label('Total')
                             ->step(0.01)
                             ->columnSpan(1)
-                            ->debounce(500)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (callable $get, callable $set) {
                                 $total = ($get('total') !== "" && $get('total') !== null) ? $get('total') : 0;
                                 $set('total', number_format($total, 2));
                                 $quantity = ($get('quantity') !== "" && $get('quantity') !== null) ? $get('quantity') : 0;
-                                $newPrice=($total/$quantity);
+                                $newPrice = ($total / $quantity);
                                 $set('price', number_format($newPrice, 2, '.', ''));
 
                                 $this->calculateTotal($get, $set);
@@ -148,7 +148,7 @@ class PurchaseItemsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('inventory.product.name')
                     ->wrap()
-                    ->label('Producto') ->formatStateUsing(function ($record) {
+                    ->label('Producto')->formatStateUsing(function ($record) {
                         $productName = $record->inventory->product->name ?? '';
                         $category = $record->inventory->product->category->name ?? '';
                         $sku = $record->inventory->product->sku ?? '';
@@ -181,7 +181,7 @@ class PurchaseItemsRelationManager extends RelationManager
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a Compra')
                     ->label('Agregar Producto')
-                    ->after(function (PurchaseItem $record,Component $livewire) {
+                    ->after(function (PurchaseItem $record, Component $livewire) {
                         $this->updateTotalPurchase($record);
                         $livewire->dispatch('refreshPurchase');
                     }),
@@ -189,13 +189,13 @@ class PurchaseItemsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->modalWidth('7xl')
-                    ->after(function (PurchaseItem $record,Component $livewire) {
+                    ->after(function (PurchaseItem $record, Component $livewire) {
                         $this->updateTotalPurchase($record);
                         $livewire->dispatch('refreshPurchase');
                     }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Quitar')
-                    ->after(function (PurchaseItem $record,Component $livewire) {
+                    ->after(function (PurchaseItem $record, Component $livewire) {
                         $this->updateTotalPurchase($record);
                         $livewire->dispatch('refreshPurchase');
                     }),
@@ -203,13 +203,13 @@ class PurchaseItemsRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->after(function (PurchaseItem $record,Component $livewire) {
+                        ->after(function (PurchaseItem $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
                                 $this->updateTotalPurchase($record);
                             }
-                        $livewire->dispatch('refreshPurchase');
-                    }),
+                            $livewire->dispatch('refreshPurchase');
+                        }),
                 ]),
             ]);
     }

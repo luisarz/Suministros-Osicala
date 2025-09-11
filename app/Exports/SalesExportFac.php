@@ -7,25 +7,31 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpParser\Node\Scalar\String_;
 
-class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithColumnFormatting
+class SalesExportFac implements FromCollection, WithColumnFormatting, WithEvents, WithHeadings
 {
     protected string $documentType;
+
     protected Carbon $startDate;
+
     protected Carbon $endDate;
+
     protected float $totalGravada = 0;
+
     protected float $totalDebitoFiscal = 0;
+
     protected float $totalVenta = 0;
 
-    public function __construct(string $documentType, string $startDate, string $endDate)
+    public function __construct(String $documentType,string $startDate, string $endDate)
     {
-        $this->documentType = $documentType;
         $this->startDate = Carbon::parse($startDate);
         $this->endDate = Carbon::parse($endDate);
+        $this->documentType = $documentType;
     }
 
     public function headings(): array
@@ -49,14 +55,15 @@ class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithCo
             'ISR 10%',
             'Total Venta',
             'Estado',
-            'fecha MH'
+            'fecha MH',
+            'Turismo 5%',
         ];
-
 
     }
 
     public function collection(): Collection
     {
+        set_time_limit(0);
         $sales = Sale::select(
             'id',
             'operation_date as fecha',
@@ -78,31 +85,30 @@ class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithCo
 
         )
             ->where('is_dte', '1')
-            ->whereIn('document_type_id', [$this->documentType])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
-//            ->whereIn('document_type_id', [1, 3, 5, 11, 14])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
+            ->whereIn('document_type_id', [$this->documentType])// 1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
             ->whereBetween('operation_date', [$this->startDate, $this->endDate])
             ->orderBy('operation_date', 'asc')
             ->with(['dteProcesado' => function ($query) {
-                $query->select('sales_invoice_id', 'num_control', 'selloRecibido', 'codigoGeneracion', 'fhProcesamiento')
+                $query->select('sales_invoice_id', 'num_control', 'selloRecibido', 'codigoGeneracion', 'fhProcesamiento', 'dte')
                     ->whereNotNull('selloRecibido');
             },
                 'documenttype', 'customer', 'billingModel', 'salescondition', 'seller'])
             ->get()
             ->map(function ($sale) {
-//                dd($sale);
+                //                dd($sale);
                 $persontype = $sale->customer->person_type_id ?? 1; // 1: Natural, 2: Jurídica
 
-                $rawNit = $sale->customer->nit;
-                $rawDui = $sale->customer->dui;
+                $rawNit = $sale->customer->nit ?? '';
+                $rawDui = $sale->customer->dui ?? '';
 
                 $cleanNit = str_replace('-', '', $rawNit);
                 $formatNit = str_repeat('0', strlen($cleanNit)); // Ejemplo: '00000000000000'
                 $cleanDUI = str_replace('-', '', $rawDui);
                 $formatDUI = str_repeat('0', strlen($cleanDUI)); // Ejemplo: '00000000000000'
-                $nit = ($rawNit === "0000-000000-000-0") ? null
-                    : '=TEXT("' . $cleanNit . '","' . $formatNit . '")';
-                $dui = ($rawDui === "00000000-0") ? null
-                    : '=TEXT("' . $cleanDUI . '","' . $formatDUI . '")';
+                $nit = ($rawNit === '0000-000000-000-0') ? null
+                    : '=TEXT("'.$cleanNit.'","'.$formatNit.'")';
+                $dui = ($rawDui === '00000000-0') ? null
+                    : '=TEXT("'.$cleanDUI.'","'.$formatDUI.'")';
 
                 $nit_report = '';
                 $dui_report = '';
@@ -118,56 +124,69 @@ class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithCo
                     $nit_report = $isSame ? '' : $nit;
                 }
 
-//                $neto=0;
-//                $iva=0;
-//                $total=0;
-//                $retention=0;
+                $json = $sale->dteProcesado->dte ?? null;
+                $resumen = $json['resumen'] ?? null;
+                // Acceder al resumen
 
+                // Extraer los valores que pediste
+                $totalGravada = $resumen['totalGravada'] ?? $resumen['totalPagar'];
+                $totalGravada_rep = $totalGravada;
+                $tributos = $resumen['tributos'] ?? null;
+                $totalIva = $resumen['totalIva'] ?? 0;
+                $retencion_1 = $resumen['ivaRete1'] ?? 0;
+                $retencion_10 = $resumen['reteRenta'] ?? 0;
+                $iva = 0;
+                $turismo = 0;
 
-                if($sale->sale_status=="Anulado"){
-                    $sale->sale_status="Invalidado";
-                    $sale->neto = 0;
-                    $sale->iva = 0;
-                    $sale->total = 0;
-                    $sale->retention = 0;
+                if (isset($resumen['tributos']) && is_array($resumen['tributos'])) {
+                    foreach ($resumen['tributos'] as $tributo) {
+                        if (($tributo['codigo'] ?? null) === '20') {
+                            $iva = $tributo['valor'] ?? 0;
+                        }
+                        if (($tributo['codigo'] ?? null) === '59') {
+                            $turismo = $tributo['valor'] ?? 0;
+                        }
+                    }
                 }
 
+                if ($iva == 0) {
+                    $iva = $resumen['totalIva'] ?? 0;
+                }
+
+                if ($sale->document_type_id == 1) {
+                    $totalGravada_rep -= $iva;
+                }
+
+                if ($sale->sale_status == 'Anulado') {
+                    $sale->sale_status = 'Invalidado';
+                    $totalGravada_rep = 0;
+                    $iva = 0;
+                    $retencion_1 = 0;
+                    $turismo = 0;
+                    $retencion_10 = 0;
+                }
 
                 return [
-                    'fecha' =>date('d/m/Y', strtotime($sale->fecha)),
-//                    'fecha' => Carbon::parse($sale->operation_date)->format('d/m/Y'),
+                    'fecha' => date('d/m/Y', strtotime($sale->fecha)),
                     'document_type' => '4',
                     'type' => $sale->documenttype->code,
                     'sello_recepcion' => $sale->dteProcesado->selloRecibido ?? null,
                     'cod_generaicon' => $sale->dteProcesado->codigoGeneracion ?? null,
-                    'num_control' => $sale->dteProcesado->num_control ?? null,//DTE
-//                    'internal_number' => $sale->id,
-//                    'num_inicial' => $sale->dteProcesado->num_control ?? null,
-//                    'num_final' => $sale->dteProcesado->num_control ?? null,
+                    'num_control' => $sale->dteProcesado->num_control ?? null, // DTE
                     'nrc' => $sale->customer->nrc ?? null,
-
-
-//                    'nit' => ($nit == $dui) ? '' : (string)$nit,
-//                    'dui' => (string)$dui,
                     'nit' => $nit_report,
                     'dui' => $dui_report,
                     'nombre' => $sale->customer->fullname ?? null,
                     'exentas' => $sale->exentas ?? null,
                     'no_sujetas' => $sale->no_sujetas ?? null,
-//                    'venta_gravada' => $sale->venta_gravada,
-                    'neto' => $sale->neto??0,
-                    'iva' => $sale->iva??0,
-                    'retencion_1_percetage' => $sale->retention ?? 0,
-                    'isr_10_percentage' => $sale->retention ?? 0,
-                    'total' => $sale->total,
-//                    'dte' => $sale->is_dte ? 'enviado' : 'pendiente',
-//                    'facturacion' => $sale->billingModel->name ?? null,
-//                    'vendedor' => $sale->seller->name ?? null,
-//                    'condicion' => $sale->salescondition->name ?? null,
+                    'neto' => $totalGravada_rep ?? 0,
+                    'iva' => $iva ?? 0,
+                    'retencion_1_percetage' => $retencion_1 ?? 0,
+                    'isr_10_percentage' => $retencion_10 ?? 0,
+                    'total' => ($totalGravada_rep + $iva) - ($retencion_1 + $retencion_10) ?? 0,
                     'estado' => strtoupper($sale->sale_status),
-                    'fecha_mh' => $sale->dteProcesado?->fhProcesamiento? date('d/m/Y', strtotime($sale->dteProcesado->fhProcesamiento)): null,
-
-
+                    'fecha_mh' => date('d/m/Y', strtotime($sale->dteProcesado->fhProcesamiento)),
+                    'turismo_5' => $turismo ?? 0,
                 ];
             });
 
@@ -177,9 +196,14 @@ class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithCo
     public function columnFormats(): array
     {
         return [
-//            'G' => NumberFormat::FORMAT_TEXT,
-//            'H' => NumberFormat::FORMAT_TEXT,
-//            'I' => NumberFormat::FORMAT_TEXT,
+
+            'K' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'L' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'M' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'N' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'O' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'P' => NumberFormat::FORMAT_ACCOUNTING_USD,
+            'Q' => NumberFormat::FORMAT_ACCOUNTING_USD,
         ];
     }
 
@@ -187,29 +211,29 @@ class SalesExportFac implements FromCollection, WithHeadings, WithEvents, WithCo
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                // Obtener la hoja activa
                 $sheet = $event->sheet->getDelegate();
+                $highestRow = $sheet->getHighestRow();
 
-                // Obtener el número de la última fila con datos
-                $lastRow = $sheet->getHighestRow();
+                // Ajustar ancho automático
+                foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+                    $sheet->getColumnDimension($col)->setAutoSize(true);
+                }
 
-                // Agregar el footer con los totales
-                $footerRow = $lastRow + 1;
-                $sheet->setCellValue('A' . $footerRow, 'Totales:');
-                $sheet->setCellValue('L' . $footerRow, $this->totalGravada); // Gravada Local
-                $sheet->setCellValue('M' . $footerRow, $this->totalDebitoFiscal); // Débito Fiscal
-                $sheet->setCellValue('P' . $footerRow, $this->totalVenta); // Total Venta
+                // Negrita para encabezados
+                $sheet->getStyle('A1:R1')->getFont()->setBold(true);
 
-                // Formatear las celdas del footer
-                $sheet->getStyle('A' . $footerRow . ':R' . $footerRow)->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'F2F2F2'],
-                    ],
-                ]);
+                // Alinear numéricos a la derecha
+                $sheet->getStyle('J2:R' . $highestRow)
+                    ->getAlignment()
+                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+
+//                // Resaltar en rojo los valores negativos de la columna EXISTENCIA (columna L)
+//                for ($row = 2; $row <= $highestRow; $row++) {
+//                    $cellValue = $sheet->getCell('L'.$row)->getValue();
+//                    if ((float)$cellValue < 0) {
+//                        $sheet->getStyle('L'.$row)->getFont()->getColor()->setRGB('FF0000'); // rojo
+//                    }
+//                }
             },
         ];
     }

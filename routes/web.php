@@ -50,8 +50,8 @@ Route::get('/sale/iva/libro/ccf/{startDate}/{endDate}', [ReportsController::clas
 Route::get('/contingency/{description}',[ContingencyController::class,'contingencyDTE'])->middleware(['auth'])->name('contingency');
 Route::get('/contingency_close/{uuid_contingence}',[ContingencyController::class,'contingencyCloseDTE'])->middleware(['auth'])->name('contingencyClose');
 //ZIP
-Route::get('/sale/json/{starDate}/{endDate}',[ReportsController::class,'downloadJson']);
-Route::get('/sale/pdf/{starDate}/{endDate}',[ReportsController::class,'downloadPdf']);
+Route::get('/sale/json/{saleType}/{starDate}/{endDate}',[ReportsController::class,'downloadJson']);
+Route::get('/sale/pdf/{saleType}/{starDate}/{endDate}',[ReportsController::class,'downloadPdf']);
 //Entrada Salia
 //Route::get('/printSalida/{idsalida}', [DTEController::class, 'printDTETicket'])->middleware(['auth'])->name('printSalida');
 Route::get('/salidaPrintTicket/{id}', [AdjustementInventory::class, 'salidaPrintTicket'])->middleware(['auth'])->name('salidaPrintTicket');

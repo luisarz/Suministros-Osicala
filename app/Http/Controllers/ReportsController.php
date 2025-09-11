@@ -30,12 +30,12 @@ class ReportsController extends Controller
         );
     }
 
-    public function downloadJson($startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
+    public function downloadJson($saleType,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
     {
         set_time_limit(0);
         $sales = Sale::select('id')
             ->where('is_dte', '1')
-            ->whereIn('document_type_id', [1, 3, 5, 11, 14])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
+            ->whereIn('document_type_id', [$saleType])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
             ->whereBetween('operation_date', [$startDate, $endDate])
             ->orderBy('operation_date', 'asc')
             ->with(['dteProcesado' => function ($query) {
@@ -103,12 +103,12 @@ class ReportsController extends Controller
         }
     }
 
-    public function downloadPdf($startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
+    public function downloadPdf($saleType,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
     {
         set_time_limit(0);
         $sales = Sale::select('id')
             ->where('is_dte', '1')
-            ->whereIn('document_type_id', [1, 3, 5, 11, 14])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
+            ->whereIn('document_type_id', [$saleType])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
             ->whereBetween('operation_date', [$startDate, $endDate])
             ->orderBy('operation_date', 'asc')
             ->with(['dteProcesado' => function ($query) {

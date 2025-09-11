@@ -5,137 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Corte de Caja</title>
     <style>
-        /* Reset y base */
         body, html {
-            margin: 0; padding: 0;
-            font-family: Arial, sans-serif;
+            margin: 0; padding: 15;
+            font-family: "Segoe UI", Arial, sans-serif;
             font-size: 11px;
-            color: #111827;
+            color: #1F2937;
+            background: #f5f6fa;
         }
 
-        /* Contenedor principal con márgenes reducidos para A4 */
         .container {
-            padding: 10mm 15mm;
-            box-sizing: border-box;
-            margin: auto;
+            padding: 15px 20px;
+            margin: 20px auto;
             background: #fff;
-            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            max-width: 1000px;
         }
 
-        /* Encabezado */
         .header {
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
         .header h1 {
-            font-size: 16px;
+            font-size: 18px;
             margin: 0;
             color: #1e3a8a;
             font-weight: 700;
-            user-select: none;
         }
         .header small {
-            font-size: 9px;
-            color: #666;
+            font-size: 10px;
+            color: #4B5563;
             display: block;
-            margin-top: 3px;
+            margin-top: 4px;
         }
 
-        /* Secciones */
-        .section {
-            margin-bottom: 10px;
-        }
-
+        .section { margin-bottom: 20px; }
         .section-title {
             font-weight: 700;
-            font-size: 12px;
+            font-size: 13px;
             color: #1e3a8a;
-            border-left: 4px solid #3b82f6;
-            padding-left: 6px;
-            margin-bottom: 6px;
-            user-select: none;
+            border-left: 5px solid #3b82f6;
+            padding-left: 8px;
+            margin-bottom: 8px;
+            background: #E0E7FF;
+            border-radius: 4px;
+            padding: 4px 8px;
         }
 
-        /* Tablas generales */
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 11px;
         }
         th, td {
-            padding: 4px 6px;
-            border: 1px solid #e5e7eb;
-            text-align: left;
+            padding: 6px 8px;
+            border: 1px solid #CBD5E1;
             vertical-align: middle;
         }
         th {
-            background: #f9fafb;
-            font-weight: 700;
+            background: #F3F4F6;
             color: #1e3a8a;
-            user-select: none;
+            font-weight: 700;
+            text-align: left;
         }
         .currency {
             text-align: right;
-            color: #3b82f6;
+            color: #1e3a8a;
             font-weight: 700;
             white-space: nowrap;
-            font-variant-numeric: tabular-nums;
         }
         .totals {
-            background: #f0f4ff;
+            background: #DBEAFE;
             font-weight: 700;
         }
 
-        /* Tablas internas */
         .nested-table th, .nested-table td {
             font-size: 10.5px;
-            padding: 3px 5px;
+            padding: 4px 6px;
         }
 
-        /* Layout de dos columnas */
-        .flex-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
+        /* Tablas lado a lado */
+        .side-by-side {
+            display: table;
+            width: 100%;
+            border-spacing: 20px;
         }
-        .flex-col {
-            flex: 1 1 48%;
-            min-width: 250px;
-        }
-
-        /* Hover para filas */
-        tbody tr:hover {
-            background: #f0f4ff;
+        .side-by-side > div {
+            display: table-cell;
+            vertical-align: top;
+            width: 50%;
         }
 
-        /* Evitar que se corte tabla en impresión */
-        tr, td, th {
-            page-break-inside: avoid;
+        /* Resumen final */
+        .summary-table td {
+            font-weight: 600;
+            padding: 6px 8px;
         }
+        .summary-table tr:nth-child(1) td { background: #DBEAFE; }
+        .summary-table tr:nth-child(2) td { background: #EFF6FF; }
+        .summary-table tr:nth-child(3) td { background: #BFDBFE; color: #1e40af; }
 
-        /* Ajuste para impresión */
         @media print {
-            body, .container {
-                margin: 0;
-                box-shadow: none;
-                border: none;
-                width: auto;
-                min-height: auto;
-                padding: 10mm 10mm;
-            }
-            .header h1 {
-                font-size: 14px;
-            }
-            .section-title {
-                font-size: 11px;
-            }
-            table, th, td {
-                font-size: 10px;
-            }
-            .flex-row {
-                flex-wrap: nowrap;
-            }
+            body, .container { margin: 0; box-shadow: none; border: none; padding: 10mm; }
+            .header h1 { font-size: 16px; }
+            .section-title { font-size: 12px; }
+            table, th, td { font-size: 10px; }
         }
     </style>
 </head>
@@ -146,16 +120,18 @@
         <small>Fecha de impresión: {{date('d-m-Y H:i:s')}}</small>
     </div>
 
+    <!-- Datos de Apertura -->
     <div class="section">
         <div class="section-title">Datos de Apertura</div>
         <table>
             <tr><td>Caja</td><td>{{$caja->cashbox->description}}</td></tr>
-            <tr><td>Fecha Apertura</td><td>{{ date('d-m-Y H:i:s', strtotime( $caja->created_at))}}</td></tr>
+            <tr><td>Fecha Apertura</td><td>{{ date('d-m-Y H:i:s', strtotime($caja->created_at))}}</td></tr>
             <tr><td>Monto Apertura</td><td class="currency">${{number_format($caja->open_amount, 2)}}</td></tr>
             <tr><td>Empleado</td><td>{{$caja->openEmployee->name}} {{$caja->openEmployee->lastname}}</td></tr>
         </table>
     </div>
 
+    <!-- Operaciones -->
     <div class="section">
         <div class="section-title">Operaciones</div>
         <table>
@@ -186,10 +162,11 @@
         </table>
     </div>
 
-    <div class="section flex-row">
-        <div class="flex-col">
+    <!-- Saldo de Cierre y Detalle de Efectivo lado a lado -->
+    <div class="section side-by-side">
+        <div>
             <div class="section-title">Saldo de Cierre</div>
-            <table>
+            <table class="nested-table">
                 <tbody>
                 <tr><td>Efectivo Ventas</td><td class="currency">${{number_format($caja->saldo_efectivo_ventas, 2)}}</td></tr>
                 <tr><td>Tarjetas</td><td class="currency">${{number_format($caja->saldo_tarjeta, 2)}}</td></tr>
@@ -206,9 +183,9 @@
             </table>
         </div>
 
-        <div class="flex-col">
+        <div>
             <div class="section-title">Detalle de Efectivo</div>
-            <table>
+            <table class="nested-table">
                 <thead>
                 <tr><th>Denominación</th><th>Cantidad</th><th>Subtotal</th></tr>
                 </thead>
@@ -232,6 +209,21 @@
         </div>
     </div>
 
+    <!-- Resumen de Cierre -->
+    <div class="section">
+        <div class="section-title">Resumen de Cierre</div>
+        <table class="summary-table">
+            <tr><td>DH Cierre</td><td class="currency">${{ number_format($caja->dh_cierre, 2) }}</td></tr>
+            <tr><td>Hay al Cierre</td><td class="currency">${{ number_format($caja->hay_cierre, 2) }}</td></tr>
+            <tr>
+                <td>Diferencia</td>
+                <td class="currency" style="color: {{ $caja->dif_cierre >= 0 ? '#16a34a' : '#dc2626' }};">
+                    ${{ number_format($caja->dif_cierre, 2) }}
+                </td>
+            </tr>
+
+        </table>
+    </div>
 </div>
 </body>
 </html>

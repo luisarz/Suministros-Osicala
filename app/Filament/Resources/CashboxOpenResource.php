@@ -6,10 +6,7 @@ use App\Filament\Resources\CashboxOpenResource\Pages;
 use App\Filament\Resources\CashboxOpenResource\RelationManagers;
 use App\Models\CashBoxOpen;
 use App\Models\Employee;
-use App\Models\Sale;
-use App\Service\GetCashBoxOpenedService;
 use App\Services\CashBoxResumenService;
-use App\Traits\Traits\GetOpenCashBox;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -18,10 +15,7 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use mysql_xdevapi\Exception;
 
 class CashboxOpenResource extends Resource
 {
@@ -239,11 +233,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -252,11 +245,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -265,11 +257,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -278,11 +269,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -291,11 +281,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -304,11 +293,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -317,11 +305,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -330,11 +317,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -343,11 +329,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -356,11 +341,10 @@ class CashboxOpenResource extends Resource
                                             ->prefix('$')
                                             ->default(0)
                                             ->numeric()
-                                            ->reactive()
+                                            ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, callable $set) {
                                                 static::calcularTotal($get, $set);
                                             })
-
                                             ->required()
                                             ->inlineLabel(true),
 
@@ -383,48 +367,79 @@ class CashboxOpenResource extends Resource
                                     return true;
                                 }
                             })
+                            ->columns(5)
                             ->schema([
                                 Forms\Components\DateTimePicker::make('closed_at')
                                     ->label('Fecha de cierre')
                                     ->required()
+                                    ->inlineLabel(false)
                                     ->default(now())
                                     ->hidden(function (?CashBoxOpen $record = null) {
                                         return $record === null;
-                                    })
-                                    ->inlineLabel(true),
+                                    }),
 
                                 Forms\Components\Placeholder::make('closed_amount')
                                     ->label('Monto Cierre')
-                                    ->inlineLabel(true)
+                                    ->inlineLabel(false)
                                     ->content(function (callable $get) use ($resumen) {
-//                                        dd ($resumen);
-//                                        $get = fn($key) => request()->input($key);
                                         $montoApertura = round($get('open_amount') ?? 0, 2);
 
-
-//                                        $totalInresos = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Ingreso');
-//                                        $totalEgresos = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Egreso');
-//                                        $totalSale = (new GetCashBoxOpenedService())->getTotal(false);
-//                                        $totalOrder = (new GetCashBoxOpenedService())->getTotal(true, true);
-//                                        $montoApertura = $get('open_amount') ?? 0;
                                         $totalInCash = $resumen->saldo_total + $montoApertura;//($montoApertura + $totalInresos + $totalOrder + $totalSale) - $totalEgresos;
                                         return new HtmlString('<span style=" border-top: #1e2c2e solid 1px; color:green; font-weight:  bold; font-size: 15px;">$ ' . number_format($totalInCash, 2) . '</span>');
-
-//                                        return new HtmlString(
-//                                            '<span style="font-weight: 600; color: #FFFFFF; font-size: 16px; background-color: #0056b3; padding: 4px 8px; border-radius: 5px; display: inline-block;">'
-//                                            . ($totalInCash ?? '-') .
-//                                            '</span>');
                                     })
                                     ->hidden(function (?CashBoxOpen $record = null) {
                                         if ($record === null) {
                                             return true;
                                         }
                                     }),
+                                Forms\Components\TextInput::make('dh_cierre')
+                                    ->label('DH')
+                                    ->inlineLabel(false)
+                                    ->prefix('$')
+                                    ->disabled() // solo lectura
+                                    ->afterStateHydrated(function ($component, $state) use ($resumen) {
+                                        $component->state(number_format($resumen->saldo_total,2)); // fija el valor en el state
+                                    })
+                                    ->reactive() // si otros cálculos dependen de él
+                                    ->hidden(fn(?CashBoxOpen $record) => $record === null),
+
+
+
+        Forms\Components\Placeholder::make('hay_cierre')
+                                    ->label('Hay')
+                                    ->inlineLabel(false)
+                                    ->reactive()
+                                    ->content(function (callable $get) {
+                                        $hay_cierre = $get('hay_cierre') ?? 0;
+                                        return new HtmlString(
+                                            '<span style="border-top:#1e2c2e solid 1px; color:green; font-weight:bold; font-size:15px;">
+                                            $ ' . number_format($hay_cierre, 2) . '
+                                         </span>'
+                                        );
+                                    })
+                                    ->hidden(fn(?CashBoxOpen $record) => $record === null),
+
+                                Forms\Components\Placeholder::make('dif_cierre')
+                                    ->label('DIF')
+                                    ->reactive()
+                                    ->inlineLabel(false)
+                                    ->content(function (callable $get) {
+                                        $dif_cierre = $get('dif_cierre') ?? 0;
+                                        return new HtmlString(
+                                            '<span style="border-top: #1e2c2e solid 1px; color:green; font-weight:bold; font-size:15px;">
+                $ ' . number_format($dif_cierre, 2) . '
+             </span>'
+                                        );
+                                    })
+                                    ->hidden(fn(?CashBoxOpen $record) => $record === null),
+
+
                                 Forms\Components\Select::make('close_employee_id')
                                     ->relationship('closeEmployee', 'name', function ($query) {
                                         $whereHouse = auth()->user()->employee->branch_id;
                                         $query->where('branch_id', $whereHouse);
                                     })
+                                    ->inlineLabel(false)
                                     ->required()
                                     ->label('Empleado Cierra')
                                     ->hidden(function (?CashBoxOpen $record = null) {
@@ -437,7 +452,7 @@ class CashboxOpenResource extends Resource
                                         return Employee::where('branch_id', $whereHouse)
                                             ->pluck('name', 'id');
                                     }),
-                            ])->columns(3)
+                            ])->columns(6)
 
 
                     ])->columns(2)
@@ -542,12 +557,16 @@ class CashboxOpenResource extends Resource
             'edit' => Pages\EditCashboxOpen::route('/{record}/edit'),
         ];
     }
+
     public static function calcularTotal(Get $get, callable $set): void
     {
         // Necesitamos acceso a los valores del formulario
 
 
         try {
+            $dh = floatval(str_replace(',', '', $get('dh_cierre')));
+
+            $digital = ($get('saldo_tarjeta') ?? 0) + ($get('saldo_tarjetacheque') ?? 0);
             $total =
                 ($get('cant_cien') ?? 0) * 100 +
                 ($get('cant_cincuenta') ?? 0) * 50 +
@@ -559,12 +578,15 @@ class CashboxOpenResource extends Resource
                 ($get('cant_cero_diez') ?? 0) * 0.10 +
                 ($get('cant_cero_cinco') ?? 0) * 0.05 +
                 ($get('cant_cero_cero_uno') ?? 0) * 0.01;
-
             $set('total_efectivo', number_format($total, 2, '.', ''));
-        }catch (\Exception $e){
+            $hay = $total + $digital;
+            $set('hay_cierre', number_format($hay, 2, '.', ''));
+            $difencia = $hay - $dh;
+//            dd($difencia,'=',);
+            $set('dif_cierre', number_format($difencia, 2, '.', ''));
+        } catch (\Exception $e) {
 
         }
-
 
 
     }

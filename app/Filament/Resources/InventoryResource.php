@@ -188,14 +188,17 @@ class InventoryResource extends Resource
                                     ->separator(';'),
                                 Tables\Columns\TextColumn::make('product.sku')
                                     ->label('SKU')
-                                    ->copyable()
-                                    ->copyable()
-                                    ->copyMessage('SKU code copado')
-                                    ->copyMessageDuration(1500)
-                                    ->copyableState(fn(Inventory $record): string => "Color: {$record->color}")
+//                                    ->getStateUsing(fn ($record) => $record->product?->sku)
+//                                    ->copyable()
+//                                    ->copyMessage('SKU copiado')
+//                                    ->copyMessageDuration(1500)
                                     ->icon('heroicon-s-qr-code')
                                     ->searchable()
                                     ->sortable(),
+
+
+
+
                                 Tables\Columns\TextColumn::make('branch.name')
                                     ->label('Sucursal')
                                     ->icon('heroicon-s-building-office-2')
@@ -258,7 +261,7 @@ class InventoryResource extends Resource
             ])->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
+//                    Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ReplicateAction::make()
                         ->form([
