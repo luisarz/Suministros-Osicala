@@ -30,19 +30,23 @@ class ReportsController extends Controller
         );
     }
 
-    public function downloadJson($saleType,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
+    public function downloadJson($saleType,$status,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
     {
+//        dd($saleType,$status,$startDate, $endDate);
         set_time_limit(0);
         $sales = Sale::select('id')
             ->where('is_dte', '1')
             ->whereIn('document_type_id', [$saleType])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
             ->whereBetween('operation_date', [$startDate, $endDate])
+            ->where('sale_status','=',$status) // 1- Enviados 0- No enviados
             ->orderBy('operation_date', 'asc')
             ->with(['dteProcesado' => function ($query) {
                 $query->select('sales_invoice_id', 'num_control', 'selloRecibido', 'codigoGeneracion', 'dte')
                     ->whereNotNull('selloRecibido');
             }])
             ->get();
+
+//        dd($sales->ToRawSql());
 
 
         try {
@@ -103,13 +107,18 @@ class ReportsController extends Controller
         }
     }
 
-    public function downloadPdf($saleType,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
+    public function downloadPdf($saleType,$status,$startDate, $endDate): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
     {
+
+
+
+
         set_time_limit(0);
         $sales = Sale::select('id')
             ->where('is_dte', '1')
             ->whereIn('document_type_id', [$saleType])//1- Fac 3-CCF 5-NC 11-FExportacion 14-Sujeto excluido
             ->whereBetween('operation_date', [$startDate, $endDate])
+            ->where('sale_status','=',$status) // 1- Enviados 0- No enviados
             ->orderBy('operation_date', 'asc')
             ->with(['dteProcesado' => function ($query) {
                 $query->select('sales_invoice_id', 'num_control', 'selloRecibido', 'codigoGeneracion', 'dte')

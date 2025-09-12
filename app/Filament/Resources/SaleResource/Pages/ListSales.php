@@ -112,6 +112,14 @@ class ListSales extends ListRecords
                             '4' => 'NC',
                         ])
                         ->required(),
+                    Select::make('status')
+                        ->default('Facturada')
+                        ->label('Estados')
+                        ->options([
+                            'Facturada' => 'Validos',
+                            'Anulado' => 'Anulados',
+                        ])
+                        ->required(),
                     Select::make('documentType')
                         ->default('json')
                         ->label('Documentos')
@@ -121,13 +129,15 @@ class ListSales extends ListRecords
                         ])
                         ->required(),
 
+
                 ])->action(function ($record, array $data) {
                     $startDate = $data['desde']; // Asegurar formato correcto
                     $endDate = $data['hasta'];   // Asegurar formato correcto
                     $documentType = $data['documentType'];
                     $saleType = $data['saleType'];
+                    $status = $data['status'];
 
-                    $ruta = '/sale/' . $documentType . '/' . $saleType . '/' . $startDate . '/' . $endDate;
+                    $ruta = '/sale/' . $documentType . '/' . $saleType . '/' . $status . '/' . $startDate . '/' . $endDate;
 
                     return \Filament\Notifications\Notification::make()
                         ->title('Reporte preparado.')
