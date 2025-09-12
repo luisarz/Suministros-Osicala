@@ -49,9 +49,10 @@ class EditCashboxOpen extends EditRecord
         $cashboxOpen->saldo_egresos_totales = $resumen->egreso_total;
         $cashboxOpen->saldo_total_operaciones = $resumen->saldo_total + $montoApertura;
         $cashboxOpen->closed_at = now();
-        $cashboxOpen->dh_cierre= $this->data['dh_cierre'];
-        $cashboxOpen->hay_cierre= $this->data['hay_cierre'];
-        $cashboxOpen->dif_cierre= $this->data['dif_cierre'];
+        $cashboxOpen->dh_cierre = floatval(str_replace([','], '', $this->data['dh_cierre']));
+        $cashboxOpen->hay_cierre = floatval(str_replace([','], '', $this->data['hay_cierre']));
+        $cashboxOpen->dif_cierre = floatval(str_replace([','], '', $this->data['dif_cierre']));
+
 
 
 

@@ -7,7 +7,9 @@ use App\Filament\Resources\SaleResource\RelationManagers;
 
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\Order;
 use App\Models\Sale;
+use App\Models\SaleItem;
 use App\Tables\Actions\dteActions;
 use App\Tables\Actions\orderActions;
 use Carbon\Carbon;
@@ -32,6 +34,45 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Notifications\Notification;
+
+
+function payment_card($order, array $data, $livewire): void
+{
+    $items = $order->saleDetails;
+
+    foreach ($items as $item) {
+        $newPrice = $data['is_payment_card']
+            ? round($item->price * 1.05, 2)   // aplicar +5%
+            : round($item->price / 1.05, 2);  // quitar 5%
+
+        $item->update([
+            'price' => $newPrice,
+            'total' => $newPrice * $item->quantity,
+        ]);
+    }
+
+    // Totales de la orden
+    $order->is_payment_card = $data['is_payment_card'];
+    $montoTotal = $order->saleDetails->sum('total');
+    $neto = $montoTotal / 1.13;
+    $iva = $montoTotal - $neto;
+
+    $order->update([
+        'net_amount' => round($neto, 2),
+        'taxe'       => round($iva, 2),
+        'sale_total' => round($montoTotal, 2),
+    ]);
+
+    // 👉 Redirigir al mismo recurso (Edit de esta orden)
+    $livewire->redirectRoute('filament.admin.resources.orders.edit', [
+        'record' => $order->id,
+    ]);
+}
+
+
+
+
 
 class OrderResource extends Resource
 {
@@ -184,8 +225,18 @@ class OrderResource extends Resource
                                                 . ($record->order_number ?? '-') .
                                                 '</span>'
                                             ))
+                                            ->inlineLabel(),
+                                        Forms\Components\Toggle::make('is_payment_card')
                                             ->inlineLabel()
-                                            ->extraAttributes(['class' => 'p-0 text-lg']), // Tailwind classes for padding and font size
+                                            ->label('Pag. Tarjeta')
+                                            ->reactive()
+                                            ->afterStateUpdated(function ($set, $state, $get, Component $livewire) {
+                                                $order = $livewire->getRecord();
+                                                if ($order) {
+                                                    payment_card($order, ['is_payment_card' => $state], $livewire);
+                                                }
+                                            }),
+
                                         Select::make('wherehouse_id')
                                             ->label('Sucursal')
                                             ->inlineLabel(true)
@@ -264,12 +315,12 @@ class OrderResource extends Resource
                     ->badge()
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? 'Eliminado' : $state)
-                    ->color(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state, $record) => $record->deleted_at ? 'Eliminado' : $state)
+                    ->color(fn($state) => match ($state) {
                         'Nueva', 'En proceso' => 'info',
                         'Finalizado' => 'success',
                         'Pendiente' => 'warning',
-                        'Anulado', 'Eliminado','Cancelada' => 'danger',
+                        'Anulado', 'Eliminado', 'Cancelada' => 'danger',
                         default => null, // Sin color
                     })
                     ->label('Estado'),
@@ -333,7 +384,6 @@ class OrderResource extends Resource
 //                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('updated_at', 'desc')
-
             ->recordUrl(null)
             ->filters([
                 DateRangeFilter::make('operation_date')
@@ -342,7 +392,7 @@ class OrderResource extends Resource
                     ->endDate(Carbon::now()),
                 Tables\Filters\TrashedFilter::make('eliminados')
                     ->label('Eliminados')
-                    ->query(fn ($query) => $query->withoutGlobalScope(SoftDeletingScope::class))
+                    ->query(fn($query) => $query->withoutGlobalScope(SoftDeletingScope::class))
                     ->default(true),
 
             ])
@@ -350,8 +400,7 @@ class OrderResource extends Resource
             ->actions([
                 orderActions::printOrder(),
                 Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
-                    ->visible(fn($record) =>
-                        $record->sale_status == 'Nueva' && $record->deleted_at == null
+                    ->visible(fn($record) => $record->sale_status == 'Nueva' && $record->deleted_at == null
                     ),
                 orderActions::closeOrder(),
                 orderActions::billingOrden(),
@@ -387,5 +436,6 @@ class OrderResource extends Resource
     {
         return 'Orden Total - ' . ($this->record?->order_number ?? 'Sin número');
     }
+
 
 }

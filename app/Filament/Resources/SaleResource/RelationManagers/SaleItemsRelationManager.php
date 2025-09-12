@@ -24,13 +24,24 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Svg\Tag\Image;
 use Symfony\Component\Console\Input\Input;
+use Livewire\Attributes\On;
 
 
 class SaleItemsRelationManager extends RelationManager
 {
+//    #[On('refreshComments')]
+//    public function refresh(): void
+//    {}
     protected static string $relationship = 'saleDetails';
     protected static ?string $title = "Prodúctos agregados";
     protected static ?string $pollingInterval = '1s';
+    protected function getListeners(): array
+    {
+        return array_merge(parent::getListeners(), [
+            'refreshSaleItems' => '$refresh',
+        ]);
+    }
+
 
 
     public function form(Form $form): Form
@@ -257,23 +268,22 @@ class SaleItemsRelationManager extends RelationManager
                                         //                                            ->afterStateUpdated(function (callable $get, callable $set) {
                                         //                                                $this->calculateTotal($get, $set);
                                         //                                            }),
-                                        Forms\Components\Toggle::make('is_tarjet')
-                                            ->label('Con Tarjeta')
-                                            ->columnSpan(1)
-                                            ->live()
-                                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                                $price = $get('price'); // Obtener el precio actual
-                                                if ($get('is_tarjet')) {
-//                                                    $neto=round($price /1.13, 2);
-                                                    $neto = round($price, 2);
-                                                    $recargoTarjeta = round($neto * 0.05, 2); // Calcular el 5% del neto
-                                                    $newprice = $price + $recargoTarjeta; // Sumar el 5% al precio
-                                                    $set('price', $newprice);
-                                                } else {
-                                                    $set('price', $price * 0.95);
-                                                }
-                                                $this->calculateTotal($get, $set);
-                                            }),
+//                                        Forms\Components\Toggle::make('is_tarjet')
+//                                            ->label('Con Tarjeta')
+//                                            ->columnSpan(1)
+//                                            ->live()
+//                                            ->afterStateUpdated(function (callable $get, callable $set) {
+//                                                $price = $get('price'); // Obtener el precio actual
+//                                                if ($get('is_tarjet')) {
+//                                                    $neto = round($price, 2);
+//                                                    $recargoTarjeta = round($neto * 0.05, 2); // Calcular el 5% del neto
+//                                                    $newprice = $price + $recargoTarjeta; // Sumar el 5% al precio
+//                                                    $set('price', $newprice);
+//                                                } else {
+//                                                    $set('price', $price * 0.95);
+//                                                }
+//                                                $this->calculateTotal($get, $set);
+//                                            }),
 
                                         Forms\Components\TextInput::make('minprice')
                                             ->label('Tributos')
@@ -378,6 +388,11 @@ class SaleItemsRelationManager extends RelationManager
                     ->columnSpan(1),
             ])
             ->headerActions([
+//                Tables\Actions\Action::make('refresh')
+//                    ->label('')
+//                    ->icon('heroicon-o-arrow-path')
+//                    ->outlined(),
+//                    ->dispatchSelf('refreshComments'),
                 Tables\Actions\CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a venta')
