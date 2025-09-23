@@ -19,63 +19,82 @@ class EmployeesController extends Controller
     {
 
 
+
+
         /* 1. Rango de fechas */
         $startDate = Carbon::createFromFormat('d-m-Y', $star_date)->startOfDay();
         $endDate = Carbon::createFromFormat('d-m-Y', $end_date)->endOfDay();
 
-        /* 2. IDs a excluir — 57 y su categoría padre (si existe) */
-        // 1. Obtener categorías hijas de 56
+        /* 2. IDs a excluir — 56 y sus categorías hijas */
         $childIds = DB::table('categories')
             ->where('parent_id', 56)
             ->pluck('id')
             ->toArray();
 
-// 2. Lista de exclusión: 56 y sus hijas
         $excludedIds = array_merge([56], $childIds);
 
-        /* 3. Consulta principal */
+        /* 3. Consulta principal con descuento */
         $rawData = DB::table('sale_items as si')
             ->join('sales       as s', 's.id', '=', 'si.sale_id')
             ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
             ->join('products    as p', 'p.id', '=', 'i.product_id')
             ->join('categories  as c', 'c.id', '=', 'p.category_id')        // hija
-            ->leftJoin('categories as cp', 'cp.id', '=', 'c.parent_id')       // padre
+            ->leftJoin('categories as cp', 'cp.id', '=', 'c.parent_id')     // padre
             ->whereBetween('s.operation_date', [$startDate, $endDate])
-            ->whereIn('s.sale_status', ['Facturada', 'Finalizado']) // Excluye ventas canceladas
-            ->whereNotIn(DB::raw('COALESCE(cp.id, c.id)'), $excludedIds)      // ⬅️ excluye 57 y su padre
-            ->where('s.seller_id', $id_employee) // Filtra por empleado
-            ->where('s.deleted_at', null)
+            ->whereIn('s.sale_status', ['Facturada', 'Finalizado'])
+            ->whereNotIn(DB::raw('COALESCE(cp.id, c.id)'), $excludedIds)
+            ->where('s.seller_id', $id_employee)
+            ->whereNull('s.deleted_at')
             ->whereIn('s.operation_type', ['Sale', 'Order', 'Quote'])
             ->selectRaw('
         DATE(s.operation_date)                                       AS sale_day,
         COALESCE(cp.id,  c.id)                                       AS parent_id,
         COALESCE(cp.name, c.name)                                    AS parent_name,
         COALESCE(cp.commission_percentage, c.commission_percentage)  AS commission_percentage,
-        SUM(si.total)                                  AS total_amount
+        s.discount_percentage,
+        SUM(si.total)                                                AS total_amount
     ')
-            ->groupByRaw('DATE(s.operation_date), parent_id, parent_name, commission_percentage')
+            ->groupByRaw('DATE(s.operation_date), parent_id, parent_name, commission_percentage, s.discount_percentage')
             ->orderBy('sale_day')
             ->get();
 
+//        return response()->json($rawData);
+
         /* ---------- Tabla dinámica ---------- */
         $pivotData = [];
-        $categoriesMap = [];   // mantiene orden de aparición
+        $categoriesMap = [];
 
         foreach ($rawData as $r) {
             $date = date('Y-m-d', strtotime($r->sale_day));
             $category = $r->parent_name . ' (' . $r->commission_percentage . '%)';
-            $amount = round($r->total_amount, 2);
+
+            // aplicar descuento
+            $discountFactor = 1 - (($r->discount_percentage ?? 0) / 100);
+            $amount = round($r->total_amount * $discountFactor, 2);
+
+            // comisión sobre monto con descuento
             $commission = round($amount * ($r->commission_percentage / 100), 2);
 
-            $pivotData[$date][$category] = [
-                'amount' => $amount,
-                'commission' => $commission,
-            ];
+            // inicializar si no existe
+            if (!isset($pivotData[$date][$category])) {
+                $pivotData[$date][$category] = [
+                    'amount' => 0,
+                    'commission' => 0,
+                ];
+            }
 
-            $categoriesMap[$category] ??= true;  // registra 1.ª aparición
+            // acumular
+            $pivotData[$date][$category]['amount'] += $amount;
+            $pivotData[$date][$category]['commission'] += $commission;
+
+            $categoriesMap[$category] ??= true;
         }
 
-        $categories = array_keys($categoriesMap);          // orden natural
+        $categories = array_keys($categoriesMap);
+
+
+
+//        return response()->json($pivotData);
 
         /* Totales por día y columnas faltantes */
         foreach ($pivotData as $date => &$row) {
@@ -90,9 +109,10 @@ class EmployeesController extends Controller
             $row['Total Día'] = $totalDay;
             $row['Total Comisión'] = $totalCommission;
         }
-
         ksort($pivotData); // fechas ordenadas
 
+
+//        return response()->json(compact('pivotData', 'categories'));
 
         $empresa = Company::find(1);
         $id_sucursal = \Auth::user()->employee->branch_id;
@@ -118,60 +138,66 @@ class EmployeesController extends Controller
     public function salesWork($id_employee, $star_date, $end_date)
     {
         /* 1. Rango de fechas */
+
+
         $startDate = Carbon::createFromFormat('d-m-Y', $star_date)->startOfDay();
         $endDate = Carbon::createFromFormat('d-m-Y', $end_date)->endOfDay();
 
-        /// 2. Obtener categorías hijas de 56
+/// 1. Obtener categorías hijas de 56
         $childIds = DB::table('categories')
             ->where('parent_id', 56)
             ->pluck('id')
             ->toArray();
 
-        // 3. Incluir categoría 56 + sus hijas
+// 2. Incluir categoría 56 + sus hijas
         $includedIds = array_merge([56], $childIds);
-        // 4. Consulta principal (solo categoría hija)
 
+// 3. Consulta principal con descuentos
         $rawData = DB::table('sale_items as si')
-            ->join('sales       as s', 's.id', '=', 'si.sale_id')
+            ->join('sales as s', 's.id', '=', 'si.sale_id')
             ->join('inventories as i', 'i.id', '=', 'si.inventory_id')
-            ->join('products    as p', 'p.id', '=', 'i.product_id')
-            ->join('categories  as c', 'c.id', '=', 'p.category_id') // solo hija
+            ->join('products as p', 'p.id', '=', 'i.product_id')
+            ->join('categories as c', 'c.id', '=', 'p.category_id')
             ->whereBetween('s.operation_date', [$startDate, $endDate])
-            ->whereIn('s.sale_status', ['Facturada', 'Finalizado']) // Excluye ventas canceladas
-            ->whereIn('c.id', $includedIds) // solo categorías hijas (sin COALESCE)
+            ->whereIn('s.sale_status', ['Facturada', 'Finalizado'])
+            ->whereIn('c.id', $includedIds)
             ->where('s.mechanic_id', $id_employee)
             ->whereIn('s.operation_type', ['Sale', 'Order', 'Quote'])
-            ->where('s.deleted_at', null)
+            ->whereNull('s.deleted_at')
             ->selectRaw('
-                DATE(s.operation_date)      AS sale_day,
-                c.id                        AS category_id,
-                c.name                      AS category_name,
-                c.commission_percentage     AS commission_percentage,
-                SUM(si.total) AS total_amount,
-                COUNT(DISTINCT s.id)        AS total_operations,
-                GROUP_CONCAT(DISTINCT CAST(s.order_number AS UNSIGNED)) AS order_numbers
-            ')
-            ->groupByRaw('DATE(s.operation_date), c.id, c.name, c.commission_percentage')
+        DATE(s.operation_date) AS sale_day,
+        c.id AS category_id,
+        c.name AS category_name,
+        c.commission_percentage AS commission_percentage,
+        s.discount_percentage AS discount_percentage,
+        SUM(si.total) AS total_amount,
+        COUNT(DISTINCT s.id) AS total_operations,
+        GROUP_CONCAT(DISTINCT CAST(s.order_number AS UNSIGNED)) AS order_numbers
+    ')
+            ->groupByRaw('DATE(s.operation_date), c.id, c.name, c.commission_percentage, s.discount_percentage')
             ->orderBy('sale_day')
             ->get();
-//        dd($rawData);
+
+// 4. Pivot table y totales
         $pivotData = [];
         $categoriesMap = [];
 
         foreach ($rawData as $r) {
             $date = date('Y-m-d', strtotime($r->sale_day));
             $category = $r->category_name . ' (' . $r->commission_percentage . '%)';
-            $amount = round($r->total_amount, 2);
+
+            // aplicar descuento
+            $discountFactor = 1 - (($r->discount_percentage ?? 0) / 100);
+            $amount = round($r->total_amount * $discountFactor, 2);
+
+            // comisión sobre monto con descuento
             $commission = round($amount * ($r->commission_percentage / 100), 2);
-            $operations = (int)$r->total_operations;
-            $orders = $r->order_numbers;
 
             $pivotData[$date][$category] = [
                 'amount' => $amount,
                 'commission' => $commission,
-                'operations' => $operations,
-                'orders' => $orders,
-
+                'operations' => (int)$r->total_operations,
+                'orders' => $r->order_numbers,
             ];
 
             $categoriesMap[$category] ??= true;
@@ -194,7 +220,8 @@ class EmployeesController extends Controller
             $row['Total Operaciones'] = $totalOperations;
         }
 
-        ksort($pivotData);
+        ksort($pivotData); // ordenar por fecha
+
 
 
         $empresa = Company::find(1);
@@ -268,6 +295,8 @@ class EmployeesController extends Controller
                 fn($item) => $item->sale_day,
                 fn($item) => $item->sale_id,
             ]);
+
+//        return response()->json($productsByDayAndSale);
 
 
 

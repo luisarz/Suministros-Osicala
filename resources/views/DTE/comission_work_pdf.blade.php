@@ -65,6 +65,7 @@
         }
 
 
+
         tfoot {
             border: 2px solid black;
         }
@@ -90,6 +91,8 @@
                     Desde: {{date('d-m-Y',strtotime($startDate))}} - Hasta {{date('d-m-Y',strtotime($endDate))}}</h4>
                 <h4>Vendedor:{{ strtoupper( $empleado->name.' '. $empleado->lastname) }}</h4>
             </td>
+
+
 
 
     </table>
@@ -124,26 +127,23 @@
             <tr>
                 <td style="border: 1px solid black; padding: 6px;">{{ $date }}</td>
                 @foreach ($categories as $category)
-                    <td style="border: 1px solid black; padding: 6px;">{{ $date }}</td>
-                    @foreach ($categories as $category)
-                        <td style="border: 1px solid black; padding: 6px; max-width: 100px; word-wrap: break-word; white-space: normal;">
-                            <b>{{ number_format($row[$category]['operations'] ?? 0, 0) }}</b>
-                            @if (!empty($row[$category]['orders']))
-                                <small>({{ $row[$category]['orders'] }})</small>
-                            @endif
-                        </td>
-                        <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['amount'] ?? 0, 2) }}</td>
-                        <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['commission'] ?? 0, 2) }}</td>
-                    @endforeach
-                    <td style="border: 1px solid black; padding: 6px;">
-                        <strong>{{ number_format($row['Total Día'], 2) }}</strong></td>
-                    <td style="border: 1px solid black; padding: 6px;">
-                        <strong>{{ number_format($row['Total Comisión'], 2) }}</strong></td>
+                    <td style="border: 1px solid black; padding: 6px; max-width: 100px; word-wrap: break-word; white-space: normal;">
+                        <b>{{ number_format($row[$category]['operations'] ?? 0, 0) }}</b>
+                        @if (!empty($row[$category]['orders']))
+                            <small>({{ $row[$category]['orders'] }})</small>
+                        @endif
+                    </td>
 
-                    @php
-                        $totalGeneral['amount'] += $row['Total Día'];
-                        $totalGeneral['commission'] += $row['Total Comisión'];
-                    @endphp
+                    <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['amount'] ?? 0, 2) }}</td>
+                    <td style="border: 1px solid black; padding: 6px;">{{ number_format($row[$category]['commission'] ?? 0, 2) }}</td>
+                @endforeach
+                <td style="border: 1px solid black; padding: 6px;"><strong>{{ number_format($row['Total Día'], 2) }}</strong></td>
+                <td style="border: 1px solid black; padding: 6px;"><strong>{{ number_format($row['Total Comisión'], 2) }}</strong></td>
+
+                @php
+                    $totalGeneral['amount'] += $row['Total Día'];
+                    $totalGeneral['commission'] += $row['Total Comisión'];
+                @endphp
             </tr>
         @endforeach
         </tbody>
@@ -170,44 +170,9 @@
     </p>
 
 
+
 </div>
 
 
-<!-- Footer fijo -->
-{{--<div class="footer">--}}
-{{--    <table>--}}
-{{--        <tr>--}}
-{{--            <td style="width: 85%">--}}
-{{--                <table style="width: 100%">--}}
-{{--                    <tr>--}}
-{{--                        <td colspan="2"><b>VALOR EN LETRAS:</b> {{ $montoLetras ??''}}--}}
-{{--                        </td>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
-{{--                        <td colspan="2" style="background-color: #57595B; color: white;  text-align: center;">--}}
-{{--                            EXTENSIÓN-INFORMACIÓN ADICIONAL--}}
-{{--                        </td>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
-{{--                        <td>Entregado por:_____________________</td>--}}
-{{--                        <td>Recibido por:_____________________</td>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
-{{--                        <td>N° Documento:____________________</td>--}}
-{{--                        <td>N° Documento:____________________</td>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
-{{--                        <td>Condicion Operación:____________________</td>--}}
-{{--                        --}}{{--                        <td>{{$datos["DTE"]['resumen']['condicionOperacion']??''}}</td>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
-{{--                        <td colspan="2">Observaciones:</td>--}}
-{{--                    </tr>--}}
-{{--                </table>--}}
-{{--            </td>--}}
-
-{{--        </tr>--}}
-{{--    </table>--}}
-{{--</div>--}}
 </body>
 </html>

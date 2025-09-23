@@ -494,7 +494,6 @@ class SaleResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('billingModel')
                     ->sortable()
-//                    ->searchable()
                     ->label('Facturación')
                     ->tooltip(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo')
                     ->icon(fn($state) => $state?->id === 2 ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
@@ -571,6 +570,9 @@ class SaleResource extends Resource
 
                     ->sortable(),
                 Tables\Columns\TextColumn::make('salescondition.name')
+                    ->label('Condición')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('paymentmethod.name')
                     ->label('Condición')
                     ->sortable(),
 

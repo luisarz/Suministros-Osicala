@@ -42,15 +42,28 @@ function payment_card($order, array $data, $livewire): void
     $items = $order->saleDetails;
 
     foreach ($items as $item) {
-        $newPrice = $data['is_payment_card']
-            ? round($item->price * 1.05, 2)   // aplicar +5%
-            : round($item->price / 1.05, 2);  // quitar 5%
+        $discountPercentage = $item->discount ?? 0;
+        $price_base = $item->price_base ?? $item->price;
+
+// 1. Calcular precio según tipo de pago
+        $price = $data['is_payment_card']
+            ? round($price_base * 1.05, 4)  // con tarjeta → +5%
+            : round($price_base, 4);        // sin tarjeta → precio base
+
+// 2. Subtotal sin descuento
+        $subtotal = $price * $item->quantity;
+
+// 3. Aplicar descuento al subtotal
+        $discountAmount = $subtotal * ($discountPercentage / 100);
+        $total = round($subtotal - $discountAmount, 4);
+
 
         $item->update([
-            'price' => $newPrice,
-            'total' => $newPrice * $item->quantity,
+            'price' => $price,
+            'total' => $total,
         ]);
     }
+
 
     // Totales de la orden
     $order->is_payment_card = $data['is_payment_card'];
@@ -60,7 +73,7 @@ function payment_card($order, array $data, $livewire): void
 
     $order->update([
         'net_amount' => round($neto, 2),
-        'taxe'       => round($iva, 2),
+        'taxe' => round($iva, 2),
         'sale_total' => round($montoTotal, 2),
     ]);
 
@@ -69,9 +82,6 @@ function payment_card($order, array $data, $livewire): void
         'record' => $order->id,
     ]);
 }
-
-
-
 
 
 class OrderResource extends Resource

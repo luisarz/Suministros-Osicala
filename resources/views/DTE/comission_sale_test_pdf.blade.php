@@ -66,6 +66,10 @@
             break-inside: avoid;
             -webkit-region-break-inside: avoid;
         }
+        .table-hover tbody tr:hover {
+            background-color: #fef3c7; /* amarillo claro */
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -95,6 +99,7 @@
             @php
                 $first = $items->first();
                 $saleTotal = $items->sum('total_item_with_discount');
+                $saleTotal_sin_descunto = $items->sum('total_item_with_discount');
                 $grandTotal += $saleTotal;
 
                 foreach ($items as $item) {
@@ -122,7 +127,7 @@
                     </h3>
                 </div>
 
-                <table class="min-w-full border border-gray-300 text-sm" style="width: 100%; border: 1px solid black;">
+                <table class="table-hover min-w-full border border-gray-300 text-sm" style="width: 100%; border: 1px solid black;">
                     <thead>
                     <tr>
                         <th>Producto</th>
@@ -130,7 +135,7 @@
                         <th>Categoría (Padre)</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
-                        <th>Descuento</th>
+                        <th>Descuento Venta</th>
                         <th>Total sin descuento</th>
                         <th>Total con descuento</th>
                     </tr>

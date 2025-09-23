@@ -13,6 +13,7 @@ class SaleItem extends Model
         'inventory_id',
         'description',
         'quantity',
+        'price_base',
         'price',
         'discount',
         'total',
@@ -20,6 +21,19 @@ class SaleItem extends Model
         'exemptSale',
         'tributes',
     ];
+
+    protected static function booted()
+    {
+        parent::booted();
+
+        // Evento al crear un registro
+        static::creating(function ($item) {
+            if (!isset($item->price_base)) {
+                $item->price_base = $item->price; // o cualquier valor por defecto
+            }
+
+        });
+    }
     protected $casts = [
         'tributes' => 'array',
     ];
