@@ -175,20 +175,28 @@ class CashboxOpenResource extends Resource
 //                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [1]);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_efectivo_ventas, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('saldo_tarjeta')
+                                        Forms\Components\TextInput::make('saldo_tarjeta')
                                             ->label('Tarjeta')
+                                            ->readonly()
                                             ->inlineLabel(true)
-                                            ->content(function () use ($resumen) {
-//                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [2, 3]);
-                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_tarjeta, 2) . '</span>');
+                                            ->afterStateHydrated(function ($component, $state) use ($resumen) {
+                                                $component->state(number_format($resumen->saldo_tarjeta,2)); // fija el valor en el state
                                             }),
-                                        Forms\Components\Placeholder::make('saldo_cheque')
+//                                            ->content(function () use ($resumen) {
+////                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [2, 3]);
+//                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_tarjeta, 2) . '</span>');
+//                                            }),
+                                        Forms\Components\TextInput::make('saldo_cheque')
                                             ->label('Cheques')
                                             ->inlineLabel(true)
-                                            ->content(function () use ($resumen) {
-//                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [4, 5]);
-                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_cheques, 2) . '</span>');
+                                            ->readonly()
+                                            ->afterStateHydrated(function ($component, $state) use ($resumen) {
+                                                $component->state(number_format($resumen->saldo_cheques,2)); // fija el valor en el state
                                             }),
+//                                            ->content(function () use ($resumen) {
+////                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [4, 5]);
+//                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_cheques, 2) . '</span>');
+//                                            }),
                                         Forms\Components\Placeholder::make('saldo_efectivo_ordenes')
                                             ->label('Efectivo Ordenes')
                                             ->inlineLabel(true)
@@ -196,13 +204,17 @@ class CashboxOpenResource extends Resource
 //                                                $smalCashBoxEgresoTotal = $openedCashBox = (new GetCashBoxOpenedService())->getTotal(true, true);;
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_efectivo_ordenes, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('saldo_caja_chica')
+                                        Forms\Components\TextInput::make('saldo_caja_chica')
                                             ->label('Caja Chica')
+                                            ->readonly()
                                             ->inlineLabel(true)
-                                            ->content(function () use ($resumen) {
-//                                                $smalCashBoxIngresoTotal = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Ingreso');
-                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_caja_chica, 2) . '</span>');
+                                            ->afterStateHydrated(function ($component, $state) use ($resumen) {
+                                                $component->state(number_format($resumen->saldo_caja_chica,2)); // fija el valor en el state
                                             }),
+//                                            ->content(function () use ($resumen) {
+////                                                $smalCashBoxIngresoTotal = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Ingreso');
+//                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_caja_chica, 2) . '</span>');
+//                                            }),
                                         Forms\Components\Placeholder::make('saldo_egresos_totales')
                                             ->label('-EGRESOS TOTALES')
                                             ->inlineLabel(true)
@@ -566,7 +578,8 @@ class CashboxOpenResource extends Resource
         try {
             $dh = floatval(str_replace(',', '', $get('dh_cierre')));
 
-            $digital = ($get('saldo_tarjeta') ?? 0) + ($get('saldo_tarjetacheque') ?? 0);
+            $digital = ($get('saldo_tarjeta') ?? 0) + ($get('saldo_cheque') ?? 0) + ($get('saldo_caja_chica') ?? 0);
+
             $total =
                 ($get('cant_cien') ?? 0) * 100 +
                 ($get('cant_cincuenta') ?? 0) * 50 +
