@@ -2,12 +2,27 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\SmallCashBoxOperationResource\Pages\ListSmallCashBoxOperations;
 use App\Filament\Resources\SmallCashBoxOperationResource\Pages;
 use App\Filament\Resources\SmallCashBoxOperationResource\RelationManagers;
 use App\Models\SmallCashBoxOperation;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,18 +37,18 @@ class SmallCashBoxOperationResource extends Resource
 {
     protected static ?string $model = SmallCashBoxOperation::class;
     protected static ?string $label = 'Transacciones';
-    protected static ?string $navigationGroup = 'Caja Chica';
+    protected static string | \UnitEnum | null $navigationGroup = 'Caja Chica';
     protected static bool $softDelete = true;
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                     ->compact()
                     ->schema([
-                        Forms\Components\Select::make('cash_box_open_id') // Este es el campo relacionado en tu modelo
+                        Select::make('cash_box_open_id') // Este es el campo relacionado en tu modelo
                         ->relationship('cashBoxOpen', 'name', function ($query) {
                             $query->with('cashbox')->where('status','open');
                         })
@@ -41,33 +56,33 @@ class SmallCashBoxOperationResource extends Resource
                             ->required(),
 
 
-                        Forms\Components\Select::make('employ_id')
+                        Select::make('employ_id')
                             ->relationship('employee', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Forms\Components\Select::make('operation')
+                        Select::make('operation')
                             ->label('Operación')
                             ->options([
                                 'Ingreso' => 'Ingreso',
                                 'Egreso' => 'Egreso',])
                             ->default('Ingreso')
                             ->required(),
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->label('Monto')
                             ->required()
                             ->numeric(),
-                        Forms\Components\TextInput::make('concept')
+                        TextInput::make('concept')
                             ->label('Concepto')
                             ->required()
                             ->inlineLabel(false)
                             ->columnSpanFull()
                             ->maxLength(255),
-                        Forms\Components\FileUpload::make('voucher')
+                        FileUpload::make('voucher')
                             ->label('Comprobante')
                             ->directory('vouchers')
                             ->columnSpanFull(),
-                        Forms\Components\Toggle::make('status')
+                        Toggle::make('status')
                             ->label('Operación activa')
                             ->default(true)
                             ->required(),
@@ -79,35 +94,35 @@ class SmallCashBoxOperationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('voucher')
+                ImageColumn::make('voucher')
                     ->circular()
                     ->label('Comprobante')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cashBoxOpen.cashbox.description')
+                TextColumn::make('cashBoxOpen.cashbox.description')
                     ->label('Caja')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('employee.full_name')
+                TextColumn::make('employee.full_name')
                     ->label('Empleado')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('operation')
+                TextColumn::make('operation')
                 ->label('Operación')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Monto')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('concept')
+                TextColumn::make('concept')
                     ->label('Concepto')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('status')
+                IconColumn::make('status')
                     ->label('Activa')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->label('Archivada')
                     ->placeholder('Activa')
@@ -115,7 +130,7 @@ class SmallCashBoxOperationResource extends Resource
 //                    ->toggleable(isToggledHiddenByDefault: true),
 
 //                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -128,20 +143,20 @@ class SmallCashBoxOperationResource extends Resource
                     ->label('Fecha de Operación'),
 
 
-                Tables\Filters\SelectFilter::make('operation')
+                SelectFilter::make('operation')
                     ->options([
                         'Ingreso' => 'Ingreso',
                         'Egreso' => 'Egreso',
                     ]),
-                Tables\Filters\TrashedFilter::make('dele')
+                TrashedFilter::make('dele')
                     ->label('Ver eliminados'),
 
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()->label(''),
+            ->recordActions([
+                ViewAction::make()->label(''),
 //                Tables\Actions\RestoreAction::make('restore'),
-                Tables\Actions\DeleteAction::make()->label('')
-                        ->before(function ($record,Tables\Actions\DeleteAction $action) {
+                DeleteAction::make()->label('')
+                        ->before(function ($record,DeleteAction $action) {
                         $operationType = $record->operation;
                         $amount = $record->amount;
                         $caja = SmallCashBoxOperation::with('cashBoxOpen')
@@ -178,9 +193,9 @@ class SmallCashBoxOperationResource extends Resource
                         // Guardar el nuevo balance
                         $cashBox->save();
                     })])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -195,7 +210,7 @@ class SmallCashBoxOperationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSmallCashBoxOperations::route('/'),
+            'index' => ListSmallCashBoxOperations::route('/'),
 //            'create' => Pages\CreateSmallCashBoxOperation::route('/create'),
 //            'edit' => Pages\EditSmallCashBoxOperation::route('/{record}/edit'),
         ];

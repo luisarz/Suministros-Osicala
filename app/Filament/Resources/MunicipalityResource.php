@@ -2,11 +2,27 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\MunicipalityResource\Pages\ListMunicipalities;
 use App\Filament\Resources\MunicipalityResource\Pages;
 use App\Filament\Resources\MunicipalityResource\RelationManagers;
 use App\Models\Municipality;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -19,31 +35,31 @@ class MunicipalityResource extends Resource
     protected static ?string $model = Municipality::class;
 
     protected static bool $softDelete = true;
-    protected static ?string $navigationGroup = "Catálogos Hacienda";
+    protected static string | \UnitEnum | null $navigationGroup = "Catálogos Hacienda";
     protected static ?string $label = 'Distritos';
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?int $navigationSort = 4;
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información de Municipio')
+        return $schema
+            ->components([
+                Section::make('Información de Municipio')
                     ->schema([
-                        Forms\Components\TextInput::make('code')
+                        TextInput::make('code')
                             ->label('Código')  // Etiqueta opcional
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Distrito')  // Etiqueta opcional
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Select::make('distrito_id')
+                        Select::make('distrito_id')
                             ->label('Municipio')  // Etiqueta opcional
                             ->relationship('distrito', 'name')  // Relación con el modelo 'distrito'
                             ->preload()  // Pre-carga las opciones para optimizar
                             ->searchable()  // Permite búsqueda en el select
                             ->required(),
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label('¿Está Activo?')  // Etiqueta opcional para mayor claridad
                             ->required(),
                     ])
@@ -56,9 +72,9 @@ class MunicipalityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nombre')
                     ->wrap()
                     ->searchable()
@@ -66,41 +82,41 @@ class MunicipalityResource extends Resource
                         ? "<span style='text-decoration: line-through; color: red;'>".strtoupper($state)."</span>"
                         : strtoupper($state)) // Convierte a mayúsculas
                     ->html(),
-                Tables\Columns\TextColumn::make('distrito.name')
+                TextColumn::make('distrito.name')
                     ->label('Municipio')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                TrashedFilter::make(),
 
             ])
-            ->actions([
+            ->recordActions([
 //               Tables\actions\actiongroup::make([
-                   Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Ver'),
-                   Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Duplicar')->color('success'),
-                   Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Editar'),
-                   Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Eliminar'),
-                   Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Restaurar'),
+                   ViewAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Ver'),
+                   ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Duplicar')->color('success'),
+                   EditAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Editar'),
+                   DeleteAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Eliminar'),
+                   RestoreAction::make()->label('')->iconSize(IconSize::Medium)->tooltip('Restaurar'),
 //                ]),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -115,7 +131,7 @@ class MunicipalityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMunicipalities::route('/'),
+            'index' => ListMunicipalities::route('/'),
 //            'create' => Pages\CreateMunicipality::route('/create'),
 //            'edit' => Pages\EditMunicipality::route('/{record}/edit'),
         ];

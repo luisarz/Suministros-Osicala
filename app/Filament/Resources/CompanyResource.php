@@ -2,12 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
+use App\Filament\Resources\CompanyResource\Pages\EditCompany;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
 use App\Models\Distrito;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,68 +28,68 @@ class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
     protected static ?string $label = 'Conf. Globales';
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static string | \UnitEnum | null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 1;
     public static function getActions(): array
     {
         return [];
     }
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información General')
+        return $schema
+            ->components([
+                Section::make('Información General')
                     ->compact()
                     ->schema([
 
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Empresa')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\TextInput::make('nrc')
+                        TextInput::make('nrc')
                             ->label('No Regisro')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('nit')
+                        TextInput::make('nit')
                             ->label('NIT')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
+                        TextInput::make('phone')
                             ->tel()
                             ->label('Teléfono')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('whatsapp')
+                        TextInput::make('whatsapp')
                             ->required()
                             ->label('WhatsApp')
                             ->inlineLabel()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->label('Correo')
                             ->inlineLabel()
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('economic_activity_id')
+                        Select::make('economic_activity_id')
                             ->relationship('economicactivity', 'description')
                             ->required()
                             ->preload()
                             ->searchable()
                             ->label('Rubro')
                             ->inlineLabel(),
-                        Forms\Components\Select::make('country_id')
+                        Select::make('country_id')
                             ->required()
                             ->inlineLabel()
                             ->relationship('country', 'name')
                             ->preload()
                             ->searchable(),
-                        Forms\Components\Select::make('departamento_id')
+                        Select::make('departamento_id')
                             ->relationship('departamento', 'name')
                             ->afterStateUpdated(function ($state, $set) {
                                 if ($state) {
@@ -91,7 +101,7 @@ class CompanyResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        Forms\Components\Select::make('distrito_id')
+                        Select::make('distrito_id')
                             ->relationship('distrito', 'name')
                             ->required()
                             ->inlineLabel()
@@ -104,21 +114,21 @@ class CompanyResource extends Resource
                             })
                             ->searchable()
                             ->preload(),
-                        Forms\Components\TextInput::make('address')
+                        TextInput::make('address')
                             ->required()
                             ->inlineLabel()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('web')
+                        TextInput::make('web')
                             ->required()
                             ->inlineLabel()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('api_key')
+                        TextInput::make('api_key')
                             ->maxLength(255)
                             ->password()
                             ->revealable(true)
                             ->inlineLabel()
                             ->default(null),
-                        Forms\Components\FileUpload::make('logo')
+                        FileUpload::make('logo')
                             ->directory('/configuracion')
                             ->avatar()
                             ->imageEditor()
@@ -132,31 +142,31 @@ class CompanyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('logo')
+                ImageColumn::make('logo')
                     ->label('Logo')
                     ->circular(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nrc')
+                TextColumn::make('nrc')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nit')
+                TextColumn::make('nit')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('economicactivity.description')
+                TextColumn::make('economicactivity.description')
                     ->color('primary')
                     ->icon('heroicon-o-shield-check')
                     ->iconPosition('before')
                     ->label('Actividad Comercial')
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('web')
+                TextColumn::make('web')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -164,11 +174,11 @@ class CompanyResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -184,9 +194,9 @@ class CompanyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCompanies::route('/'),
+            'index' => ListCompanies::route('/'),
 //            'create' => Pages\CreateCompany::route('/create'),
-            'edit' => Pages\EditCompany::route('/{record}/edit'),
+            'edit' => EditCompany::route('/{record}/edit'),
         ];
     }
 }

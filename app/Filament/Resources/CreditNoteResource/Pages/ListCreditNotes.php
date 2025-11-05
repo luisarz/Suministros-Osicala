@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditNoteResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\CreditNoteResource;
 use App\Models\CashBoxOpen;
 use Filament\Actions;
@@ -14,7 +15,7 @@ class ListCreditNotes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label('Nueva Nota')
                 ->icon('heroicon-o-shopping-cart')
                 ->color('success')

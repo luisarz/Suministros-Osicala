@@ -11,13 +11,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class SalesStat extends BaseWidget
 {
     use InteractsWithPageFilters;
-    protected static ?string $pollingInterval = '10s'; // Auto-refrescar cada 10 segundos
+    protected ?string $pollingInterval = '10s'; // Auto-refrescar cada 10 segundos
 
     protected function getStats(): array
     {
-        $whereHouse = $this->filters['whereHouse'] ?? auth()->user()->employee->branch_id;
-        $startDate = $this->filters['startDate'] ?? now()->subDays(7);
-        $endDate = $this->filters['endDate'] ?? now();
+        $whereHouse = $this->pageFilters['whereHouse'] ?? auth()->user()->employee->branch_id;
+        $startDate = $this->pageFilters['startDate'] ?? now()->subDays(7);
+        $endDate = $this->pageFilters['endDate'] ?? now();
 
         $sales_total = 0;
 

@@ -2,16 +2,30 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\AdjustmentInventoryResource\RelationManagers\AdjustmentRelationManager;
+use App\Filament\Resources\AdjustmentInventoryResource\Pages\ListAdjustmentInventories;
+use App\Filament\Resources\AdjustmentInventoryResource\Pages\CreateAdjustmentInventory;
+use App\Filament\Resources\AdjustmentInventoryResource\Pages\EditAdjustmentInventory;
+use App\Filament\Resources\AdjustmentInventoryResource\Pages\ViewAdjustment;
 use App\Filament\Resources\AdjustmentInventoryResource\Pages;
 use App\Filament\Resources\AdjustmentInventoryResource\RelationManagers;
 use App\Models\adjustmentInventory;
 use App\Models\Employee;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -21,16 +35,16 @@ class AdjustmentInventoryResource extends Resource
 {
     protected static ?string $model = adjustmentInventory::class;
     protected static ?string $label = 'Entradas/Salidas';
-    protected static ?string $navigationGroup = "Inventario";
+    protected static string | \UnitEnum | null $navigationGroup = "Inventario";
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Movimientos de inventario')
+        return $schema
+            ->components([
+                Section::make('Movimientos de inventario')
                     ->schema([
-                        Forms\Components\Select::make('tipo')
+                        Select::make('tipo')
                             ->label('Tipo')
                             ->options([
                                 "Entrada" => "Entrada",
@@ -39,7 +53,7 @@ class AdjustmentInventoryResource extends Resource
                             ->reactive()
                             ->default('Entrada')
                             ->required(),
-                        Forms\Components\Select::make('branch_id')
+                        Select::make('branch_id')
                             ->label('Sucursal')
                             ->debounce(500)
                             ->relationship('branch', 'name')
@@ -50,16 +64,16 @@ class AdjustmentInventoryResource extends Resource
                             ->required(),
 
 
-                        Forms\Components\DatePicker::make('fecha')
+                        DatePicker::make('fecha')
                             ->inlineLabel(true)
                             ->default(now())
                             ->required(),
-                        Forms\Components\TextInput::make('entidad')
+                        TextInput::make('entidad')
                             ->reactive()
                             ->maxLength(255)
                             ->label(fn(callable $get) => $get('tipo') === 'Entrada' ? 'Proveedor' : 'Cliente'
                             )->required(),
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->required()
                             ->debounce(500)
                             ->options(function (callable $get) {
@@ -72,7 +86,7 @@ class AdjustmentInventoryResource extends Resource
                             ->searchable()
                             ->default(fn() => optional(Auth::user()->employee)->id)
                             ->required(),
-                        Forms\Components\TextInput::make('descripcion')
+                        TextInput::make('descripcion')
                             ->label('Motivo')
                             ->required()
                             ->maxLength(255),
@@ -86,43 +100,43 @@ class AdjustmentInventoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tipo')
+                TextColumn::make('tipo')
                     ->label('Operacion')
                     ->badge()
                     ->color(fn($state) => $state === 'Entrada' ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Operacion')
                     ->badge()
                     ->color(fn($state) => $state === 'FINALIZADO' ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('branch.name')
+                TextColumn::make('branch.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha')
+                TextColumn::make('fecha')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('entidad')
+                TextColumn::make('entidad')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('employee.name')
+                TextColumn::make('employee.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('descripcion')
+                TextColumn::make('descripcion')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('monto')
+                TextColumn::make('monto')
                     ->numeric()
                     ->money(currency: 'USD', locale: 'en_US') // Moneda USA
 
-                    ->summarize(Tables\Columns\Summarizers\Sum::make()->money(currency: 'USD', locale: 'en_US')
+                    ->summarize(Sum::make()->money(currency: 'USD', locale: 'en_US')
                     )
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -136,8 +150,8 @@ class AdjustmentInventoryResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make('modificar')
+            ->recordActions([
+                EditAction::make('modificar')
                     ->label('')
                     ->color('danger')
                     ->iconSize(IconSize::Large)
@@ -155,9 +169,9 @@ class AdjustmentInventoryResource extends Resource
 
 
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -165,17 +179,17 @@ class AdjustmentInventoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AdjustmentRelationManager::class,
+            AdjustmentRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAdjustmentInventories::route('/'),
-            'create' => Pages\CreateAdjustmentInventory::route('/create'),
-            'edit' => Pages\EditAdjustmentInventory::route('/{record}/edit'),
-            'adjus' => Pages\ViewAdjustment::route('/{record}/sale'),
+            'index' => ListAdjustmentInventories::route('/'),
+            'create' => CreateAdjustmentInventory::route('/create'),
+            'edit' => EditAdjustmentInventory::route('/{record}/edit'),
+            'adjus' => ViewAdjustment::route('/{record}/sale'),
 
         ];
     }

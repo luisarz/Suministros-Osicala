@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\KardexResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\KardexResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditKardex extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

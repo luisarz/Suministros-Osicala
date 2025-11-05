@@ -3,6 +3,22 @@
 
 
 namespace App\Filament\Resources\CreditNoteResource\RelationManagers;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Exception;
 use App\Models\Distrito;
 use App\Models\Inventory;
 use App\Models\Price;
@@ -12,9 +28,7 @@ use App\Models\RetentionTaxe;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -32,15 +46,15 @@ class CNtemsRelationManager extends RelationManager
     protected static ?string $pollingInterval = '1s';
 
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
 
-                Forms\Components\Section::make('')
+                Section::make('')
                     ->schema([
 
-                        Forms\Components\Grid::make(12)
+                        Grid::make(12)
                             ->schema([
 
                                 Section::make('Venta')
@@ -59,7 +73,7 @@ class CNtemsRelationManager extends RelationManager
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
+                                                $whereHouse = Auth::user()->employee->branch_id; // Sucursal del usuario
                                                 $aplications = $get('aplications');
                                                 if (strlen($query) < 2) {
                                                     return []; // No buscar si el texto es muy corto
@@ -139,7 +153,7 @@ class CNtemsRelationManager extends RelationManager
 
 
                                             }),
-                                        Forms\Components\TextInput::make('aplications')
+                                        TextInput::make('aplications')
                                             ->inlineLabel(false)
 //                                            ->columnSpanFull()
                                             ->label('Aplicaciones'),
@@ -174,7 +188,7 @@ class CNtemsRelationManager extends RelationManager
                                             }),
 
 
-                                        Forms\Components\TextInput::make('quantity')
+                                        TextInput::make('quantity')
                                             ->label('Cantidad')
                                             ->step(1)
                                             ->numeric()
@@ -188,7 +202,7 @@ class CNtemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('price')
+                                        TextInput::make('price')
                                             ->label('Precio')
                                             ->step(0.01)
                                             ->numeric()
@@ -201,7 +215,7 @@ class CNtemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('discount')
+                                        TextInput::make('discount')
                                             ->label('Descuento')
                                             ->step(0.01)
                                             ->prefix('%')
@@ -214,7 +228,7 @@ class CNtemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('total')
+                                        TextInput::make('total')
                                             ->label('Total')
                                             ->step(0.01)
                                             ->readOnly()
@@ -222,7 +236,7 @@ class CNtemsRelationManager extends RelationManager
                                             ->columnSpan(1)
                                             ->required(),
 
-                                        Forms\Components\Toggle::make('is_except')
+                                        Toggle::make('is_except')
                                             ->label('Exento de IVA')
                                             ->columnSpan(1)
                                             ->live()
@@ -243,7 +257,7 @@ class CNtemsRelationManager extends RelationManager
                                         //         $this->calculateTotal($get, $set);
                                         //     }),
 
-                                        Forms\Components\TextInput::make('minprice')
+                                        TextInput::make('minprice')
                                             ->label('Tributos')
                                             ->hidden(true)
                                             ->columnSpan(3)
@@ -265,14 +279,14 @@ class CNtemsRelationManager extends RelationManager
                                         Section::make('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\Textarea::make('description')
+                                                Textarea::make('description')
                                                     ->label('Descripción')
                                                     ->inlineLabel(false)
                                             ]),
                                         Section::make('Imagen')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\FileUpload::make('product_image')
+                                                FileUpload::make('product_image')
                                                     ->label('')
                                                     ->previewable(true)
                                                     ->openable()
@@ -301,13 +315,13 @@ class CNtemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Sales Item')
             ->columns([
-                Tables\Columns\TextColumn::make('inventory.product.name')
+                TextColumn::make('inventory.product.name')
                     ->wrap()
                     ->formatStateUsing(fn($record) => $record->inventory->product->name . '</br> ' . $record->description)
                     ->html()
                     ->label('Producto'),
 
-                Tables\Columns\BooleanColumn::make('inventory.product.is_service')
+                BooleanColumn::make('inventory.product.is_service')
                     ->label('Producto/Servicio')
                     ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
                     ->falseIcon('heroicon-o-cog-8-tooth') // Icono cuando `is_service` es false
@@ -317,25 +331,25 @@ class CNtemsRelationManager extends RelationManager
                     }),
 
 
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a venta')
                     ->label('Agregar Producto')
@@ -344,15 +358,15 @@ class CNtemsRelationManager extends RelationManager
                         $livewire->dispatch('refreshSale');
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->modalWidth('7xl')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
 
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->label('Quitar')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
@@ -360,9 +374,9 @@ class CNtemsRelationManager extends RelationManager
 
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (SaleItem $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
@@ -399,7 +413,7 @@ class CNtemsRelationManager extends RelationManager
 
             $set('price', $price);
             $set('total', $total);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
@@ -429,7 +443,7 @@ class CNtemsRelationManager extends RelationManager
                 $sale->retention = round($retention, 2);
                 $sale->sale_total = round($montoTotal - $retention, 2);
                 $sale->save();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
 

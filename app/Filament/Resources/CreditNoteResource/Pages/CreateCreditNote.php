@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditNoteResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\CreditNoteResource;
 use App\Models\SaleItem;
 use Filament\Actions;
@@ -50,7 +51,7 @@ class CreateCreditNote extends CreateRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if (!$this->record) {
                         $this->redirect(static::getResource()::getUrl('index'));
                         return;

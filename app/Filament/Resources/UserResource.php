@@ -2,34 +2,45 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+// use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+// use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $label = 'Usuarios';
-    protected static ?string $navigationGroup = 'Seguridad';
+    protected static string | \UnitEnum | null $navigationGroup = 'Seguridad';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Informacion del usuario')
+        return $schema
+            ->components([
+                Section::make('Informacion del usuario')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('employee_id')
+                        Select::make('employee_id')
                             ->relationship('employee', 'name')
                             ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' ' . $record->lastname) // Concatenar campos
                             ->preload()
@@ -37,19 +48,19 @@ class UserResource extends Resource
                             ->searchable()
                             ->inlineLabel()
                             ->label('Empleado'),
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Usuario')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->label('Correo')
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\DateTimePicker::make('email_verified_at')
+                        DateTimePicker::make('email_verified_at')
                             ->inlineLabel()
                             ->label('Fecha verificaión'),
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->password()
 //                        ->rules(function ($record){
 //                            return [
@@ -59,7 +70,7 @@ class UserResource extends Resource
 //                        })
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Select::make('roles')
+                        Select::make('roles')
                             ->relationship('roles', 'name')
                             ->multiple()
                             ->preload()
@@ -72,22 +83,22 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('employee.name')
+                TextColumn::make('employee.name')
                     ->label('Empleado')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Usuario')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable(),
 //                Tables\Columns\TextColumn::make('email_verified_at')
 //                    ->dateTime()
 //                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -95,13 +106,13 @@ class UserResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                ActivityLogTimelineTableAction::make('Activities'),
+            ->recordActions([
+                EditAction::make(),
+                // ActivityLogTimelineTableAction::make('Activities'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -109,7 +120,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitylogRelationManager::class,
+            // ActivitylogRelationManager::class,
 
         ];
     }
@@ -117,9 +128,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

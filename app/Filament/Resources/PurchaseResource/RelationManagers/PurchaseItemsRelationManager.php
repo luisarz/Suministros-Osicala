@@ -2,12 +2,21 @@
 
 namespace App\Filament\Resources\PurchaseResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use App\Models\Inventory;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,11 +28,11 @@ class PurchaseItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'purchaseItems';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información del producto a Comprar')
+        return $schema
+            ->components([
+                Section::make('Información del producto a Comprar')
 //                    ->description('Agregue los productos que desea vender')
                     ->icon('heroicon-o-shopping-cart')
                     ->columns(3)
@@ -35,7 +44,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->columnSpanFull()
                             ->inlineLabel(false)
                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
+                                $whereHouse = Auth::user()->employee->branch_id; // Sucursal del usuario
                                 $aplications = $get('aplications');
                                 if (strlen($query) < 2) {
                                     return []; // No buscar si el texto es muy corto
@@ -84,7 +93,7 @@ class PurchaseItemsRelationManager extends RelationManager
                             ->required(),
 
 
-                        Forms\Components\TextInput::make('quantity')
+                        TextInput::make('quantity')
                             ->label('Cantidad')
                             ->step(1)
                             ->numeric()
@@ -95,7 +104,7 @@ class PurchaseItemsRelationManager extends RelationManager
                                 $this->calculateTotal($get, $set);
                             }),
 
-                        Forms\Components\TextInput::make('price')
+                        TextInput::make('price')
                             ->label('Precio')
                             ->step(0.01)
                             ->numeric()
@@ -106,7 +115,7 @@ class PurchaseItemsRelationManager extends RelationManager
                                 $this->calculateTotal($get, $set);
                             }),
 
-                        Forms\Components\TextInput::make('discount')
+                        TextInput::make('discount')
                             ->label('Descuento')
                             ->step(0.01)
                             ->prefix('%')
@@ -119,7 +128,7 @@ class PurchaseItemsRelationManager extends RelationManager
                                 $this->calculateTotal($get, $set);
                             }),
 
-                        Forms\Components\TextInput::make('total')
+                        TextInput::make('total')
                             ->label('Total')
                             ->step(0.01)
                             ->columnSpan(1)
@@ -146,7 +155,7 @@ class PurchaseItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Sales Item')
             ->columns([
-                Tables\Columns\TextColumn::make('inventory.product.name')
+                TextColumn::make('inventory.product.name')
                     ->wrap()
                     ->label('Producto')->formatStateUsing(function ($record) {
                         $productName = $record->inventory->product->name ?? '';
@@ -158,26 +167,26 @@ class PurchaseItemsRelationManager extends RelationManager
                     ->html(),
 
 
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->prefix('%')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a Compra')
                     ->label('Agregar Producto')
@@ -186,23 +195,23 @@ class PurchaseItemsRelationManager extends RelationManager
                         $livewire->dispatch('refreshPurchase');
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->modalWidth('7xl')
                     ->after(function (PurchaseItem $record, Component $livewire) {
                         $this->updateTotalPurchase($record);
                         $livewire->dispatch('refreshPurchase');
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->label('Quitar')
                     ->after(function (PurchaseItem $record, Component $livewire) {
                         $this->updateTotalPurchase($record);
                         $livewire->dispatch('refreshPurchase');
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (PurchaseItem $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {

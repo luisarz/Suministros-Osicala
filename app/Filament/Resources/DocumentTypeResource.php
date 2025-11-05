@@ -2,11 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\DocumentTypeResource\Pages\ListDocumentTypes;
 use App\Filament\Resources\DocumentTypeResource\Pages;
 use App\Filament\Resources\DocumentTypeResource\RelationManagers;
 use App\Models\DocumentType;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -19,28 +30,28 @@ class DocumentTypeResource extends Resource
 {
     protected static ?string $model = DocumentType::class;
 protected static ?string $label = 'Cat-002 T. D. Tributario';
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort=2;
 
-    public static function form(Form $form): Form
+    public static function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información del tipo de documento')
+        return $schema
+            ->components([
+                Section::make('Información del tipo de documento')
                 ->compact()
                     ->schema([
-                    Forms\Components\TextInput::make('code')
+                    TextInput::make('code')
                         ->label('Código')
                         ->inlineLabel(false)
                         ->maxLength(255)
                         ->default(null),
-                    Forms\Components\TextInput::make('name')
+                    TextInput::make('name')
                         ->label('Nombre')
                         ->inlineLabel(false)
 
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('is_active')
+                    Toggle::make('is_active')
                         ->label('Activo')
                         ->default(true)
                         ->required(),
@@ -53,22 +64,22 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -76,14 +87,14 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -98,7 +109,7 @@ protected static ?string $label = 'Cat-002 T. D. Tributario';
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDocumentTypes::route('/'),
+            'index' => ListDocumentTypes::route('/'),
 //            'create' => Pages\CreateDocumentType::route('/create'),
 //            'edit' => Pages\EditDocumentType::route('/{record}/edit'),
         ];

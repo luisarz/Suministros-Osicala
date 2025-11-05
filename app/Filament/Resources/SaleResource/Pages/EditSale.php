@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\SaleResource\Pages;
 
+use Filament\Actions\EditAction;
+use Log;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\SaleResource;
 use App\Helpers\KardexHelper;
 use App\Models\CashBox;
@@ -57,7 +60,7 @@ class EditSale extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas Finalizar esta venta?')
                 ->modalButton('Sí, Finalizar venta')
-                ->action(function (Actions\EditAction $edit) {
+                ->action(function (EditAction $edit) {
                     try {
                         DB::beginTransaction();
 
@@ -163,7 +166,7 @@ class EditSale extends EditRecord
                             $inventory = Inventory::with('product')->find($item->inventory_id);
                             // Verifica si el inventario existe
                             if (!$inventory) {
-                                \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                                Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                                 continue; // Si no se encuentra el inventario, continua con el siguiente item
                             }
                             // Actualiza el stock del inventario
@@ -230,7 +233,7 @@ class EditSale extends EditRecord
 
                             // Verifica si la creación del Kardex fue exitosa
                             if (!$kardex) {
-                                \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                                Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                             }
                         }
 
@@ -283,7 +286,7 @@ class EditSale extends EditRecord
                 ->modalSubheading("Para cancelar esta venta, escribe el siguiente código:")
                 ->modalButton('Sí, cancelar venta')
 
-                ->form([
+                ->schema([
                     Placeholder::make('codigo_mostrado')
                         ->label('Código:')
                         ->inlineLabel(true)
@@ -300,7 +303,7 @@ class EditSale extends EditRecord
                         ]),
                 ])
 
-                ->action(function (Actions\DeleteAction $delete)  {
+                ->action(function (DeleteAction $delete)  {
                     if ($this->record->is_dte) {
                         Notification::make()
                             ->title('Error al anular venta')

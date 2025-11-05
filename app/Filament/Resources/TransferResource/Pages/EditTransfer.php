@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\TransferResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use Log;
 use App\Filament\Resources\TransferResource;
 use App\Helpers\KardexHelper;
 use App\Models\CashBoxCorrelative;
@@ -60,7 +62,7 @@ class EditTransfer extends EditRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     $this->record->delete();
                     TransferItems::where('sale_id', $this->record->id)->delete();
                     $this->redirect(static::getResource()::getUrl('index'));
@@ -90,7 +92,7 @@ class EditTransfer extends EditRecord
             $inventory = Inventory::find($item->inventory_id);
             // Verifica si el inventario existe
             if (!$inventory) {
-                \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                 continue; // Si no se encuentra el inventario, continua con el siguiente item
             }
 
@@ -123,7 +125,7 @@ class EditTransfer extends EditRecord
 
             // Verifica si la creación del Kardex fue exitosa
             if (!$kardex) {
-                \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                Log::error("Error al crear Kardex para el item de compra: {$item->id}");
             }
         }
 

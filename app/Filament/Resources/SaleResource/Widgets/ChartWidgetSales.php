@@ -10,15 +10,15 @@ use Illuminate\Support\Carbon;
 
 class ChartWidgetSales extends ChartWidget
 {
-    protected static ?string $heading = 'Comparativo -Compras y Ventas';
+    protected ?string $heading = 'Comparativo -Compras y Ventas';
     use InteractsWithPageFilters;
 
     protected function getData(): array
     {
 //        dd($this->filters['whereHouse']);
-        $whereHouse = $this->filters['whereHouse'];
-        $startDate = $this->filters['startDate'] ?? now()->subDays(7);
-        $endDate = $this->filters['endDate'] ?? now();
+        $whereHouse = $this->pageFilters['whereHouse'];
+        $startDate = $this->pageFilters['startDate'] ?? now()->subDays(7);
+        $endDate = $this->pageFilters['endDate'] ?? now();
 
         // Obtener las ventas agrupadas por día
         $sales = Sale::whereBetween('operation_date', [$startDate, $endDate])

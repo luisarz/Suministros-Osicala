@@ -2,6 +2,31 @@
 
 namespace App\Filament\Resources;
 
+use Auth;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\Layout\Grid;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
+use Exception;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\InventoryResource\RelationManagers\PricesRelationManager;
+use App\Filament\Resources\InventoryResource\RelationManagers\GroupingInventoryRelationManager;
+use App\Filament\Resources\InventoryResource\Pages\ListInventories;
+use App\Filament\Resources\InventoryResource\Pages\CreateInventory;
+use App\Filament\Resources\InventoryResource\Pages\EditInventory;
 use App\Filament\Exports\InventoryExporter;
 use App\Filament\Resources\InventoryResource\Pages;
 use App\Filament\Resources\InventoryResource\RelationManagers;
@@ -12,7 +37,6 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
@@ -28,11 +52,11 @@ class InventoryResource extends Resource
 {
     protected static function getWhereHouse(): string
     {
-        return \Auth::user()->employee->wherehouse->name ?? 'N/A'; // Si no hay valor, usa 'N/A'
+        return Auth::user()->employee->wherehouse->name ?? 'N/A'; // Si no hay valor, usa 'N/A'
     }
 
     protected static ?string $model = Inventory::class;
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
     protected static ?string $label = 'Inventario'; // Singular
     protected static ?string $pluralLabel = "Lista de inventario";
     protected static ?string $badgeColor = 'danger';
@@ -41,7 +65,7 @@ class InventoryResource extends Resource
 
 //
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         $tax = Tribute::find(1)->select('rate', 'is_percentage')->first();
         if (!$tax) {
@@ -49,17 +73,17 @@ class InventoryResource extends Resource
         }
         $divider = ($tax->is_percentage) ? 100 : 1;
         $iva = $tax->rate / $divider;
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->compact()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Section::make('Informacion del Inventario')
+                        Section::make('Informacion del Inventario')
                             ->columns(3)
                             ->compact()
                             ->schema([
-                                Forms\Components\Select::make('product_id')
+                                Select::make('product_id')
                                     ->required()
                                     ->inlineLabel(false)
                                     ->preload()
@@ -72,7 +96,7 @@ class InventoryResource extends Resource
                                         return "{$record->name} (SKU: {$record->sku})";  // Formato de la etiqueta
                                     }),
 
-                                Forms\Components\Select::make('branch_id')
+                                Select::make('branch_id')
                                     ->label('Sucursal')
                                     ->placeholder('Seleccionar sucursal')
                                     ->relationship('branch', 'name')
@@ -80,29 +104,29 @@ class InventoryResource extends Resource
                                     ->searchable(['name'])
                                     ->required(),
 
-                                Forms\Components\TextInput::make('stock')
+                                TextInput::make('stock')
                                     ->required()
                                     ->numeric()
                                     ->default(0),
-                                Forms\Components\Hidden::make('stock_actual')
+                                Hidden::make('stock_actual')
                                     ->default(0) // Valor predeterminado para nuevos registros
-                                    ->afterStateHydrated(function (Forms\Components\Hidden $component, $state, $record) {
+                                    ->afterStateHydrated(function (Hidden $component, $state, $record) {
                                         if ($record) {
                                             $component->state($record->stock);
                                         }
                                     }),
 
-                                Forms\Components\TextInput::make('stock_min')
+                                TextInput::make('stock_min')
                                     ->label('Stock Minimo')
                                     ->required()
                                     ->numeric()
                                     ->default(0),
-                                Forms\Components\TextInput::make('stock_max')
+                                TextInput::make('stock_max')
                                     ->label('Stock Maximo')
                                     ->required()
                                     ->numeric()
                                     ->default(0),
-                                Forms\Components\TextInput::make('cost_without_taxes')
+                                TextInput::make('cost_without_taxes')
                                     ->required()
                                     ->prefix('$')
                                     ->label('C. sin IVA')
@@ -117,7 +141,7 @@ class InventoryResource extends Resource
                                         $set('cost_with_taxes',number_format( $costWithTaxes,2,'.','')); // Actualiza el campo
                                     })
                                     ->default(0.00),
-                                Forms\Components\TextInput::make('cost_with_taxes')
+                                TextInput::make('cost_with_taxes')
                                     ->label('C. + IVA')
                                     ->required()
                                     ->readOnly()
@@ -127,19 +151,19 @@ class InventoryResource extends Resource
 
 
                             ]),
-                        Forms\Components\Section::make('Configuración')
+                        Section::make('Configuración')
                             ->columns(3)
                             ->compact()
                             ->schema([
-                                Forms\Components\Toggle::make('is_stock_alert')
+                                Toggle::make('is_stock_alert')
                                     ->label('Alerta de stock minimo')
                                     ->default(true)
                                     ->required(),
-                                Forms\Components\Toggle::make('is_expiration_date')
+                                Toggle::make('is_expiration_date')
                                     ->label('Tiene vencimiento')
                                     ->default(true)
                                     ->required(),
-                                Forms\Components\Toggle::make('is_active')
+                                Toggle::make('is_active')
                                     ->default(true)
                                     ->label('Activo')
                                     ->required(),
@@ -153,14 +177,14 @@ class InventoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\Layout\Grid::make()
+                Grid::make()
                     ->columns(1)
                     ->schema([
-                        Tables\Columns\Layout\Split::make([
-                            Tables\Columns\Layout\Grid::make()
+                        Split::make([
+                            Grid::make()
                                 ->columns(1)
                                 ->schema([
-                                    Tables\Columns\ImageColumn::make('product.images')
+                                    ImageColumn::make('product.images')
                                         ->placeholder('Sin imagen')
                                         ->defaultImageUrl(url('storage/products/noimage.png'))
                                         ->openUrlInNewTab()
@@ -171,8 +195,8 @@ class InventoryResource extends Resource
                                             'loading' => 'lazy'
                                         ])
                                 ])->grow(false),
-                            Tables\Columns\Layout\Stack::make([
-                                Tables\Columns\TextColumn::make('product.name')
+                            Stack::make([
+                                TextColumn::make('product.name')
                                     ->label('Producto')
                                     ->wrap()
                                     ->weight(FontWeight::Medium)
@@ -180,13 +204,13 @@ class InventoryResource extends Resource
                                     ->icon('heroicon-s-cube')
                                     ->searchable()
                                     ->sortable(),
-                                Tables\Columns\TextColumn::make('product.aplications')
+                                TextColumn::make('product.aplications')
                                     ->label('Aplicaciones')
                                     ->badge()
                                     ->icon('heroicon-s-cog')
                                     ->searchable()
                                     ->separator(';'),
-                                Tables\Columns\TextColumn::make('product.sku')
+                                TextColumn::make('product.sku')
                                     ->label('SKU')
 //                                    ->getStateUsing(fn ($record) => $record->product?->sku)
 //                                    ->copyable()
@@ -199,11 +223,11 @@ class InventoryResource extends Resource
 
 
 
-                                Tables\Columns\TextColumn::make('branch.name')
+                                TextColumn::make('branch.name')
                                     ->label('Sucursal')
                                     ->icon('heroicon-s-building-office-2')
                                     ->sortable(),
-                                Tables\Columns\TextColumn::make('stock')
+                                TextColumn::make('stock')
                                     ->numeric()
                                     ->icon('heroicon-s-circle-stack')
                                     ->getStateUsing(function ($record) {
@@ -218,7 +242,7 @@ class InventoryResource extends Resource
                                     })
                                     ->weight(FontWeight::Medium)
                                     ->sortable(),
-                                Tables\Columns\TextColumn::make('prices')
+                                TextColumn::make('prices')
                                     ->numeric()
                                     ->icon('heroicon-s-currency-dollar')
                                     ->weight(FontWeight::Bold)
@@ -250,28 +274,28 @@ class InventoryResource extends Resource
 //            ->deferLoading()
             ->striped()
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('branch_id')
+                TrashedFilter::make(),
+                SelectFilter::make('branch_id')
                     ->relationship('branch', 'name')
                     ->label('Sucursal')
                     ->preload()
-                    ->default(\Auth::user()->employee->wherehouse->id)
+                    ->default(Auth::user()->employee->wherehouse->id)
                     ->placeholder('Buscar por sucursal'),
 //
             ])->filtersFormColumns(2)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
+            ->recordActions([
+                ActionGroup::make([
 //                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make()
-                        ->form([
-                            Forms\Components\Select::make('branch_did')
+                    EditAction::make(),
+                    ReplicateAction::make()
+                        ->schema([
+                            Select::make('branch_did')
                                 ->relationship('branch', 'name')
                                 ->label('Sucursal Destino')
                                 ->required()
                                 ->placeholder('Ingresa el ID de la sucursal'),
                         ])
-                        ->beforeReplicaSaved(function (Inventory $record, Actions\Action $action, $replica, array $data): void {
+                        ->beforeReplicaSaved(function (Inventory $record, \Filament\Actions\Action $action, $replica, array $data): void {
                             try {
                                 $existencia = Inventory::withTrashed()
                                     ->where('product_id', $record->product_id)
@@ -295,12 +319,12 @@ class InventoryResource extends Resource
                                         $action->halt(); // Detener la acción si se encuentra un registro duplicado
                                     }
                                 }
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 $action->halt(); // Detener la acción en caso de error
                             }
                         }),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\ForceDeleteAction::make(),
+                    DeleteAction::make(),
+                    ForceDeleteAction::make(),
                 ])
                     ->link()
                     ->label('Acciones'),
@@ -311,9 +335,9 @@ class InventoryResource extends Resource
 
             ])
             ->searchable('product.name', 'product.sku', 'branch.name', 'product.aplications')
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                     ExportAction::make()
                         ->exporter(InventoryExporter::class)
                         ->formats([
@@ -339,8 +363,8 @@ class InventoryResource extends Resource
 
 
         return [
-            RelationManagers\PricesRelationManager::class,
-            RelationManagers\GroupingInventoryRelationManager::class,
+            PricesRelationManager::class,
+            GroupingInventoryRelationManager::class,
         ];
     }
 
@@ -350,9 +374,9 @@ class InventoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInventories::route('/'),
-            'create' => Pages\CreateInventory::route('/create'),
-            'edit' => Pages\EditInventory::route('/{record}/edit'),
+            'index' => ListInventories::route('/'),
+            'create' => CreateInventory::route('/create'),
+            'edit' => EditInventory::route('/{record}/edit'),
         ];
     }
 

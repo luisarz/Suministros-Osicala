@@ -9,7 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class PurchaseWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = '10s'; // Auto-refrescar cada 10 segundos
+    protected ?string $pollingInterval = '10s'; // Auto-refrescar cada 10 segundos
 
     protected function getStats(): array
     {

@@ -2,12 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\BranchResource\Pages\ListBranches;
+use App\Filament\Resources\BranchResource\Pages\CreateBranch;
+use App\Filament\Resources\BranchResource\Pages\EditBranch;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Filament\Resources\BranchResource\RelationManagers;
 use App\Models\Branch;
 use App\Models\Distrito;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -19,7 +33,7 @@ class BranchResource extends Resource
 {
     protected static ?string $model = Branch::class;
     protected static ?string $label = 'Sucursales';
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static string | \UnitEnum | null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 2;
 
 
@@ -28,49 +42,49 @@ class BranchResource extends Resource
         return [];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Informacion de la sucursal')
+        return $schema
+            ->components([
+                Section::make('Informacion de la sucursal')
                     ->schema([
-                        Forms\Components\Select::make('stablisment_type_id')
+                        Select::make('stablisment_type_id')
                             ->relationship('stablishmenttype', 'name')
                             ->label('Tipo de Establecimiento')
                             ->inlineLabel()
                             ->required()
                             ->preload()
                             ->searchable(),
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Select::make('company_id')
+                        Select::make('company_id')
                             ->relationship('company', 'name')
                             ->inlineLabel()
                             ->required()
                             ->preload()
                             ->searchable(),
-                        Forms\Components\TextInput::make('nrc')
+                        TextInput::make('nrc')
                             ->label('NRC')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('nit')
+                        TextInput::make('nit')
                             ->label('NIT')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('establishment_type_code')
+                        TextInput::make('establishment_type_code')
                             ->label('Codigo de Establecimiento')
                             ->required()
                             ->minLength(4)
                             ->maxLength(4),
-                        Forms\Components\TextInput::make('pos_terminal_code')
+                        TextInput::make('pos_terminal_code')
                             ->label('Codigo de Terminal POS')
                             ->required()
                             ->minLength(4)
                             ->maxLength(4),
 
-                        Forms\Components\Select::make('departamento_id')
+                        Select::make('departamento_id')
                             ->relationship('departamento', 'name')
                             ->afterStateUpdated(function ($state, $set) {
                                 if ($state) {
@@ -82,7 +96,7 @@ class BranchResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        Forms\Components\Select::make('distrito_id')
+                        Select::make('distrito_id')
                             ->relationship('distrito', 'name')
                             ->label('Municipio')
                             ->required()
@@ -96,7 +110,7 @@ class BranchResource extends Resource
                             })
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Select::make('economic_activity_id')
+                        Select::make('economic_activity_id')
                             ->label('Actividad Economica')
                             ->relationship('economicactivity', 'description')
 
@@ -106,34 +120,34 @@ class BranchResource extends Resource
                             ->columnSpanFull()
                             ->columns(1)
                             ->required(),
-                        Forms\Components\TextInput::make('address')
+                        TextInput::make('address')
                             ->label('Dirección')
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\TextInput::make('phone')
+                        TextInput::make('phone')
                             ->label('Teléfono')
                             ->tel()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->label('Correo')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('web')
+                        TextInput::make('web')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('prices_by_products')
+                        TextInput::make('prices_by_products')
                             ->label('Precios por productos')
                             ->required()
                             ->numeric()
                             ->default(2),
 
-                        Forms\Components\FileUpload::make('logo')
+                        FileUpload::make('logo')
                             ->directory('wherehouses')
                             ->columnSpanFull(),
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->inlineLabel()
                             ->label('Activo')
                             ->required(),
@@ -145,66 +159,66 @@ class BranchResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('stablishmenttype.name')
+                TextColumn::make('stablishmenttype.name')
                     ->label('Tipo')
                     ->sortable()
                     ->searchable(),
 
 
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('establishment_type_code')
+                TextColumn::make('establishment_type_code')
                     ->label('Codigo de Establecimiento')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pos_terminal_code')
+                TextColumn::make('pos_terminal_code')
                     ->label('Codigo de Terminal POS')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->toggleable(isToggledHiddenByDefault: true)
 
                     ->label('Empresa'),
 //                Tables\Columns\TextColumn::make('nit')
 //                    ->searchable(),
-                Tables\Columns\TextColumn::make('nrc')
+                TextColumn::make('nrc')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('departamento.name')
+                TextColumn::make('departamento.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('distrito.name')
+                TextColumn::make('distrito.name')
               ->label('Municipio')
                     ->sortable(),
 //                Tables\Columns\TextColumn::make('address')
 //                    ->searchable(),
-                Tables\Columns\TextColumn::make('economic_activity_id')
+                TextColumn::make('economic_activity_id')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->toggleable(isToggledHiddenByDefault: true)
 
                     ->searchable(),
-                Tables\Columns\TextColumn::make('web')
+                TextColumn::make('web')
                     ->toggleable(isToggledHiddenByDefault: true)
                                         ->searchable(),
-                Tables\Columns\TextColumn::make('prices_by_products')
+                TextColumn::make('prices_by_products')
                     ->label('Precios por productos')
                     ->numeric()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 //                Tables\Columns\IconColumn::make('is_active')
 //                    ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -212,19 +226,19 @@ class BranchResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    ReplicateAction::make(),
 //                    Tables\Actions\DeleteAction::make(),
 //                    Tables\Actions\RestoreAction::make(),
 
 //                    ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -239,9 +253,9 @@ class BranchResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBranches::route('/'),
-            'create' => Pages\CreateBranch::route('/create'),
-            'edit' => Pages\EditBranch::route('/{record}/edit'),
+            'index' => ListBranches::route('/'),
+            'create' => CreateBranch::route('/create'),
+            'edit' => EditBranch::route('/{record}/edit'),
         ];
     }
 }

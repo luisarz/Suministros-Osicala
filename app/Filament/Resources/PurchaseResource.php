@@ -2,6 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Auth;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Log;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PurchaseResource\RelationManagers\PurchaseItemsRelationManager;
+use App\Filament\Resources\PurchaseResource\Pages\ListPurchases;
+use App\Filament\Resources\PurchaseResource\Pages\CreatePurchase;
+use App\Filament\Resources\PurchaseResource\Pages\EditPurchase;
+use App\Filament\Resources\PurchaseResource\Pages\ViewPurchase;
 use App\Filament\Resources\PurchaseResource\Pages;
 use App\Filament\Resources\PurchaseResource\RelationManagers;
 use App\Helpers\KardexHelper;
@@ -14,7 +34,6 @@ use App\Models\SaleItem;
 use App\Models\Tribute;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -55,47 +74,47 @@ class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
     protected static ?string $label = 'Compras';
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                     ->schema([
-                        Forms\Components\Section::make('COMPRA')
+                        Section::make('COMPRA')
 //                            ->description('Informacion general de la compra')
                             ->icon('heroicon-o-book-open')
                             ->iconColor('danger')
                             ->compact()
                             ->schema([
-                                Forms\Components\Select::make('provider_id')
+                                Select::make('provider_id')
                                     ->relationship('provider', 'comercial_name')
                                     ->label('Proveedor')
                                     ->preload()
                                     ->searchable()
                                     ->required(),
-                                Forms\Components\Select::make('employee_id')
+                                Select::make('employee_id')
                                     ->relationship('employee', 'name')
                                     ->label('Empleado')
                                     ->preload()
-                                    ->default(fn () => optional(\Auth::user()->employee)->id ?? '')
+                                    ->default(fn () => optional(Auth::user()->employee)->id ?? '')
                                     ->searchable()
                                     ->required(),
-                                Forms\Components\Select::make('wherehouse_id')
+                                Select::make('wherehouse_id')
                                     ->label('Sucursal')
                                     ->relationship('wherehouse', 'name')
-                                    ->default(fn() => \Auth::user()->employee->branch_id)
+                                    ->default(fn() => Auth::user()->employee->branch_id)
                                     ->preload()
                                     ->required(),
-                                Forms\Components\DatePicker::make('purchase_date')
+                                DatePicker::make('purchase_date')
                                     ->label('Fecha')
                                     ->inlineLabel()
                                     ->default(today())
                                     ->required(),
-                                Forms\Components\Select::make('document_type')
+                                Select::make('document_type')
                                     ->label('Tipo Documento')
                                     ->options([
                                         'Electrónico' => 'Electrónico',
@@ -112,13 +131,13 @@ class PurchaseResource extends Resource
                                         }
                                     }),
 
-                                Forms\Components\TextInput::make('document_number')
+                                TextInput::make('document_number')
                                     ->label(fn(callable $get) => $get('document_number_label') ?? 'Número CCF') // Default label if not set
                                     ->required()
                                     ->maxLength(255),
 
 
-                                Forms\Components\Select::make('pruchase_condition')
+                                Select::make('pruchase_condition')
                                     ->label('Condición')
                                     ->options([
                                         'Contado' => 'Contado',
@@ -140,14 +159,14 @@ class PurchaseResource extends Resource
                                         }
                                     }),
 
-                                Forms\Components\TextInput::make('credit_days')
+                                TextInput::make('credit_days')
                                     ->label('Días de Crédito')
                                     ->numeric()
                                     ->default(null)
                                     ->visible(fn(callable $get) => $get('pruchase_condition') != 'Contado') // Solo visible cuando se selecciona "Crédito"
                                     ->required(fn(callable $get) => $get('pruchase_condition') != 'Contado'), // Obligatorio solo si "Crédito" es seleccionado
 
-                                Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->options([
                                         'Procesando' => 'Procesando',
                                         'Finalizado' => 'Finalizado',
@@ -158,12 +177,12 @@ class PurchaseResource extends Resource
 
 
                             ])->columnSpan(3)->columns(2),
-                        Forms\Components\Section::make('Total')
+                        Section::make('Total')
                             ->compact()
                             ->icon('heroicon-o-currency-dollar')
                             ->iconColor('success')
                             ->schema([
-                                Forms\Components\Toggle::make('have_perception')
+                                Toggle::make('have_perception')
                                     ->label('Percepción')
                                     ->live()
                                     ->required()
@@ -175,26 +194,26 @@ class PurchaseResource extends Resource
                                         updateTotaPurchase($idItem, $data);
                                         $livewire->dispatch('refreshPurchase');
                                     }),
-                                Forms\Components\Placeholder::make('net_value')
+                                Placeholder::make('net_value')
                                     ->content(function (?Purchase $record) {
                                         return $record ? ($record->net_value ?? 0) : 0;
                                     })
                                     ->inlineLabel()
                                     ->label('Neto'),
 
-                                Forms\Components\Placeholder::make('taxe_value')
+                                Placeholder::make('taxe_value')
                                     ->content(function (?Purchase $record) {
                                         return $record ? ($record->taxe_value ?? 0) : 0;
                                     })
                                     ->inlineLabel()
                                     ->label('IVA'),
 
-                                Forms\Components\Placeholder::make('perception_value')
+                                Placeholder::make('perception_value')
                                     ->content(fn(?Purchase $record) => $record->perception_value ?? 0)
                                     ->inlineLabel()
                                     ->label('Percepción:'),
 
-                                Forms\Components\Placeholder::make('purchase_total')
+                                Placeholder::make('purchase_total')
                                     ->label('Total')
                                     ->content(fn(?Purchase $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->purchase_total ?? 0, 2) . '</span>'))
                                     ->inlineLabel()
@@ -212,34 +231,34 @@ class PurchaseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('provider.comercial_name')
+                TextColumn::make('provider.comercial_name')
                     ->label('Proveedor')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('employ.name')
+                TextColumn::make('employ.name')
                     ->label('Empleado')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('purchase_date')
+                TextColumn::make('purchase_date')
                     ->label('Fecha')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('document_type')
+                TextColumn::make('document_type')
                     ->label('Documento')
                 ,
-                Tables\Columns\TextColumn::make('document_number')
+                TextColumn::make('document_number')
                     ->label('#')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('pruchase_condition')
+                TextColumn::make('pruchase_condition')
                     ->label('Cond. Compra'),
-                Tables\Columns\TextColumn::make('credit_days')
+                TextColumn::make('credit_days')
                     ->label('Crédito')
                     ->placeholder('Contado')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                 ->badge()
                 ->label('Estado')
                     ->color(fn($record) => match ($record->status) {
@@ -250,39 +269,39 @@ class PurchaseResource extends Resource
                     })
 
                 ,
-                Tables\Columns\IconColumn::make('have_perception')
+                IconColumn::make('have_perception')
                     ->label('Percepción')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
-                Tables\Columns\TextColumn::make('net_value')
+                TextColumn::make('net_value')
                     ->label('NETO')
                     ->money('USD', true, 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('taxe_value')
+                TextColumn::make('taxe_value')
                     ->label('IVA')
                     ->money('USD', true, 'en_US')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('perception_value')
+                TextColumn::make('perception_value')
                     ->label('Percepción')
                     ->money('USD', true, 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('purchase_total')
+                TextColumn::make('purchase_total')
                     ->label('Total')
                     ->money('USD', true, 'en_US')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('paid')
+                IconColumn::make('paid')
                     ->label('Pagada')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -303,13 +322,13 @@ class PurchaseResource extends Resource
                     ->endDate(Carbon::now())
                     ->label('Fecha de Compra'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make('ver compra')
+            ->recordActions([
+                ViewAction::make('ver compra')
                     ->modal()
                     ->modalHeading('Ver Compra')
                     ->modalWidth('6xl'),
 
-                Tables\Actions\Action::make('Anular')->label('Anular')
+                Action::make('Anular')->label('Anular')
                     ->requiresConfirmation()
                     ->color('danger')
                     ->icon('heroicon-o-trash')
@@ -325,7 +344,7 @@ class PurchaseResource extends Resource
 
                         // Verifica si el inventario existe
                         if (!$inventory) {
-                            \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                            Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                             continue; // Si no se encuentra el inventario, continua con el siguiente item
                         }
 
@@ -359,7 +378,7 @@ class PurchaseResource extends Resource
 
                         // Verifica si la creación del Kardex fue exitosa
                         if (!$kardex) {
-                            \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                            Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                         }
                         $purchase->update(['status' =>"Anulado"]);
                         Notification::make('Anulacion de compra')
@@ -370,9 +389,9 @@ class PurchaseResource extends Resource
                     }
                 }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -380,17 +399,17 @@ class PurchaseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PurchaseItemsRelationManager::class
+            PurchaseItemsRelationManager::class
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPurchases::route('/'),
-            'create' => Pages\CreatePurchase::route('/create'),
-            'edit' => Pages\EditPurchase::route('/{record}/edit'),
-            'purchase' => Pages\ViewPurchase::route('/{record}/sale'),
+            'index' => ListPurchases::route('/'),
+            'create' => CreatePurchase::route('/create'),
+            'edit' => EditPurchase::route('/{record}/edit'),
+            'purchase' => ViewPurchase::route('/{record}/sale'),
         ];
     }
 

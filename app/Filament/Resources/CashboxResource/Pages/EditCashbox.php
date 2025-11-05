@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CashboxResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\CashboxResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditCashbox extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
     public function beforeSave()

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Sale;
@@ -56,7 +57,7 @@ class CreateQuote extends CreateRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         Notification::make('No se puede cancelar una venta con DTE')
                             ->title('Error al anular venta')

@@ -2,11 +2,32 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Tables\Filters\SelectFilter;
+use App\Models\Category;
+use App\Models\Marca;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -28,7 +49,7 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
     protected static ?string $label = 'Prodúctos';
-    protected static ?string $navigationGroup = 'Almacén';
+    protected static string | \UnitEnum | null $navigationGroup = 'Almacén';
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getGloballySearchableAttributes(): array
@@ -45,34 +66,34 @@ class ProductResource extends Resource
         ];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información del prodúcto')
+        return $schema
+            ->components([
+                Section::make('Información del prodúcto')
                     ->compact()
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Nombre')
                             ->required()
                             ->inlineLabel(false)
 //                            ->columnSpanFull()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('aplications')
+                        TextInput::make('aplications')
                             ->placeholder('Separar con punto y comas (;)')
 //                            ->columnSpanFull()
                             ->inlineLabel(false)
                             ->label('Aplicaciones'),
-                        Forms\Components\TextInput::make('sku')
+                        TextInput::make('sku')
                             ->label('SKU')
                             ->maxLength(255)
                             ->default(null),
-                        Forms\Components\TextInput::make('bar_code')
+                        TextInput::make('bar_code')
                             ->label('Código de barras')
                             ->maxLength(255)
                             ->default(null),
 
-                        Forms\Components\Select::make('category_id')
+                        Select::make('category_id')
                             ->label('Categoría')
                             ->relationship(
                                 name: 'category',
@@ -83,13 +104,13 @@ class ProductResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        Forms\Components\Select::make('marca_id')
+                        Select::make('marca_id')
                             ->label('Marca')
                             ->preload()
                             ->searchable()
                             ->relationship('marca', 'nombre')
                             ->required(),
-                        Forms\Components\Select::make('unit_measurement_id')
+                        Select::make('unit_measurement_id')
                             ->label('Unidad de medida')
                             ->preload()
                             ->searchable()
@@ -101,26 +122,26 @@ class ProductResource extends Resource
 //                            ->searchable()
 //                            ->relationship('tributes', 'name'),
 
-                        Forms\Components\Section::make('Configuración')
+                        Section::make('Configuración')
                             ->schema([
-                                Forms\Components\Toggle::make('is_service')
+                                Toggle::make('is_service')
                                     ->label('Es un servicio')
                                     ->required(),
-                                Forms\Components\Toggle::make('is_active')
+                                Toggle::make('is_active')
                                     ->label('Activo')
                                     ->default(true)
                                     ->required(),
-                                Forms\Components\Toggle::make('is_grouped')
+                                Toggle::make('is_grouped')
                                     ->label('Compuesto')
                                     ->default(true)
                                     ->required(),
-                                Forms\Components\Toggle::make('is_taxed')
+                                Toggle::make('is_taxed')
                                     ->label('Gravado')
                                     ->default(true)
                                     ->required(),
                             ])->columns(3),
 
-                        Forms\Components\FileUpload::make('images')
+                        FileUpload::make('images')
                             ->directory('products')
                             ->image()
                             ->openable()
@@ -142,7 +163,7 @@ class ProductResource extends Resource
 //                            Tables\Columns\Layout\Grid::make()
 //                                ->columns(1)
 //                                ->schema([
-                                    Tables\Columns\ImageColumn::make('images')
+                                    ImageColumn::make('images')
                                         ->placeholder('Sin imagen')
                                         ->defaultImageUrl(url('storage/products/noimage.png'))
                                         ->openUrlInNewTab()
@@ -151,12 +172,12 @@ class ProductResource extends Resource
 
 //                                ])->grow(false),
 //                            Tables\Columns\Layout\Stack::make([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label('Codigo')
                     ->sortable()
                     ->wrap()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Producto')
 //                                    ->weight(FontWeight::SemiBold)
                     ->sortable()
@@ -165,38 +186,38 @@ class ProductResource extends Resource
 //                                    ->formatStateUsing(fn($state, $record) => $record->deleted_at ? "<span style='text-decoration: line-through; color: red;'>$state</span>" : $state)
                     ->html()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('unitMeasurement.description')
+                TextColumn::make('unitMeasurement.description')
                     ->label('Presentación')
 //                    ->icon('heroicon-s-scale')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->label('Linea')
 //                    ->icon('heroicon-s-wrench-screwdriver')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('marca.nombre')
+                TextColumn::make('marca.nombre')
 //                    ->icon('heroicon-s-check-badge')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('aplications')
+                TextColumn::make('aplications')
                     ->label('Aplicaicones')
                     ->badge()
 //                    ->icon('heroicon-s-cog')
                     ->sortable()
                     ->separator(';')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sku')
+                TextColumn::make('sku')
                     ->label('SKU')
                     ->copyable()
 //                                    ->icon('heroicon-s-qr-code')
                     ->copyMessage('SKU  copied')
                     ->searchable(),
-                Tables\Columns\BooleanColumn::make('is_grouped')
+                BooleanColumn::make('is_grouped')
                     ->label('Servicio')
                     ->trueIcon('heroicon-o-server-stack')
                     ->falseIcon('heroicon-o-server')
                     ->sortable(),
 
 
-                Tables\Columns\TextColumn::make('bar_code')
+                TextColumn::make('bar_code')
 //                    ->icon('heroicon-s-code-bracket-square')
                     ->label('C. Barras')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -226,39 +247,39 @@ class ProductResource extends Resource
             ])
             ->filters([
                 //
-                Tables\Filters\SelectFilter::make('category_id')
+                SelectFilter::make('category_id')
                     ->label('Categoría')
                     ->searchable()
                     ->preload()
                     ->relationship('category', 'name')
-                    ->options(fn() => \App\Models\Category::pluck('name', 'id')->toArray())
+                    ->options(fn() => Category::pluck('name', 'id')->toArray())
                     ->default(null),
-                Tables\Filters\SelectFilter::make('marca_id')
+                SelectFilter::make('marca_id')
                     ->label('Marca')
                     ->searchable()
                     ->preload()
                     ->relationship('marca', 'nombre')
-                    ->options(fn() => \App\Models\Marca::pluck('nombre', 'id')->toArray())
+                    ->options(fn() => Marca::pluck('nombre', 'id')->toArray())
                     ->default(null),
-                Tables\Filters\TrashedFilter::make(),
+                TrashedFilter::make(),
 
 
             ])
-            ->actions([
+            ->recordActions([
 
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->label('Ver')->iconSize(IconSize::Large),
-                    Tables\Actions\EditAction::make()->label('Modificar')->iconSize(IconSize::Large)->color('warning'),
-                    Tables\Actions\ReplicateAction::make()->label('Replicar')->iconSize(IconSize::Large),
-                    Tables\Actions\DeleteAction::make()->label('Eliminar')->iconSize(IconSize::Large)->color('danger'),
-                    Tables\Actions\RestoreAction::make()->label('Restaurar')->iconSize(IconSize::Large)->color('success'),
+                ActionGroup::make([
+                    ViewAction::make()->label('Ver')->iconSize(IconSize::Large),
+                    EditAction::make()->label('Modificar')->iconSize(IconSize::Large)->color('warning'),
+                    ReplicateAction::make()->label('Replicar')->iconSize(IconSize::Large),
+                    DeleteAction::make()->label('Eliminar')->iconSize(IconSize::Large)->color('danger'),
+                    RestoreAction::make()->label('Restaurar')->iconSize(IconSize::Large)->color('success'),
                 ])->link()
                     ->label('Acciones'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
 //                    ExportAction::make(),
                 ])
             ]);
@@ -274,7 +295,7 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProducts::route('/'),
+            'index' => ListProducts::route('/'),
 //            'create' => Pages\CreateProduct::route('/create'),
 //            'view' => Pages\CreateProduct::route('/view'),
 //            'edit' => Pages\EditProduct::route('/{record}/edit'),

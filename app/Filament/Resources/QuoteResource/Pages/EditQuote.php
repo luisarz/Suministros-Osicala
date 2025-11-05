@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\QuoteResource;
 use App\Helpers\KardexHelper;
@@ -26,7 +27,7 @@ class EditQuote extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('Volver'),
+            Action::make('Volver'),
         ];
     }
 
@@ -51,7 +52,7 @@ class EditQuote extends EditRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
 //
                     $this->record->delete();
                     SaleItem::where('sale_id', $this->record->id)->delete();

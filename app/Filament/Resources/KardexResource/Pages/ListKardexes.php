@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\KardexResource\Pages;
 
+use Maatwebsite\Excel\Excel;
 use App\Filament\Resources\KardexResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -22,7 +23,7 @@ class ListKardexes extends ListRecords
                     ExcelExport::make()
                         ->fromTable()
                         ->withFilename(fn ($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
-                        ->withWriterType(\Maatwebsite\Excel\Excel::XLSX)
+                        ->withWriterType(Excel::XLSX)
                         ->withColumns([
 //                            Column::make('updated_at'),
                         ])

@@ -2,6 +2,20 @@
 
 namespace App\Filament\Resources\TransferResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Exception;
 use App\Models\Inventory;
 use App\Models\Price;
 use App\Models\RetentionTaxe;
@@ -10,9 +24,7 @@ use App\Models\SaleItem;
 use App\Models\TransferItems;
 use App\Models\Tribute;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
@@ -34,15 +46,15 @@ class TransferItemsRelationManager extends RelationManager
     protected static ?string $pollingInterval = '1s';
 
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
 
-                Forms\Components\Section::make('')
+                Section::make('')
                     ->schema([
 
-                        Forms\Components\Grid::make(12)
+                        Grid::make(12)
                             ->schema([
 
                                 Section::make('Traslado')
@@ -59,7 +71,7 @@ class TransferItemsRelationManager extends RelationManager
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->getSearchResultsUsing(function (string $query) {
-                                                $whereHouse = \Auth::user()->employee->branch_id;
+                                                $whereHouse = Auth::user()->employee->branch_id;
                                                 if (strlen($query) < 3) {
                                                     return []; // No cargar resultados hasta que haya al menos 3 letras
                                                 }
@@ -123,7 +135,7 @@ class TransferItemsRelationManager extends RelationManager
 
                                             }),
 
-                                        Forms\Components\TextInput::make('quantity')
+                                        TextInput::make('quantity')
                                             ->label('Cantidad')
                                             ->step(1)
                                             ->numeric()
@@ -137,7 +149,7 @@ class TransferItemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('price')
+                                        TextInput::make('price')
                                             ->label('Costo')
                                             ->step(0.01)
                                             ->numeric()
@@ -151,7 +163,7 @@ class TransferItemsRelationManager extends RelationManager
                                             }),
 
 
-                                        Forms\Components\TextInput::make('total')
+                                        TextInput::make('total')
                                             ->label('Total')
                                             ->step(0.01)
                                             ->readOnly()
@@ -169,7 +181,7 @@ class TransferItemsRelationManager extends RelationManager
                                 Section::make('Image')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\FileUpload::make('product_image')
+                                        FileUpload::make('product_image')
                                             ->label('')
                                             ->previewable(true)
                                             ->openable()
@@ -193,11 +205,11 @@ class TransferItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Sales Item')
             ->columns([
-                Tables\Columns\TextColumn::make('inventory.product.name')
+                TextColumn::make('inventory.product.name')
                     ->wrap()
 //                    ->searchable()
                     ->label('Producto'),
-                Tables\Columns\BooleanColumn::make('inventory.product.is_service')
+                BooleanColumn::make('inventory.product.is_service')
                     ->label('Producto/Servicio')
                     ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
                     ->falseIcon('heroicon-o-cog-8-tooth') // Icono cuando `is_service` es false
@@ -207,25 +219,25 @@ class TransferItemsRelationManager extends RelationManager
                     }),
 
 
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto al Traslado')
                     ->label('Agregar Producto')
@@ -234,15 +246,15 @@ class TransferItemsRelationManager extends RelationManager
                         $livewire->dispatch('refreshTransfer');
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->modalWidth('7xl')
                     ->after(function (TransferItems $record, Component $livewire) {
                         $this->updateTotalTransfer($record);
                         $livewire->dispatch('refreshTransfer');
 
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->label('Quitar')
                     ->after(function (TransferItems $record, Component $livewire) {
                         $this->updateTotalTransfer($record);
@@ -250,9 +262,9 @@ class TransferItemsRelationManager extends RelationManager
 
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (TransferItems $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
@@ -276,7 +288,7 @@ class TransferItemsRelationManager extends RelationManager
 
             $set('price', $price);
             $set('total', $total);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
@@ -294,7 +306,7 @@ class TransferItemsRelationManager extends RelationManager
                 $montoTotal = TransferItems::where('transfer_id', $transfer->id)->sum('total') ?? 0;
                 $transfer->total = round($montoTotal, 2);
                 $transfer->save();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
         }

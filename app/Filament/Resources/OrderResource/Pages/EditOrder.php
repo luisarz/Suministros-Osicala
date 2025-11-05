@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\OrderResource;
 use App\Helpers\KardexHelper;
 use App\Models\Inventory;
@@ -36,7 +38,7 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('Volver'),
+            Action::make('Volver'),
         ];
     }
 
@@ -51,7 +53,7 @@ class EditOrder extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas enviar esta orden?')
                 ->modalButton('Sí, enviar orden')
-                ->action(function (Actions\EditAction $edit) {
+                ->action(function (EditAction $edit) {
                     $id = $this->record->id;
                     $sale = Sale::find($id);
                     $sale->seller_id = $this->data['seller_id'] ?? $sale->seller_id;
@@ -71,7 +73,7 @@ class EditOrder extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading("Para cancelar esta venta, escribe el siguiente código:")
                 ->modalButton('Sí, cancelar venta')
-                ->form([
+                ->schema([
                     Placeholder::make('codigo_mostrado')
                         ->label('Código:')
                         ->inlineLabel(true)
@@ -87,7 +89,7 @@ class EditOrder extends EditRecord
                             'in' => 'El código ingresado no coincide.',
                         ]),
                 ])
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         Notification::make()
                             ->title('Error al anular venta')
@@ -113,7 +115,7 @@ class EditOrder extends EditRecord
                 ->color('primary')
                 ->label('Volver')
                 ->icon('heroicon-o-arrow-uturn-left')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
 
                     $this->redirect(static::getResource()::getUrl('index'));
                 }),

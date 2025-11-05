@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TransferResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\TransferResource;
 use App\Models\SaleItem;
 use App\Models\Transfer;
@@ -50,7 +51,7 @@ class CreateTransfer extends CreateRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if (!$this->record) {
                         $this->redirect(static::getResource()::getUrl('index'));
                         return;

@@ -2,6 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\DatePicker;
+use App\Models\Branch;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\EditAction;
+use Filament\Actions\RestoreAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\SaleResource\RelationManagers\SaleItemsRelationManager;
+use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
+use App\Filament\Resources\QuoteResource\Pages\CreateQuote;
+use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 
@@ -13,21 +31,16 @@ use App\Tables\Actions\orderActions;
 use App\Tables\Actions\QuoteAction;
 use Couchbase\QueryOptions;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
-use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
@@ -37,7 +50,7 @@ class QuoteResource extends Resource
 
     protected static ?string $label = 'Cotización';
     protected static ?string $pluralLabel = 'Cotizaciones';
-    protected static ?string $navigationGroup = 'Facturación';
+    protected static string | \UnitEnum | null $navigationGroup = 'Facturación';
 
     protected static bool $softDelete = true;
 //    public static function getGloballySearchableAttributes(): array
@@ -45,10 +58,10 @@ class QuoteResource extends Resource
 //        return ['operation_type'];
 //    }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->schema([
 
@@ -60,13 +73,13 @@ class QuoteResource extends Resource
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\DatePicker::make('operation_date')
+                                        DatePicker::make('operation_date')
                                             ->label('Fecha')
                                             ->required()
                                             ->inlineLabel(true)
                                             ->default(now()),
 
-                                        Forms\Components\Select::make('seller_id')
+                                        Select::make('seller_id')
                                             ->label('Vendedor')
                                             ->preload()
                                             ->searchable()
@@ -81,7 +94,7 @@ class QuoteResource extends Resource
                                             ->default(fn()=>optional(\Auth::user()->employee)->id)
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
-                                        Forms\Components\Select::make('customer_id')
+                                        Select::make('customer_id')
                                             ->searchable()
                                             ->live()
                                             ->inlineLabel(false)
@@ -124,17 +137,17 @@ class QuoteResource extends Resource
                                                             ->options(function (callable $get) {
                                                                 $wherehouse = (Auth::user()->employee)->branch_id;
                                                                 if ($wherehouse) {
-                                                                    return \App\Models\Branch::where('id', $wherehouse)->pluck('name', 'id');
+                                                                    return Branch::where('id', $wherehouse)->pluck('name', 'id');
                                                                 }
                                                                 return []; // Return an empty array if no wherehouse selected
                                                             })
                                                             ->preload()
                                                             ->default(fn() => optional(Auth::user()->employee)->branch_id)
                                                             ->columnSpanFull(),
-                                                        Forms\Components\TextInput::make('name')
+                                                        TextInput::make('name')
                                                             ->required()
                                                             ->label('Nombre'),
-                                                        Forms\Components\TextInput::make('last_name')
+                                                        TextInput::make('last_name')
                                                             ->required()
                                                             ->label('Apellido'),
                                                     ])->columns(2),
@@ -145,7 +158,7 @@ class QuoteResource extends Resource
                                         ,
 
 
-                                        Forms\Components\Select::make('sales_payment_status')
+                                        Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
                                                 'Pendiente' => 'Pendiente',
                                                 'Abono' => 'Abono',])
@@ -162,7 +175,7 @@ class QuoteResource extends Resource
                                 Section::make('')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\Placeholder::make('Orden')
+                                        Placeholder::make('Orden')
                                             ->label('Orden #')
                                             ->content(fn(?Sale $record) => new HtmlString(
                                                 '<span style="font-weight: 600; color: #FFFFFF; font-size: 16px; background-color: #0056b3; padding: 4px 8px; border-radius: 5px; display: inline-block;">'
@@ -179,7 +192,7 @@ class QuoteResource extends Resource
                                             ->default(fn() => optional(Auth::user()->employee)->branch_id)
                                             ->columnSpanFull(),
 
-                                        Forms\Components\Placeholder::make('total')
+                                        Placeholder::make('total')
                                             ->label('Total')
                                             ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->sale_total ?? 0, 2) . '</span>'))
                                             ->inlineLabel()
@@ -202,11 +215,11 @@ class QuoteResource extends Resource
             ->columns([
 
 
-                Tables\Columns\TextColumn::make('order_number')
+                TextColumn::make('order_number')
                     ->label('Orden')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->searchable()
@@ -218,20 +231,20 @@ class QuoteResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_invoiced')
+                IconColumn::make('is_invoiced')
                     ->boolean()
                     ->tooltip('Facturada')
                     ->trueIcon('heroicon-o-lock-closed')
                     ->falseIcon('heroicon-o-lock-open')
                     ->label('Procesada')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('seller.name')
+                TextColumn::make('seller.name')
                     ->label('Vendedor')
                     ->searchable()
                     ->sortable(),
@@ -241,12 +254,12 @@ class QuoteResource extends Resource
 //                    ->placeholder('No asignado')
 //                    ->sortable(),
 
-                Tables\Columns\TextColumn::make('customer.name')
+                TextColumn::make('customer.name')
                     ->label('Cliente')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('sale_status')
+                TextColumn::make('sale_status')
                     ->badge()
                     ->colors([
                         'success' => 'Finalizado',
@@ -257,17 +270,17 @@ class QuoteResource extends Resource
                     ->label('Estado'),
 
 
-                Tables\Columns\TextColumn::make('retention')
+                TextColumn::make('retention')
                     ->label('Retención')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sale_total')
+                TextColumn::make('sale_total')
                     ->label('Total')
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount_percentage')
+                TextColumn::make('discount_percentage')
                     ->label('Descuento')
                     ->suffix('%')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -276,29 +289,29 @@ class QuoteResource extends Resource
 //                    ->label('Taller')
 //                    ->money('USD', locale: 'en_US')
 //                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_order_after_discount')
+                TextColumn::make('total_order_after_discount')
                     ->label('Total - Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cash')
+                TextColumn::make('cash')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('change')
+                TextColumn::make('change')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -314,23 +327,23 @@ class QuoteResource extends Resource
                         'start' => now()->subDays(30)->format('Y-m-d'),
                         'end' => now()->format('Y-m-d'),
                     ]),
-                Tables\Filters\TrashedFilter::make('withTrashed')
+                TrashedFilter::make('withTrashed')
                     ->label('Mostrar eliminados'),
 
 
             ])
-            ->actions([
+            ->recordActions([
                 QuoteAction::printQuote(),
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
+                EditAction::make()->label('')->iconSize(IconSize::Large)->color('warning')
                     ->visible(function ($record) {
                         return $record->sale_status != 'Finalizado' && $record->is_invoiced == false;
                     }),
                 orderActions::billingOrden(),
                 orderActions::cancelOrder(),
-                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
-            ], position: ActionsPosition::BeforeCells)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                RestoreAction::make()->label('')->iconSize(IconSize::Large)->color('success'),
+            ], position: RecordActionsPosition::BeforeCells)
+            ->toolbarActions([
+                BulkActionGroup::make([
                 ]),
             ]);
     }
@@ -339,7 +352,7 @@ class QuoteResource extends Resource
     static function getRelations(): array
     {
         return [
-            RelationManagers\SaleItemsRelationManager::class,
+            SaleItemsRelationManager::class,
         ];
     }
 
@@ -347,9 +360,9 @@ class QuoteResource extends Resource
     static function getPages(): array
     {
         return [
-            'index' => Pages\ListQuotes::route('/'),
-            'create' => Pages\CreateQuote::route('/create'),
-            'edit' => Pages\EditQuote::route('/{record}/edit'),
+            'index' => ListQuotes::route('/'),
+            'create' => CreateQuote::route('/create'),
+            'edit' => EditQuote::route('/{record}/edit'),
         ];
     }
 

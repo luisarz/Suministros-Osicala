@@ -2,11 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\EconomicActivityResource\Pages\ListEconomicActivities;
 use App\Filament\Resources\EconomicActivityResource\Pages;
 use App\Filament\Resources\EconomicActivityResource\RelationManagers;
 use App\Models\EconomicActivity;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -20,20 +29,20 @@ class EconomicActivityResource extends Resource
     protected static ?string $label = 'Cat-019 Actividades Económicas';
     protected static string $icon = 'heroicon-o-collection';
     protected static $softDelete = true;
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 19;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                 ->schema([
-                    Forms\Components\TextInput::make('code')
+                    TextInput::make('code')
                         ->label('Código')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('description')
+                    TextInput::make('description')
                         ->label('Actividad económica')
                         ->required()
                         ->maxLength(255),
@@ -45,15 +54,15 @@ class EconomicActivityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -61,13 +70,13 @@ class EconomicActivityResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -82,7 +91,7 @@ class EconomicActivityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEconomicActivities::route('/'),
+            'index' => ListEconomicActivities::route('/'),
 //            'create' => Pages\CreateEconomicActivity::route('/create'),
 //            'edit' => Pages\EditEconomicActivity::route('/{record}/edit'),
         ];

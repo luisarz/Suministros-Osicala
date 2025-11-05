@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\AdjustmentInventoryResource\Pages;
 
+use Filament\Actions\EditAction;
+use Log;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\AdjustmentInventoryResource;
 use App\Helpers\KardexHelper;
 use App\Models\adjustmentInventory;
@@ -35,7 +38,7 @@ class EditAdjustmentInventory extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas Finalizar esta proceso?')
                 ->modalButton('Sí, Finalizar venta')
-                ->action(function (Actions\EditAction $edit) {
+                ->action(function (EditAction $edit) {
 
                     $id_sale = $this->record->id; // Obtener el registro de la compra
                     $ajusteProceso = adjustmentInventory::find($id_sale);
@@ -105,7 +108,7 @@ class EditAdjustmentInventory extends EditRecord
                                 );
 
                                 if (!$kardex) {
-                                    \Log::error("Error al crear Kardex para el item agrupado: {$item->id}");
+                                    Log::error("Error al crear Kardex para el item agrupado: {$item->id}");
                                 }
                             }
                         } else {
@@ -149,7 +152,7 @@ class EditAdjustmentInventory extends EditRecord
                             );
 
                             if (!$kardex) {
-                                \Log::error("Error al crear Kardex para el item: {$item->id}");
+                                Log::error("Error al crear Kardex para el item: {$item->id}");
                             }
                         }
 
@@ -179,7 +182,7 @@ class EditAdjustmentInventory extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         Notification::make()
                             ->title('Error al anular venta')

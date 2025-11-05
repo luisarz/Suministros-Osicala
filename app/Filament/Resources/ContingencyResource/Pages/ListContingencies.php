@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\ContingencyResource\Pages;
 
+use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\ContingencyResource;
 use App\Http\Controllers\ContingencyController;
 use App\Http\Controllers\DTEController;
@@ -21,7 +23,7 @@ class ListContingencies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('create')
+            Action::make('create')
                 ->label('Nueva Contingencia')
                 ->icon('heroicon-o-plus-circle')
                 ->requiresConfirmation()
@@ -37,9 +39,9 @@ class ListContingencies extends ListRecords
                 })
 
                 ->modalSubmitActionLabel('Generar Contingencia')
-                ->form([
+                ->schema([
 
-                        Forms\Components\TextInput::make('description')
+                        TextInput::make('description')
                             ->label('Motivo')
                             ->inlineLabel(false)
                             ->required()

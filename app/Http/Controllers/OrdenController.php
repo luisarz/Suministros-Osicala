@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Storage;
 use App\Filament\Resources\CashboxOpenResource;
 use App\Models\CashBoxOpen;
 use App\Models\Company;
@@ -52,7 +53,7 @@ class OrdenController extends Controller
         $datos = Sale::with('customer', 'saleDetails', 'whereHouse', 'saleDetails.inventory', 'saleDetails.inventory.product', 'documenttype', 'seller', 'mechanic')->find($idVenta);
         $empresa = $this->getConfiguracion();
         $logo = auth()->user()->employee->wherehouse->logo;
-        $logoPath=\Storage::url($logo);
+        $logoPath=Storage::url($logo);
         $isLocalhost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']);
 
         $formatter = new NumeroALetras();

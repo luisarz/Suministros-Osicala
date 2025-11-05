@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\PurchaseResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use Log;
 use App\Filament\Resources\PurchaseResource;
 use App\Helpers\KardexHelper;
 use App\Models\Inventory;
@@ -20,7 +22,7 @@ class EditPurchase extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 
@@ -49,7 +51,7 @@ class EditPurchase extends EditRecord
 
                 // Verifica si el inventario existe
                 if (!$inventory) {
-                    \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                    Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                     continue; // Si no se encuentra el inventario, continua con el siguiente item
                 }
 
@@ -90,7 +92,7 @@ class EditPurchase extends EditRecord
 
                 // Verifica si la creación del Kardex fue exitosa
                 if (!$kardex) {
-                    \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                    Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                 }
             }
 

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use App\Models\Sale;
 use App\Filament\Resources\OrderResource;
 use App\Models\SaleItem;
 use Filament\Actions;
@@ -57,7 +59,7 @@ class CreateOrder extends CreateRecord
                 ->modalHeading('Confirmación!!')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         Notification::make('No se puede cancelar una venta con DTE')
                             ->title('Error al anular venta')
@@ -81,7 +83,7 @@ class CreateOrder extends CreateRecord
         $data['payment_method_id'] = 1;//Efectivo por default
         $data['is_invoiced'] = false;
         $whereHouse = auth()->user()->employee->branch_id ?? null;
-        $lastOrder = \App\Models\Sale::where('wherehouse_id', $whereHouse)
+        $lastOrder = Sale::where('wherehouse_id', $whereHouse)
             ->max('order_number');
         $nextNumber = $lastOrder ? intval(preg_replace('/[^0-9]/', '', $lastOrder)) + 1 : 1;
         $data['order_number'] = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);

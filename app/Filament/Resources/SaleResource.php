@@ -2,6 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\SaleResource\RelationManagers\SaleItemsRelationManager;
+use App\Filament\Resources\SaleResource\Pages\ListSales;
+use App\Filament\Resources\SaleResource\Pages\CreateSale;
+use App\Filament\Resources\SaleResource\Pages\EditSale;
+use App\Filament\Resources\SaleResource\Pages\ViewSale;
+use Exception;
 use App\Filament\Forms\CreateClienteForm;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
@@ -22,17 +40,13 @@ use Doctrine\DBAL\Exception\DatabaseDoesNotExist;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
@@ -42,7 +56,7 @@ use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
-use Filament\Support\Enums\MaxWidth;
+// use Filament\Support\Enums\MaxWidth; // Removed in Filament 4
 use function Filament\Support\format_number;
 
 function updateTotalSale(mixed $idItem, array $data): void
@@ -95,13 +109,13 @@ class SaleResource extends Resource
     protected static ?string $model = Sale::class;
 
     protected static ?string $label = 'Ventas';
-    protected static ?string $navigationGroup = 'Facturación';
+    protected static string | \UnitEnum | null $navigationGroup = 'Facturación';
     protected static bool $softDelete = true;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->schema([
 
@@ -113,19 +127,19 @@ class SaleResource extends Resource
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\DatePicker::make('operation_date')
+                                        DatePicker::make('operation_date')
                                             ->label('Fecha')
                                             ->required()
                                             ->inlineLabel(true)
                                             ->default(now()),
-                                        Forms\Components\Select::make('wherehouse_id')
+                                        Select::make('wherehouse_id')
                                             ->label('Sucursal')
                                             ->debounce(500)
                                             ->relationship('wherehouse', 'name')
                                             ->preload()
                                             ->disabled()
                                             ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
-                                        Forms\Components\Select::make('document_type_id')
+                                        Select::make('document_type_id')
                                             ->label('Comprobante')
 //                                            ->relationship('documenttype', 'name')
                                             ->default(1)
@@ -163,7 +177,7 @@ class SaleResource extends Resource
 //                                            ->maxLength(255),
 
 
-                                        Forms\Components\Select::make('seller_id')
+                                        Select::make('seller_id')
                                             ->label('Vendedor')
                                             ->preload()
                                             ->searchable()
@@ -180,7 +194,7 @@ class SaleResource extends Resource
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
-                                        Forms\Components\Select::make('customer_id')
+                                        Select::make('customer_id')
                                             ->searchable()
                                             ->debounce(500)
                                             ->relationship('customer', 'name')
@@ -205,17 +219,17 @@ class SaleResource extends Resource
                                             ->inlineLabel(false)
                                             ->label('Cliente')
                                             ->createOptionForm(CreateClienteForm::getForm())
-                                            ->createOptionAction(fn(Forms\Components\Actions\Action $action) =>
+                                            ->createOptionAction(fn(\Filament\Actions\Action $action) =>
                                             $action
                                                 ->label('Crear cliente')
                                                 ->color('success')
                                                 ->icon('heroicon-o-plus')
                                                 ->modalWidth('7xl')
                                             )
-                                            ->createOptionUsing(fn($data) => \App\Models\Customer::create($data)->id),
+                                            ->createOptionUsing(fn($data) => Customer::create($data)->id),
 
 
-                                        Forms\Components\Select::make('sales_payment_status')
+                                        Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
                                                 'Pendiente' => 'Pendiente',
                                                 'Abono' => 'Abono',])
@@ -223,7 +237,7 @@ class SaleResource extends Resource
                                             ->default('Pendiente')
                                             ->hidden()
                                             ->disabled(),
-                                        Forms\Components\Select::make('sale_status')
+                                        Select::make('sale_status')
                                             ->options(['Nuevo' => 'Nuevo',
                                                 'Procesando' => 'Procesando',
                                                 'Cancelado' => 'Cancelado',
@@ -236,22 +250,22 @@ class SaleResource extends Resource
                                         ->description('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\Placeholder::make('net_amount')
+                                                Placeholder::make('net_amount')
                                                     ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->net_amount ?? 0, 2) . '</span>'))
                                                     ->inlineLabel()
                                                     ->label('Neto'),
 
-                                                Forms\Components\Placeholder::make('taxe')
+                                                Placeholder::make('taxe')
                                                     ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->taxe ?? 0, 2) . '</span>'))
                                                     ->inlineLabel()
                                                     ->label('IVA'),
 
-                                                Forms\Components\Placeholder::make('retention')
+                                                Placeholder::make('retention')
                                                     ->content(fn(?Sale $record) => $record->retention ?? 0)
                                                     ->inlineLabel()
                                                     ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->retention ?? 0, 2) . '</span>'))
                                                     ->label('ISR -1%'),
-                                                Forms\Components\Placeholder::make('total')
+                                                Placeholder::make('total')
                                                     ->label('Total')
                                                     ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->sale_total ?? 0, 2) . '</span>'))
                                                     ->inlineLabel()
@@ -319,14 +333,14 @@ class SaleResource extends Resource
 //                                                return redirect()->route('filament.resources.sales.edit', $state); // 'sales.edit' es la ruta de edición del recurso de "Sale"
                                             }),
 
-                                        Forms\Components\Toggle::make('is_taxed')
+                                        Toggle::make('is_taxed')
                                             ->label('Gravado')
                                             ->default(true)
                                             ->onColor('danger')
                                             ->reactive()
                                             ->offColor('gray')
                                             ->required(),
-                                        Forms\Components\Toggle::make('have_retention')
+                                        Toggle::make('have_retention')
                                             ->label('Retención')
                                             ->onColor('danger')
                                             ->offColor('gray')
@@ -342,19 +356,19 @@ class SaleResource extends Resource
                                                 updateTotalSale($idItem, $data);
                                                 $livewire->dispatch('refreshSale');
                                             }),
-                                        Forms\Components\Select::make('operation_condition_id')
+                                        Select::make('operation_condition_id')
                                             ->relationship('salescondition', 'name')
                                             ->label('Condición')
                                             ->required()
                                             ->default(1),
-                                        Forms\Components\Select::make('payment_method_id')
+                                        Select::make('payment_method_id')
                                             ->label('F. Pago')
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
                                             ->required()
                                             ->default(1),
-                                        Forms\Components\TextInput::make('cash')
+                                        TextInput::make('cash')
                                             ->label('Efectivo')
 //                                            ->required()
                                             ->numeric()
@@ -386,7 +400,7 @@ class SaleResource extends Resource
                                                 $livewire->dispatch('refreshSale');
 
                                             }),
-                                        Forms\Components\TextInput::make('change')
+                                        TextInput::make('change')
                                             ->label('Cambio')
 //                                            ->required()
                                             ->readOnly()
@@ -412,46 +426,46 @@ class SaleResource extends Resource
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public
     static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label('Interno')
                     ->numeric()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('operation_date')
+                TextColumn::make('operation_date')
                     ->label('Fecha')
                     ->date('d/m/Y')
                     ->timezone('America/El_Salvador') // Zona horaria (opcional)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('documenttype.name')
+                TextColumn::make('documenttype.name')
                     ->label('Tipo')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('document_internal_number')
+                TextColumn::make('document_internal_number')
                     ->label('#')
                     ->formatStateUsing(fn ($state) => number_format($state,'0','')) // Formatea el número
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('generationCode')
+                TextColumn::make('generationCode')
                     ->label('Cod.Generaición')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\BadgeColumn::make('is_dte')
+                BadgeColumn::make('is_dte')
                     ->label('DTE')
                     ->sortable()
                     ->formatStateUsing(function ($state, $record) {
@@ -491,7 +505,7 @@ class SaleResource extends Resource
 //                    ->label('DTE')
 //                    ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('billingModel')
+                BadgeColumn::make('billingModel')
                     ->sortable()
                     ->label('Facturación')
                     ->tooltip(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo')
@@ -500,7 +514,7 @@ class SaleResource extends Resource
                     ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo'), // Aquí se define el badge
 
 
-                Tables\Columns\BadgeColumn::make('transmisionType')
+                BadgeColumn::make('transmisionType')
                     ->label('Transmisión')
                     ->placeholder('S/N')
                     ->tooltip(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal')
@@ -510,11 +524,11 @@ class SaleResource extends Resource
                     ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal'), // Texto del badge
 
 
-                Tables\Columns\TextColumn::make('seller.name')
+                TextColumn::make('seller.name')
                     ->label('Vendedor')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer.fullname')
+                TextColumn::make('customer.fullname')
                     ->badge()
                     ->placeholder('Asignar cliente...')
                     ->color(fn ($record) => $record->is_dte ? 'success' : 'danger') // color según is_dte
@@ -528,10 +542,10 @@ class SaleResource extends Resource
                         });
                     })
                     ->action(
-                        Tables\Actions\Action::make('customer.fullname')
+                        \Filament\Actions\Action::make('customer.fullname')
                             ->label('Cambiar Cliente')
-                            ->form([
-                                Forms\Components\Select::make('customer_id')
+                            ->schema([
+                                Select::make('customer_id')
                                     ->searchable()
                                     ->debounce(500)
                                     ->relationship('customer', 'name')
@@ -542,7 +556,7 @@ class SaleResource extends Resource
                                     ->inlineLabel(false)
                                     ->label('Cliente')
                                     ->createOptionForm(CreateClienteForm::getForm())
-                                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                    ->createOptionAction(function (\Filament\Actions\Action $action) {
                                         return $action
                                             ->label('Crear cliente')
                                             ->color('success')
@@ -568,52 +582,52 @@ class SaleResource extends Resource
 
 
                     ->sortable(),
-                Tables\Columns\TextColumn::make('salescondition.name')
+                TextColumn::make('salescondition.name')
                     ->label('Condición')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paymentmethod.name')
+                TextColumn::make('paymentmethod.name')
                     ->label('Condición')
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('sale_status')
+                BadgeColumn::make('sale_status')
                     ->label('Estado')
                     ->extraAttributes(['class' => 'text-lg'])  // Cambia el tamaño de la fuente
                     ->color(fn($record) => $record->sale_status === 'Anulado' ? 'danger' : 'success'),
 
-                Tables\Columns\TextColumn::make('net_amount')
+                TextColumn::make('net_amount')
                     ->label('Neto')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('taxe')
+                TextColumn::make('taxe')
                     ->label('IVA')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('retention')
+                TextColumn::make('retention')
                     ->label('Retención')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sale_total')
+                TextColumn::make('sale_total')
                     ->label('Total')
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cash')
+                TextColumn::make('cash')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('change')
+                TextColumn::make('change')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
@@ -640,7 +654,7 @@ class SaleResource extends Resource
 
 
 
-                Tables\Filters\SelectFilter::make('documenttype')
+                SelectFilter::make('documenttype')
                     ->label('Documento')
                     ->preload()
                     ->relationship('documenttype', 'name', function ($query) {
@@ -649,7 +663,7 @@ class SaleResource extends Resource
 
             ])
 
-            ->actions([
+            ->recordActions([
                 dteActions::imprimirTicketDTE(),
                 dteActions::imprimirDTE(),
                 dteActions::generarDTE(),
@@ -673,9 +687,9 @@ class SaleResource extends Resource
 
 
 
-            ], position: ActionsPosition::BeforeCells)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ], position: RecordActionsPosition::BeforeCells)
+            ->toolbarActions([
+                BulkActionGroup::make([
                     ExportBulkAction::make('Exportar'),
                 ]),
             ]);
@@ -685,7 +699,7 @@ class SaleResource extends Resource
     static function getRelations(): array
     {
         return [
-            RelationManagers\SaleItemsRelationManager::class,
+            SaleItemsRelationManager::class,
         ];
     }
 
@@ -693,10 +707,10 @@ class SaleResource extends Resource
     static function getPages(): array
     {
         return [
-            'index' => Pages\ListSales::route('/'),
-            'create' => Pages\CreateSale::route('/create'),
-            'edit' => Pages\EditSale::route('/{record}/edit'),
-            'sale' => Pages\ViewSale::route('/{record}/sale'),
+            'index' => ListSales::route('/'),
+            'create' => CreateSale::route('/create'),
+            'edit' => EditSale::route('/{record}/edit'),
+            'sale' => ViewSale::route('/{record}/sale'),
         ];
     }
 

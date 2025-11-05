@@ -2,11 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\DepartamentoResource\Pages\ListDepartamentos;
 use App\Filament\Resources\DepartamentoResource\Pages;
 use App\Filament\Resources\DepartamentoResource\RelationManagers;
 use App\Models\Departamento;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -20,24 +33,24 @@ class DepartamentoResource extends Resource
     protected static ?string $model = Departamento::class;
     protected static  ?string $label= 'Cat-012 Departamentos';
     protected static ?bool $softDelete = true;
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
 protected static ?int $navigationSort = 12;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                 ->schema([
-                    Forms\Components\TextInput::make('code')
+                    TextInput::make('code')
                         ->label('Código')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('name')
+                    TextInput::make('name')
                         ->label('Nombre')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('is_active')
+                    Toggle::make('is_active')
                         ->label('Activo')
                         ->default(true)
                         ->required(),
@@ -49,17 +62,17 @@ protected static ?int $navigationSort = 12;
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -67,17 +80,17 @@ protected static ?int $navigationSort = 12;
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\ActionGroup::make([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
-                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                ReplicateAction::make()->label('')->iconSize(IconSize::Medium)->color('success'),
+                ViewAction::make()->label('')->iconSize(IconSize::Medium),
 //                ]),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -92,7 +105,7 @@ protected static ?int $navigationSort = 12;
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDepartamentos::route('/'),
+            'index' => ListDepartamentos::route('/'),
             // 'create' => Pages\CreateDepartamento::route('/create'),
             // 'edit' => Pages\EditDepartamento::route('/{record}/edit'),
         ];

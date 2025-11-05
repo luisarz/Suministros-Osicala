@@ -2,11 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PaymentMethodResource\Pages\ListPaymentMethods;
 use App\Filament\Resources\PaymentMethodResource\Pages;
 use App\Filament\Resources\PaymentMethodResource\RelationManagers;
 use App\Models\PaymentMethod;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -19,29 +30,29 @@ class PaymentMethodResource extends Resource
     protected static ?string $model = PaymentMethod::class;
 
     protected static ?string $label = 'Cat-017 Métodos de pago';
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 17;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-              Forms\Components\Section::make('Información Método de pago')
+        return $schema
+            ->components([
+              Section::make('Información Método de pago')
                   ->description('Información del método de pago')
                   ->icon('heroicon-o-credit-card')
                   ->iconColor('info')
                   ->columns(2)
                   ->compact()
                 ->schema([
-                    Forms\Components\TextInput::make('code')
+                    TextInput::make('code')
                         ->label('Código')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('name')
+                    TextInput::make('name')
                         ->label('Metodo de pago')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('is_active')
+                    Toggle::make('is_active')
                         ->default(true)
                         ->required(),
                 ])
@@ -52,24 +63,24 @@ class PaymentMethodResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->label('Código')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Metodo de pago')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -77,13 +88,13 @@ class PaymentMethodResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -98,7 +109,7 @@ class PaymentMethodResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPaymentMethods::route('/'),
+            'index' => ListPaymentMethods::route('/'),
 //            'create' => Pages\CreatePaymentMethod::route('/create'),
 //            'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
         ];

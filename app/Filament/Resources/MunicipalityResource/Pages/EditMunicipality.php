@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MunicipalityResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\MunicipalityResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditMunicipality extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

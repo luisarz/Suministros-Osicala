@@ -2,18 +2,26 @@
 
 namespace App\Filament\Resources\InventoryResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
 use App\Models\Inventory;
 use App\Models\Price;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 
 class PricesRelationManager extends RelationManager
 {
@@ -22,18 +30,18 @@ class PricesRelationManager extends RelationManager
     protected static ?string $title = "Precios de venta";
 
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información del Precio')
+        return $schema
+            ->components([
+                Section::make('Información del Precio')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->inlineLabel(false)
                             ->label('Descripción Precio')
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('price')
+                        TextInput::make('price')
                             ->label('Precio')
                             ->inlineLabel(false)
                             ->required()
@@ -58,7 +66,7 @@ class PricesRelationManager extends RelationManager
                                 $set('utilidad', number_format($margenUtilidad, 2));
                             }),
 
-                        Forms\Components\TextInput::make('utilidad')
+                        TextInput::make('utilidad')
                             ->label('Utilidad')
                             ->inlineLabel(false)
                             ->required()
@@ -89,7 +97,7 @@ class PricesRelationManager extends RelationManager
 //                            ->required()
 //                            ->numeric(),
 
-                        Forms\Components\Toggle::make('is_default')
+                        Toggle::make('is_default')
                             ->label('Predeterminado'),
                     ]),
             ]);
@@ -140,36 +148,36 @@ class PricesRelationManager extends RelationManager
             ->searchable()
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->label('Descripción Precio'),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->numeric()
                     ->money('USD', locale: 'en_US')
                     ->label('Precio'),
-                Tables\Columns\TextColumn::make('utilidad')
+                TextColumn::make('utilidad')
                     ->numeric()
                     ->money('USD', locale: 'en_US')
                     ->suffix('%')
                     ->label('Utilidad (%)'),
-                Tables\Columns\ToggleColumn::make('is_default')
+                ToggleColumn::make('is_default')
                     ->label('Predeterminado'),
-                Tables\Columns\ToggleColumn::make('is_active')
+                ToggleColumn::make('is_active')
                     ->label('Activo'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->visible($canCreate),
+                CreateAction::make()->visible($canCreate),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

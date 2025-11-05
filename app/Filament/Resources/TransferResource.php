@@ -2,6 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use App\Models\Branch;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\TransferResource\RelationManagers\TransferItemsRelationManager;
+use App\Filament\Resources\TransferResource\Pages\ListTransfers;
+use App\Filament\Resources\TransferResource\Pages\CreateTransfer;
+use App\Filament\Resources\TransferResource\Pages\EditTransfer;
 use App\Filament\Resources\TransferResource\Pages;
 use App\Filament\Resources\TransferResource\RelationManagers;
 use App\Models\CashBoxCorrelative;
@@ -12,10 +26,7 @@ use App\Models\Transfer;
 use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\transferActions;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -28,14 +39,14 @@ class TransferResource extends Resource
 {
     protected static ?string $model = Transfer::class;
 
-    protected static ?string $navigationGroup = "Inventario";
+    protected static string | \UnitEnum | null $navigationGroup = "Inventario";
     protected static ?string $label = 'Traslados';
     protected static bool $softDelete = true;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->schema([
 
@@ -47,27 +58,27 @@ class TransferResource extends Resource
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\Select::make('wherehouse_from')
+                                        Select::make('wherehouse_from')
                                             ->label('Sucursal Origen')
                                             ->relationship('wherehouseFrom', 'name', function ($query) {
                                                 $actualbranch = auth()->user()->employee->branch_id;
                                                 $query->where('id', $actualbranch); // Filtrar por la sucursal actual
                                             })
                                             ->default(function () {
-                                                return \App\Models\Branch::where('id', auth()->user()->employee->branch_id)->first()?->id;
+                                                return Branch::where('id', auth()->user()->employee->branch_id)->first()?->id;
                                             })
                                             ->disabled(function ($livewire) {
-                                                return $livewire instanceof \Filament\Resources\Pages\EditRecord; // Deshablitar en modo edicion
+                                                return $livewire instanceof EditRecord; // Deshablitar en modo edicion
                                             })
                                             ->required(),
-                                        Forms\Components\Select::make('user_send')
+                                        Select::make('user_send')
                                             ->label('Empleado Envia')
                                             ->required()
                                             ->preload()
                                             ->relationship('userSend', 'name')
                                             ->searchable(),
 
-                                        Forms\Components\DateTimePicker::make('transfer_date')
+                                        DateTimePicker::make('transfer_date')
                                             ->inlineLabel(true)
                                             ->default(now())
                                             ->label('Fecha de Traslado')
@@ -97,7 +108,7 @@ class TransferResource extends Resource
                                 Section::make('Destino')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\Placeholder::make('transfer_number')
+                                        Placeholder::make('transfer_number')
                                             ->label('Traslado')
                                             ->content(fn(?Transfer $record) => new HtmlString(
                                                 '<span style="font-weight: 600; color: #FFFFFF; font-size: 14px; background-color: #0056b3; padding: 4px 8px; border-radius: 5px; display: inline-block;">'
@@ -107,18 +118,18 @@ class TransferResource extends Resource
                                             ->inlineLabel()
                                             ->extraAttributes(['class' => 'p-0 text-lg']) // Tailwind classes for padding and font size
                                             ->columnSpan('full'),
-                                        Forms\Components\Select::make('wherehouse_to')
+                                        Select::make('wherehouse_to')
                                             ->label('Sucursal')
                                             ->relationship('wherehouseTo', 'name', function ($query) {
                                                 $actualbranch = auth()->user()->employee->branch_id;
                                                 $query->where('id', '!=', $actualbranch); // Filtrar por la sucursal actual
                                             })
                                             ->disabled(function ($livewire) {
-                                                return $livewire instanceof \Filament\Resources\Pages\EditRecord; // Deshablitar en modo edicion
+                                                return $livewire instanceof EditRecord; // Deshablitar en modo edicion
                                             })
                                             ->required(),
 
-                                        Forms\Components\Placeholder::make('total')
+                                        Placeholder::make('total')
                                             ->label('Total')
                                             ->content(fn(?Transfer $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->total ?? 0, 2) . '</span>'))
                                             ->inlineLabel()
@@ -139,47 +150,47 @@ class TransferResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('transfer_number')
+                TextColumn::make('transfer_number')
                     ->label('Traslado')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('wherehouseFrom.name')
+                TextColumn::make('wherehouseFrom.name')
                     ->label('Origen')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('userSend.name')
+                TextColumn::make('userSend.name')
                     ->label('Envió')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouseTo.name')
+                TextColumn::make('wherehouseTo.name')
                     ->label('Destino')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('userRecive.name')
+                TextColumn::make('userRecive.name')
                     ->label('Recibió')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transfer_date')
+                TextColumn::make('transfer_date')
                     ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('received_date')
+                TextColumn::make('received_date')
                     ->label('Fecha Recibido')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->money('USD', locale: 'es_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status_send')
+                TextColumn::make('status_send')
                     ->label('Estado Envio')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status_received')
+                TextColumn::make('status_received')
                     ->label('Estado Recibido')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -188,15 +199,15 @@ class TransferResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 transferActions::printTransfer(),
                 transferActions::anularTransfer(),
 //                transferActions::recibirTransferParcial(),
                 transferActions::recibirTransferFull(),
 
-            ], Tables\Enums\ActionsPosition::BeforeCells)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ], RecordActionsPosition::BeforeCells)
+            ->toolbarActions([
+                BulkActionGroup::make([
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -205,7 +216,7 @@ class TransferResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\TransferItemsRelationManager::class,
+            TransferItemsRelationManager::class,
 
         ];
     }
@@ -213,9 +224,9 @@ class TransferResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTransfers::route('/'),
-            'create' => Pages\CreateTransfer::route('/create'),
-            'edit' => Pages\EditTransfer::route('/{record}/edit'),
+            'index' => ListTransfers::route('/'),
+            'create' => CreateTransfer::route('/create'),
+            'edit' => EditTransfer::route('/{record}/edit'),
         ];
     }
 }

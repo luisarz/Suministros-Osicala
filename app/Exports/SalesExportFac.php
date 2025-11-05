@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Models\Sale;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -225,7 +226,7 @@ class SalesExportFac implements FromCollection, WithColumnFormatting, WithEvents
                 // Alinear numéricos a la derecha
                 $sheet->getStyle('J2:R' . $highestRow)
                     ->getAlignment()
-                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                    ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
 //                // Resaltar en rojo los valores negativos de la columna EXISTENCIA (columna L)
 //                for ($row = 2; $row <= $highestRow; $row++) {

@@ -2,12 +2,28 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\MarcaResource\RelationManagers\ProductosRelationManagerRelationManager;
+use App\Filament\Resources\MarcaResource\Pages\ListMarcas;
+use App\Filament\Resources\MarcaResource\Pages\CreateMarca;
+use App\Filament\Resources\MarcaResource\Pages\EditMarca;
 use App\Filament\Resources\MarcaResource\Pages;
 use App\Filament\Resources\MarcaResource\RelationManagers;
 use App\Models\Marca;
 use CharrafiMed\GlobalSearchModal\Customization\Position;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -20,30 +36,30 @@ class MarcaResource extends Resource
     protected static ?string $model = Marca::class;
 
     protected static bool $softDelete = true;
-    protected static ?string $navigationGroup = "Almacén";
+    protected static string | \UnitEnum | null $navigationGroup = "Almacén";
     protected static ?string $label="Marcas";
     protected static ?string $recordTitleAttribute = 'nombre';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                     ->schema([
-                        Forms\Components\TextInput::make('nombre')
+                        TextInput::make('nombre')
                             ->required()
                             ->inlineLabel(false)
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('descripcion')
+                        TextInput::make('descripcion')
                             ->inlineLabel(false)
 
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\FileUpload::make('imagen')
+                        FileUpload::make('imagen')
                             ->image()
                             ->directory('marcas'),
 
-                        Forms\Components\Toggle::make('estado')
+                        Toggle::make('estado')
                             ->label('Activo')
                             ->default(true)
                             ->required(),
@@ -56,26 +72,26 @@ class MarcaResource extends Resource
         return $table
             ->columns([
 
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nombre')
+                TextColumn::make('nombre')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('descripcion')
+                TextColumn::make('descripcion')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('imagen')
+                ImageColumn::make('imagen')
                     ->placeholder('Sin imagen')
 
                     ->circular(),
-                Tables\Columns\IconColumn::make('estado')
+                IconColumn::make('estado')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -83,13 +99,13 @@ class MarcaResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -97,16 +113,16 @@ class MarcaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ProductosRelationManagerRelationManager::class
+            ProductosRelationManagerRelationManager::class
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMarcas::route('/'),
-            'create' => Pages\CreateMarca::route('/create'),
-            'edit' => Pages\EditMarca::route('/{record}/edit'),
+            'index' => ListMarcas::route('/'),
+            'create' => CreateMarca::route('/create'),
+            'edit' => EditMarca::route('/{record}/edit'),
         ];
     }
 }

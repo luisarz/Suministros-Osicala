@@ -3,6 +3,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\CreditNoteResource\RelationManagers\CNtemsRelationManager;
+use App\Filament\Resources\CreditNoteResource\Pages\ListCreditNotes;
+use App\Filament\Resources\CreditNoteResource\Pages\CreateCreditNote;
+use App\Filament\Resources\CreditNoteResource\Pages\EditCreditNote;
+use Exception;
 use App\Filament\Resources\CreditNoteResource\Pages;
 use App\Filament\Resources\CreditNoteResource\RelationManagers;
 use App\Models\CashBoxCorrelative;
@@ -19,17 +35,13 @@ use App\Tables\Actions\dteActions;
 use Carbon\Carbon;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
@@ -90,14 +102,14 @@ class CreditNoteResource extends Resource
     protected static ?string $model = Sale::class;
 
     protected static ?string $label = 'Notas';
-    protected static ?string $navigationGroup = 'Facturación';
+    protected static string | \UnitEnum | null $navigationGroup = 'Facturación';
     protected static bool $softDelete = true;
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->schema([
 
@@ -109,19 +121,19 @@ class CreditNoteResource extends Resource
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\DatePicker::make('operation_date')
+                                        DatePicker::make('operation_date')
                                             ->label('Fecha')
                                             ->required()
                                             ->inlineLabel(true)
                                             ->default(now()),
-                                        Forms\Components\Select::make('wherehouse_id')
+                                        Select::make('wherehouse_id')
                                             ->label('Sucursal')
                                             ->debounce(500)
                                             ->relationship('wherehouse', 'name')
                                             ->preload()
                                             ->disabled()
                                             ->default(fn() => optional(Auth::user()->employee)->branch_id), // Null-safe check
-                                        Forms\Components\Select::make('document_type_id')
+                                        Select::make('document_type_id')
                                             ->label('Comprobante')
                                             ->default(4)
                                             ->reactive()
@@ -145,7 +157,7 @@ class CreditNoteResource extends Resource
 //
 
 
-                                        Forms\Components\Select::make('seller_id')
+                                        Select::make('seller_id')
                                             ->label('Encargado')
                                             ->preload()
                                             ->searchable()
@@ -162,7 +174,7 @@ class CreditNoteResource extends Resource
                                             ->required()
                                             ->disabled(fn(callable $get) => !$get('wherehouse_id')), // Disable if no wherehouse selected
 
-                                        Forms\Components\Select::make('customer_id')
+                                        Select::make('customer_id')
                                             ->searchable()
                                             ->debounce(500)
                                             ->preload()
@@ -248,7 +260,7 @@ class CreditNoteResource extends Resource
                                         ,
 
 
-                                        Forms\Components\Select::make('sales_payment_status')
+                                        Select::make('sales_payment_status')
                                             ->options(['Pagado' => 'Pagado',
                                                 'Pendiente' => 'Pendiente',
                                                 'Abono' => 'Abono',])
@@ -256,7 +268,7 @@ class CreditNoteResource extends Resource
                                             ->default('Pendiente')
                                             ->hidden()
                                             ->disabled(),
-                                        Forms\Components\Select::make('sale_status')
+                                        Select::make('sale_status')
                                             ->options(['Nuevo' => 'Nuevo',
                                                 'Procesando' => 'Procesando',
                                                 'Cancelado' => 'Cancelado',
@@ -278,15 +290,15 @@ class CreditNoteResource extends Resource
                                     ->schema([
 
 
-                                        Forms\Components\Placeholder::make('net_amount')
+                                        Placeholder::make('net_amount')
                                             ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->net_amount ?? 0, 2) . '</span>'))
                                             ->inlineLabel()
                                             ->label('Neto'),
-                                        Forms\Components\Placeholder::make('taxe')
+                                        Placeholder::make('taxe')
                                             ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold;  font-size: 15px;">$ ' . number_format($record->taxe ?? 0, 2) . '</span>'))
                                             ->inlineLabel()
                                             ->label('IVA'),
-                                        Forms\Components\Placeholder::make('total')
+                                        Placeholder::make('total')
                                             ->label('Total')
                                             ->content(fn(?Sale $record) => new HtmlString('<span style="font-weight: bold; color: red; font-size: 18px;">$ ' . number_format($record->sale_total ?? 0, 2) . '</span>'))
                                             ->inlineLabel()
@@ -311,34 +323,34 @@ class CreditNoteResource extends Resource
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public
     static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('operation_date')
+                TextColumn::make('operation_date')
                     ->label('Fecha')
                     ->date('d/m/Y')
                     ->timezone('America/El_Salvador') // Zona horaria (opcional)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('documenttype.name')
+                TextColumn::make('documenttype.name')
                     ->label('Tipo')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('document_internal_number')
+                TextColumn::make('document_internal_number')
                     ->label('#')
                     ->numeric()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\BadgeColumn::make('is_dte')
+                BadgeColumn::make('is_dte')
                     ->label('DTE')
                     ->sortable()
                     ->formatStateUsing(function ($state, $record) {
@@ -378,7 +390,7 @@ class CreditNoteResource extends Resource
 //                    ->label('DTE')
 //                    ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('billingModel')
+                BadgeColumn::make('billingModel')
                     ->sortable()
 //                    ->searchable()
                     ->label('Facturación')
@@ -388,7 +400,7 @@ class CreditNoteResource extends Resource
                     ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Diferido' : 'Previo'), // Aquí se define el badge
 
 
-                Tables\Columns\BadgeColumn::make('transmisionType')
+                BadgeColumn::make('transmisionType')
                     ->label('Transmisión')
                     ->placeholder('S/N')
                     ->tooltip(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal')
@@ -398,11 +410,11 @@ class CreditNoteResource extends Resource
                     ->formatStateUsing(fn($state) => $state?->id === 2 ? 'Contingencia' : 'Normal'), // Texto del badge
 
 
-                Tables\Columns\TextColumn::make('seller.name')
+                TextColumn::make('seller.name')
                     ->label('Encargado')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer.name')
+                TextColumn::make('customer.name')
                     ->label('Cliente')
                     ->searchable()
                     ->sortable(),
@@ -417,53 +429,53 @@ class CreditNoteResource extends Resource
 //                    ->label('Método de pago')
 //                    ->toggleable(isToggledHiddenByDefault: true)
 //                    ->sortable(),
-                Tables\Columns\TextColumn::make('sales_payment_status')
+                TextColumn::make('sales_payment_status')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Pago'),
-                Tables\Columns\BadgeColumn::make('sale_status')
+                BadgeColumn::make('sale_status')
                     ->label('Estado')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->extraAttributes(['class' => 'text-lg'])  // Cambia el tamaño de la fuente
                     ->color(fn($record) => $record->sale_status === 'Anulado' ? 'danger' : 'success'),
 
-                Tables\Columns\IconColumn::make('is_taxed')
+                IconColumn::make('is_taxed')
                     ->label('Gravado')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
-                Tables\Columns\TextColumn::make('net_amount')
+                TextColumn::make('net_amount')
                     ->label('Neto')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('taxe')
+                TextColumn::make('taxe')
                     ->label('IVA')
                     ->toggleable()
                     ->money('USD', locale: 'en_US')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('retention')
+                TextColumn::make('retention')
                     ->label('Retención')
                     ->toggleable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sale_total')
+                TextColumn::make('sale_total')
                     ->label('Total')
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cash')
+                TextColumn::make('cash')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('change')
+                TextColumn::make('change')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
@@ -488,23 +500,23 @@ class CreditNoteResource extends Resource
                     ->label('Fecha de venta'),
 
 
-                Tables\Filters\SelectFilter::make('documenttype')
+                SelectFilter::make('documenttype')
                     ->label('Sucursal')
 //                    ->multiple()
                     ->preload()
                     ->relationship('documenttype', 'name'),
 
             ])
-            ->actions([
+            ->recordActions([
                 creditNotesActions::generarDTE(),
                 creditNotesActions::imprimirDTE(),
                 creditNotesActions::enviarEmailDTE(),
                 creditNotesActions::anularDTE(),
                 creditNotesActions::historialDTE(),
 
-            ], position: ActionsPosition::BeforeCells)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ], position: RecordActionsPosition::BeforeCells)
+            ->toolbarActions([
+                BulkActionGroup::make([
                     ExportBulkAction::make('Exportar'),
                 ]),
             ]);
@@ -514,7 +526,7 @@ class CreditNoteResource extends Resource
     static function getRelations(): array
     {
         return [
-            RelationManagers\CNtemsRelationManager::class,
+            CNtemsRelationManager::class,
         ];
     }
 
@@ -522,9 +534,9 @@ class CreditNoteResource extends Resource
     static function getPages(): array
     {
         return [
-            'index' => Pages\ListCreditNotes::route('/'),
-            'create' => Pages\CreateCreditNote::route('/create'),
-            'edit' => Pages\EditCreditNote::route('/{record}/edit'),
+            'index' => ListCreditNotes::route('/'),
+            'create' => CreateCreditNote::route('/create'),
+            'edit' => EditCreditNote::route('/{record}/edit'),
         ];
     }
 

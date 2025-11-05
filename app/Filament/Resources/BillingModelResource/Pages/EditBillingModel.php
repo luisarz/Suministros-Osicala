@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BillingModelResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\BillingModelResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditBillingModel extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

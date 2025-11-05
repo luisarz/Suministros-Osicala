@@ -2,16 +2,25 @@
 
 namespace App\Filament\Resources\InventoryResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Exception;
 use App\Models\Inventory;
 use App\Models\InventoryGrouped;
 use App\Models\Price;
 use App\Models\Product;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
 use Filament\Forms;
 use Filament\Tables;
@@ -27,11 +36,11 @@ class GroupingInventoryRelationManager extends RelationManager
 
     protected static ?string $badgeColor = 'danger';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información del Inventario a agrupar')
+        return $schema
+            ->components([
+                Section::make('Información del Inventario a agrupar')
                     ->schema([
                         Select::make('inventory_child_id')
                             ->label('Inventario')
@@ -42,7 +51,7 @@ class GroupingInventoryRelationManager extends RelationManager
                             ->columnSpanFull()
                             ->inlineLabel(false)
                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
+                                $whereHouse = Auth::user()->employee->branch_id; // Sucursal del usuario
                                 if (strlen($query) < 2) {
                                     return []; // No buscar si el texto es muy corto
                                 }
@@ -86,13 +95,13 @@ class GroupingInventoryRelationManager extends RelationManager
                             })
                             ->required(),
 
-                        Forms\Components\TextInput::make('quantity')
+                        TextInput::make('quantity')
                             ->label('Cantidad a descontar')
                             ->inlineLabel(false)
                             ->required()
                             ->numeric(),
 
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label('Predeterminado'),
                     ]),
             ]);
@@ -109,10 +118,10 @@ class GroupingInventoryRelationManager extends RelationManager
             ->searchable()
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('inventoryChild.product.name')
+                TextColumn::make('inventoryChild.product.name')
                     ->searchable()
                     ->label('Inventario Agrupado'),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->numeric()
                     ->label('Cantidad por item de venta'),
 
@@ -122,15 +131,15 @@ class GroupingInventoryRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -143,8 +152,8 @@ class GroupingInventoryRelationManager extends RelationManager
             $product=Product::find($product_id);
             $is_grouped=$product->is_grouped;
             return $is_grouped === 1;
-        }catch (\Exception $exception){
-            throw new \Exception($exception->getMessage());
+        }catch (Exception $exception){
+            throw new Exception($exception->getMessage());
         }
     }
     public static function getBadge(Model $ownerRecord, string $pageClass): ?string

@@ -2,11 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\JobTitleResource\Pages\ListJobTitles;
 use App\Filament\Resources\JobTitleResource\Pages;
 use App\Filament\Resources\JobTitleResource\RelationManagers;
 use App\Models\JobTitle;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -19,21 +30,21 @@ class JobTitleResource extends Resource
     protected static ?string $model = JobTitle::class;
 
 protected static ?string $label = 'Cargos laborales';
-protected static ?string $navigationGroup = 'Recursos Humanos';
+protected static string | \UnitEnum | null $navigationGroup = 'Recursos Humanos';
 protected static ?int $navigationSort = 1;
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-        Forms\Components\Section::make('')
+        return $schema
+            ->components([
+        Section::make('')
             ->columns(1)
                 ->schema([
 
-                        Forms\Components\TextInput::make('code')
+                        TextInput::make('code')
                             ->label('Código')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Cargo')
                             ->required()
                             ->maxLength(255),
@@ -46,36 +57,36 @@ protected static ?int $navigationSort = 1;
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->label('Código')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Cargo')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                TrashedFilter::make(),
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
-                    Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                    Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                    ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                    EditAction::make()->label('')->iconSize(IconSize::Medium),
+                    DeleteAction::make()->label('')->iconSize(IconSize::Medium),
 //                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+                    RestoreAction::make()->label('')->iconSize(IconSize::Medium),
 //                    ])
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -90,7 +101,7 @@ protected static ?int $navigationSort = 1;
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListJobTitles::route('/'),
+            'index' => ListJobTitles::route('/'),
 //            'create' => Pages\CreateJobTitle::route('/create'),
 //            'edit' => Pages\EditJobTitle::route('/{record}/edit'),
         ];

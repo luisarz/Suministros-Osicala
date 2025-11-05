@@ -2,6 +2,21 @@
 
 namespace App\Filament\Resources\AdjustmentInventoryResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Exception;
 use App\Models\Distrito;
 use App\Models\Inventory;
 use App\Models\precio_unitario;
@@ -11,9 +26,7 @@ use App\Models\RetentionTaxe;
 use App\Models\adjustmentInventoryItems;
 use App\Models\Tribute;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -33,15 +46,15 @@ class AdjustmentRelationManager extends RelationManager
     protected static ?string $pollingInterval = '1s';
 
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
 
-                Forms\Components\Section::make('')
+                Section::make('')
                     ->schema([
 
-                        Forms\Components\Grid::make(12)
+                        Grid::make(12)
                             ->schema([
 
                                 Section::make('Ajuste')
@@ -57,7 +70,7 @@ class AdjustmentRelationManager extends RelationManager
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
                                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
+                                                $whereHouse = Auth::user()->employee->branch_id; // Sucursal del usuario
                                                 if (strlen($query) < 2) {
                                                     return []; // No buscar si el texto es muy corto
                                                 }
@@ -157,7 +170,7 @@ class AdjustmentRelationManager extends RelationManager
 //                                                }
 //                                            }),
 
-                                        Forms\Components\TextInput::make('cantidad')
+                                        TextInput::make('cantidad')
                                             ->label('Cantidad')
                                             ->step(1)
                                             ->numeric()
@@ -170,7 +183,7 @@ class AdjustmentRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('precio_unitario')
+                                        TextInput::make('precio_unitario')
                                             ->label('Precio')
                                             ->step(0.01)
                                             ->numeric()
@@ -184,7 +197,7 @@ class AdjustmentRelationManager extends RelationManager
 
 
 
-                                        Forms\Components\TextInput::make('total')
+                                        TextInput::make('total')
                                             ->label('Total')
                                             ->step(0.01)
                                             ->readOnly()
@@ -206,14 +219,14 @@ class AdjustmentRelationManager extends RelationManager
                                         Section::make('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\Textarea::make('description')
+                                                Textarea::make('description')
                                                     ->label('Descripción')
                                                     ->inlineLabel(false)
                                             ]),
                                         Section::make('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\FileUpload::make('product_image')
+                                                FileUpload::make('product_image')
                                                     ->label('')
                                                     ->previewable(true)
                                                     ->openable()
@@ -242,13 +255,13 @@ class AdjustmentRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Sales Item')
             ->columns([
-                Tables\Columns\TextColumn::make('inventory.product.name')
+                TextColumn::make('inventory.product.name')
                     ->wrap()
                     ->formatStateUsing(fn($record) => $record->inventory->product->name . '</br> ' . $record->description)
                     ->html()
                     ->label('Producto'),
 
-                Tables\Columns\BooleanColumn::make('inventory.product.is_service')
+                BooleanColumn::make('inventory.product.is_service')
                     ->label('Producto/Servicio')
                     ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
                     ->falseIcon('heroicon-o-cog-8-tooth') // Icono cuando `is_service` es false
@@ -258,23 +271,23 @@ class AdjustmentRelationManager extends RelationManager
                     }),
 
 
-                Tables\Columns\TextColumn::make('cantidad')
+                TextColumn::make('cantidad')
                     ->label('Cantidad')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('precio_unitario')
+                TextColumn::make('precio_unitario')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
              
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
                     ->money('USD', locale: 'en_US')
                     ->columnSpan(1),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a proceso')
                     ->label('Agregar Producto')
@@ -283,15 +296,15 @@ class AdjustmentRelationManager extends RelationManager
                         $livewire->dispatch('refreshSale');
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->modalWidth('7xl')
                     ->after(function (adjustmentInventoryItems $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
 
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->label('Quitar')
                     ->after(function (adjustmentInventoryItems $record, Component $livewire) {
                         $this->updateTotalSale($record);
@@ -299,9 +312,9 @@ class AdjustmentRelationManager extends RelationManager
 
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (adjustmentInventoryItems $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
@@ -325,7 +338,7 @@ class AdjustmentRelationManager extends RelationManager
             $total = round($total, 2);
             $set('precio_unitario', $price);
             $set('total', $total);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
@@ -343,7 +356,7 @@ class AdjustmentRelationManager extends RelationManager
                 $montoTotal = adjustmentInventoryItems::where('adjustment_id', $sale->id)->sum('total') ?? 0;
                 $sale->monto = round($montoTotal , 2);
                 $sale->save();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
         }

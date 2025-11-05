@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\SaleResource\Pages;
 
+use Filament\Notifications\Notification;
+use Filament\Actions\CreateAction;
+use Filament\Schemas\Components\Tabs\Tab;
 use App\Filament\Resources\SaleResource;
 use App\Http\Controllers\DTEController;
 use App\Models\CashBoxOpen;
@@ -10,7 +13,6 @@ use App\Models\Sale;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\IconSize;
 use Filament\Support\Facades\FilamentView;
@@ -35,7 +37,7 @@ class ListSales extends ListRecords
                 ->modalDescription('Complete la información para generar el informe de IVA')
                 ->modalSubmitActionLabel('Sí, Generar informe')
                 ->color('danger')
-                ->form([
+                ->schema([
                     DatePicker::make('desde')
                         ->inlineLabel(true)
                         ->default(now()->startOfMonth())
@@ -71,11 +73,11 @@ class ListSales extends ListRecords
                     $ruta = '/sale/iva/' . $documentType . '/' . $startDate . '/' . $endDate; // Base del nombre de la ruta
 
 
-                    return \Filament\Notifications\Notification::make()
+                    return Notification::make()
                         ->title('Reporte preparado.')
                         ->body('Haz clic aquí para ver los resultados.')
                         ->actions([
-                            \Filament\Notifications\Actions\Action::make('Ver informe')
+                            \Filament\Actions\Action::make('Ver informe')
                                 ->button()
                                 ->url($ruta, true) // true = abrir en nueva pestaña
                         ])
@@ -93,7 +95,7 @@ class ListSales extends ListRecords
                 ->modalDescription('Complete la información para generar el archivo a descargar')
                 ->modalSubmitActionLabel('Sí, Generar Archivo')
                 ->color('warning')
-                ->form([
+                ->schema([
                     DatePicker::make('desde')
                         ->inlineLabel(true)
                         ->default(now()->startOfMonth())
@@ -138,11 +140,11 @@ class ListSales extends ListRecords
 
                     $ruta = '/sale/' . $documentType . '/' . $saleType . '/' . $status . '/' . $startDate . '/' . $endDate;
 
-                    return \Filament\Notifications\Notification::make()
+                    return Notification::make()
                         ->title('Reporte preparado.')
                         ->body('Haz clic aquí para ver los resultados.')
                         ->actions([
-                            \Filament\Notifications\Actions\Action::make('Descargar Archivo')
+                            \Filament\Actions\Action::make('Descargar Archivo')
                                 ->button()
                                 ->url($ruta, true) // true = abrir en nueva pestaña
                         ])
@@ -151,7 +153,7 @@ class ListSales extends ListRecords
                 })
                 ->openUrlInNewTab(),
 
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label('Nueva Venta')
                 ->icon('heroicon-o-shopping-cart')
                 ->color('success')

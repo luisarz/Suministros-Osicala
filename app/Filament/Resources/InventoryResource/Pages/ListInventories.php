@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\InventoryResource\Pages;
 
+use Maatwebsite\Excel\Excel;
+use Filament\Actions\Action;
 use App\Filament\Resources\InventoryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -21,14 +23,14 @@ protected static ?string $navigationLabel = "Inventarios";
                     ExcelExport::make()
                         ->fromTable()
                         ->withFilename(fn ($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
-                        ->withWriterType(\Maatwebsite\Excel\Excel::XLSX)
+                        ->withWriterType(Excel::XLSX)
                         ->withColumns([
                             Column::make('updated_at'),
                             Column::make('created_at'),
                             Column::make('deleted_at'),
                         ])
                 ]),
-            Actions\Action::make('Crear')
+            Action::make('Crear')
                 ->label('LEVANTAR INVENTARIO')
                 ->color('success')
                 ->extraAttributes(['class' => 'font-semibold font-3xl'])

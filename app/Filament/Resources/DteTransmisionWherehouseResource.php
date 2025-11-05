@@ -2,11 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\DteTransmisionWherehouseResource\Pages\ListDteTransmisionWherehouses;
 use App\Filament\Resources\DteTransmisionWherehouseResource\Pages;
 use App\Filament\Resources\DteTransmisionWherehouseResource\RelationManagers;
 use App\Models\DteTransmisionWherehouse;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,19 +25,19 @@ class DteTransmisionWherehouseResource extends Resource
     protected static ?string $model = DteTransmisionWherehouse::class;
     protected static ?string $label = 'Transmision DTE';
     protected static ?string $pluralLabel = 'Impresión DTE Sucursal';
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static string | \UnitEnum | null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 3;
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-               Forms\Components\Section::make('Configuracion de transmision DTE')
+        return $schema
+            ->components([
+               Section::make('Configuracion de transmision DTE')
                    ->compact()
                    ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('wherehouse')
+                    Select::make('wherehouse')
                         ->label('Sucursal')
                         ->relationship('where_house', 'name')
                         ->preload()
@@ -38,7 +45,7 @@ class DteTransmisionWherehouseResource extends Resource
                             return auth()->user()->employee->branch_id;
                         })
                         ->required(),
-                    Forms\Components\Select::make('billing_model')
+                    Select::make('billing_model')
                         ->label('Modelo de Facturación')
                         ->relationship('billingModel', 'name')
                         ->preload()
@@ -48,13 +55,13 @@ class DteTransmisionWherehouseResource extends Resource
                         })
                         ->default(1)
                         ->required(),
-                    Forms\Components\Select::make('transmision_type')
+                    Select::make('transmision_type')
                         ->label('Tipo de Transmisión')
                         ->relationship('transmisionType', 'name')
                         ->preload()
                         ->default(1)
                         ->required(),
-                    Forms\Components\Select::make('printer_type')
+                    Select::make('printer_type')
                         ->options([
                             1 => 'Ticket',
                             2 => 'PDF',
@@ -69,25 +76,25 @@ class DteTransmisionWherehouseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('where_house.name')
+                TextColumn::make('where_house.name')
                     ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('billingModel.name')
+                TextColumn::make('billingModel.name')
                     ->label('Modelo de Facturación')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transmisionType.name')
+                TextColumn::make('transmisionType.name')
                     ->label('Tipo de Transmisión')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('printer_type')
+                TextColumn::make('printer_type')
                     ->label('Tipo de Impresión')
                     ->formatStateUsing(fn ($state) => $state == 1 ? 'Ticket' : 'PDF')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -95,12 +102,12 @@ class DteTransmisionWherehouseResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -115,7 +122,7 @@ class DteTransmisionWherehouseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDteTransmisionWherehouses::route('/'),
+            'index' => ListDteTransmisionWherehouses::route('/'),
 //            'create' => Pages\CreateDteTransmisionWherehouse::route('/create'),
 //            'edit' => Pages\EditDteTransmisionWherehouse::route('/{record}/edit'),
         ];

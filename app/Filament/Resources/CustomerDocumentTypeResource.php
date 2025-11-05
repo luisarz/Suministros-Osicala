@@ -2,11 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CustomerDocumentTypeResource\Pages\ListCustomerDocumentTypes;
 use App\Filament\Resources\CustomerDocumentTypeResource\Pages;
 use App\Filament\Resources\CustomerDocumentTypeResource\RelationManagers;
 use App\Models\CustomerDocumentType;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
@@ -18,28 +29,28 @@ class CustomerDocumentTypeResource extends Resource
 {
     protected static ?string $model = CustomerDocumentType::class;
     protected static ?string $label = 'Cat-022 T.  Doc. Cliente';
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 22;
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Información de Tipo de Documento del Cliente')
+        return $schema
+            ->components([
+                Section::make('Información de Tipo de Documento del Cliente')
                 ->columns(1)
                     ->compact()
                     ->schema([
-                    Forms\Components\TextInput::make('code')
+                    TextInput::make('code')
                         ->label('Código')
                         ->required()
                         ->maxLength(5),
-                    Forms\Components\TextInput::make('name')
+                    TextInput::make('name')
                         ->label('Nombre')
                         ->required()
                         ->maxLength(150),
-                    Forms\Components\Toggle::make('is_active')
+                    Toggle::make('is_active')
                         ->label('Activo')
                         ->default(true)
                         ->required(),
@@ -52,26 +63,26 @@ class CustomerDocumentTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->label('Código')
                     ->badge()
                     ->color('danger')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -79,14 +90,14 @@ class CustomerDocumentTypeResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+            ],position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -101,7 +112,7 @@ class CustomerDocumentTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCustomerDocumentTypes::route('/'),
+            'index' => ListCustomerDocumentTypes::route('/'),
 //            'create' => Pages\CreateCustomerDocumentType::route('/create'),
 //            'edit' => Pages\EditCustomerDocumentType::route('/{record}/edit'),
         ];

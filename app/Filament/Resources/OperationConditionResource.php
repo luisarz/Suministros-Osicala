@@ -2,15 +2,29 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\OperationConditionResource\Pages\ListOperationConditions;
+use App\Filament\Resources\OperationConditionResource\Pages\CreateOperationCondition;
+use App\Filament\Resources\OperationConditionResource\Pages\EditOperationCondition;
 use App\Filament\Resources\OperationConditionResource\Pages;
 use App\Filament\Resources\OperationConditionResource\RelationManagers;
 use App\Models\OperationCondition;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -20,32 +34,32 @@ class OperationConditionResource extends Resource
     protected static ?string $model = OperationCondition::class;
 
     protected static ?string $label = 'Cat-016 Condiciones de operacióne';
-    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 16;
     public static function getNavigationLabel(): string
     {
         return substr(static::$label, 0, -1);
     }
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-               Forms\Components\Section::make('Información Condición de operación')
+        return $schema
+            ->components([
+               Section::make('Información Condición de operación')
                    ->description('Información de la condición de operación')
                    ->icon('heroicon-o-credit-card')
                    ->iconColor('info')
                    ->columns(2)
                    ->compact()
                  ->schema([
-                     Forms\Components\TextInput::make('code')
+                     TextInput::make('code')
                          ->label('Código')
                          ->required()
                          ->maxLength(255),
-                     Forms\Components\TextInput::make('name')
+                     TextInput::make('name')
                          ->label('Condición de operación')
                          ->required()
                          ->maxLength(255),
-                     Forms\Components\Toggle::make('is_active')
+                     Toggle::make('is_active')
                          ->label('Activo')
                          ->required(),
                      ]),
@@ -56,26 +70,26 @@ class OperationConditionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->label('Código')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Condición de operación')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label('Eliminado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -83,18 +97,18 @@ class OperationConditionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->label('Ver'),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
+                    ViewAction::make()->label('Ver'),
+                    EditAction::make(),
+                    ReplicateAction::make(),
+                    DeleteAction::make(),
+                    RestoreAction::make(),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -109,9 +123,9 @@ class OperationConditionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOperationConditions::route('/'),
-            'create' => Pages\CreateOperationCondition::route('/create'),
-            'edit' => Pages\EditOperationCondition::route('/{record}/edit'),
+            'index' => ListOperationConditions::route('/'),
+            'create' => CreateOperationCondition::route('/create'),
+            'edit' => EditOperationCondition::route('/{record}/edit'),
         ];
     }
 }

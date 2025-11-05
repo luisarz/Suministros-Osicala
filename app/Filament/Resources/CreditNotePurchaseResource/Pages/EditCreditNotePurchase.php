@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\CreditNotePurchaseResource\Pages;
 
+use Filament\Actions\EditAction;
+use Log;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\CreditNotePurchaseResource;
 use App\Filament\Resources\PurchaseResource;
 use App\Helpers\KardexHelper;
@@ -44,7 +47,7 @@ class EditCreditNotePurchase extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas Finalizar esta NC?')
                 ->modalButton('Sí, Finalizar Nota')
-                ->action(function (Actions\EditAction $edit) {
+                ->action(function (EditAction $edit) {
                     $purchase = $this->record; // Obtener el registro de la compra
                     $purchaseItems = PurchaseItem::where('purchase_id', $purchase->id)->get();
                     $provider = Provider::with('pais')->find($purchase->provider_id);
@@ -56,7 +59,7 @@ class EditCreditNotePurchase extends EditRecord
 
                         // Verifica si el inventario existe
                         if (!$inventory) {
-                            \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                            Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                             continue; // Si no se encuentra el inventario, continua con el siguiente item
                         }
 
@@ -89,7 +92,7 @@ class EditCreditNotePurchase extends EditRecord
 
                         // Verifica si la creación del Kardex fue exitosa
                         if (!$kardex) {
-                            \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                            Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                         }
                     }
 
@@ -107,7 +110,7 @@ class EditCreditNotePurchase extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta Nota? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
 
 
                     // Eliminar la venta y los elementos relacionados

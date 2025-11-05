@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use Filament\Actions\CreateAction;
+use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Sale;
 use Filament\Actions;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 
 class ListQuotes extends ListRecords
@@ -15,7 +17,7 @@ class ListQuotes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->color('success'),
+            CreateAction::make()->color('success'),
         ];
     }
     public function getTabs(): array
@@ -32,7 +34,7 @@ class ListQuotes extends ListRecords
                 ->label('Cerradas')
                 ->badgeColor('success')
                 ->icon('heroicon-o-lock-closed')
-                ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                ->modifyQueryUsing(function (Builder $query) {
                     return $query->where('operation_type', "Quote")
                         ->whereIn('sale_status', ['Finalizado', 'Facturada','Anulado']);
                 }),
@@ -43,7 +45,7 @@ class ListQuotes extends ListRecords
                 ->badge($open)
                 ->badgeColor('danger')
                 ->icon('heroicon-s-lock-open')
-                ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                ->modifyQueryUsing(function (Builder $query) {
                     return $query->where('operation_type', "Quote")
                         ->whereIn('sale_status', ['Nueva']);
                 }),

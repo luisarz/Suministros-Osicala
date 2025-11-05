@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\CreditNoteResource\Pages;
 
+use Filament\Actions\EditAction;
+use Log;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\CreditNoteResource;
 use App\Helpers\KardexHelper;
 use App\Models\CashBoxCorrelative;
@@ -39,7 +42,7 @@ class EditCreditNote extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas Finalizar esta NC?')
                 ->modalButton('Sí, Finalizar Nota')
-                ->action(function (Actions\EditAction $edit) {
+                ->action(function (EditAction $edit) {
                     if ($this->record->sale_total <= 0) {
                         Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar Nota')
@@ -112,7 +115,7 @@ class EditCreditNote extends EditRecord
 
                             // Verifica si el inventario existe
                             if (!$inventory) {
-                                \Log::error("Inventario no encontrado para el item de compra: {$item->id}");
+                                Log::error("Inventario no encontrado para el item de compra: {$item->id}");
                                 continue; // Si no se encuentra el inventario, continua con el siguiente item
                             }
                             // Actualiza el stock del inventario
@@ -146,7 +149,7 @@ class EditCreditNote extends EditRecord
                                         $inventarioHijo->inventoryChild->cost_without_taxes ?? 0 // purchase_price
                                     );
                                     if (!$kardex) {
-                                        \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                                        Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                                     }
                                 }
                             } else {
@@ -174,7 +177,7 @@ class EditCreditNote extends EditRecord
                                     $inventory->cost_without_taxes // purchase_price
                                 );
                                 if (!$kardex) {
-                                    \Log::error("Error al crear Kardex para el item de compra: {$item->id}");
+                                    Log::error("Error al crear Kardex para el item de compra: {$item->id}");
                                 }
                             }
                             // Verifica si la creación del Kardex fue exitosa
@@ -219,7 +222,7 @@ class EditCreditNote extends EditRecord
                 ->modalHeading('Confirmación')
                 ->modalSubheading('¿Estás seguro de que deseas cancelar esta venta? Esta acción no se puede deshacer.')
                 ->modalButton('Sí, cancelar venta')
-                ->action(function (Actions\DeleteAction $delete) {
+                ->action(function (DeleteAction $delete) {
                     if ($this->record->is_dte) {
                         Notification::make()
                             ->title('Error al anular venta')

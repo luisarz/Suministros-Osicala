@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MarcaResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\MarcaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditMarca extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

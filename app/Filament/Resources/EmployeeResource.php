@@ -2,6 +2,28 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\EmployeeResource\Pages\ListEmployees;
+use App\Filament\Resources\EmployeeResource\Pages\CreateEmployee;
+use App\Filament\Resources\EmployeeResource\Pages\EditEmployee;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\Distrito;
@@ -11,14 +33,11 @@ use App\Models\Municipality;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
-use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,34 +49,34 @@ class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
     protected static ?string $label = 'Empleados';
-    protected static ?string $navigationGroup = 'Recursos Humanos';
+    protected static string | \UnitEnum | null $navigationGroup = 'Recursos Humanos';
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Tabs::make('Empleado')
                     ->columns(1)
                     ->tabs([
-                        Tabs\Tab::make('Datos Personales')
+                        \Filament\Schemas\Components\Tabs\Tab::make('Datos Personales')
                             ->icon('heroicon-o-user')
                             ->columns(23)
                             ->schema([
-                                Forms\Components\Card::make('Datos Laborales')
+                                Section::make('Datos Laborales')
 //                                    ->description('Información Sucursal y Cargo')
                                     ->icon('heroicon-o-briefcase')
                                     ->compact()
                                     ->columns(2)
                                     ->schema([
 
-                                        Forms\Components\Select::make('branch_id')
+                                        Select::make('branch_id')
                                             ->label('Sucursal')
                                             ->relationship('wherehouse', 'name')
                                             ->preload()
                                             ->searchable()
                                             ->required(),
-                                        Forms\Components\Select::make('job_title_id')
+                                        Select::make('job_title_id')
                                             ->label('Cargo')
                                             ->relationship('job', 'name')
                                             ->searchable()
@@ -68,25 +87,25 @@ class EmployeeResource extends Resource
                                     ])->columnSpanFull(true),
 
 
-                                Forms\Components\Card::make('Datos Personales')
+                                Section::make('Datos Personales')
 //                                            ->description('Datos Personales')
                                     ->icon('heroicon-o-user')
                                     ->compact()
                                     ->columns()
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label('Nombre')
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('lastname')
+                                        TextInput::make('lastname')
                                             ->label('Apellido')
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\DatePicker::make('birthdate')
+                                        DatePicker::make('birthdate')
                                             ->label('Fecha de Nacimiento')
                                             ->inlineLabel(true),
 
-                                        Forms\Components\Select::make('gender')
+                                        Select::make('gender')
                                             ->label('Género')
                                             ->options([
                                                 'M' => 'Masculino',
@@ -94,7 +113,7 @@ class EmployeeResource extends Resource
                                             ])
                                             ->required(),
 
-                                        Forms\Components\TextInput::make('dui')
+                                        TextInput::make('dui')
                                             ->maxLength(255)
                                             ->required()
                                             ->minLength(9)
@@ -112,15 +131,15 @@ class EmployeeResource extends Resource
                                                 'required' => 'El :attribute es requerido.',
                                             ])
                                             ->default(null),
-                                        Forms\Components\TextInput::make('nit')
+                                        TextInput::make('nit')
                                             ->maxLength(255)
                                             ->default(null),
 
-                                        Forms\Components\TextInput::make('phone')
+                                        TextInput::make('phone')
                                             ->tel()
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('email')
+                                        TextInput::make('email')
                                             ->email()
                                             ->required()
                                             ->rules(function ($record) {
@@ -136,7 +155,7 @@ class EmployeeResource extends Resource
                                                 'required' => 'El :attribute es requerido.',
                                             ])
                                             ->maxLength(255),
-                                        Forms\Components\FileUpload::make('photo')
+                                        FileUpload::make('photo')
 //                                                        ->inlineLabel()
                                             ->columnSpanFull()
                                             ->label('Foto')
@@ -145,17 +164,17 @@ class EmployeeResource extends Resource
                                     ]),
 
                             ]),
-                        Tabs\Tab::make('Información complementaria')
+                        \Filament\Schemas\Components\Tabs\Tab::make('Información complementaria')
                             ->icon('heroicon-o-map-pin')
                             ->columns(2)
                             ->schema([
-                                Forms\Components\Card::make('Datos de contacto')
+                                Section::make('Datos de contacto')
                                     ->description('')
                                     ->icon('heroicon-o-map-pin')
                                     ->compact()
                                     ->columns(2)
                                     ->schema([
-                                        Forms\Components\Select::make('department_id')
+                                        Select::make('department_id')
                                             ->relationship('departamento', 'name')
                                             ->searchable()
                                             ->preload()
@@ -166,7 +185,7 @@ class EmployeeResource extends Resource
                                                 }
                                             })
                                             ->required(),
-                                        Forms\Components\Select::make('distrito_id')
+                                        Select::make('distrito_id')
                                             ->label('Municipio')
                                             ->options(function (callable $get) {
                                                 $department = $get('department_id');
@@ -184,7 +203,7 @@ class EmployeeResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->required(),
-                                        Forms\Components\Select::make('municipalitie_id')
+                                        Select::make('municipalitie_id')
                                             ->label('Distrito')
                                             ->options(function (callable $get) {
                                                 $distrito = $get('distrito_id');
@@ -196,40 +215,40 @@ class EmployeeResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->required(),
-                                        Forms\Components\TextInput::make('address')
+                                        TextInput::make('address')
                                             ->required()
                                             ->label('Dirección')
                                             ->maxLength(255),
                                     ]),
-                                Forms\Components\Card::make('Configuración')
+                                Section::make('Configuración')
                                     ->columns(3)
                                     ->schema([
 
-                                        Forms\Components\Toggle::make('is_comisioned')
+                                        Toggle::make('is_comisioned')
                                             ->label('Comision por venta')
                                             ->required(),
-                                        Forms\Components\TextInput::make('comision')
+                                        TextInput::make('comision')
                                             ->prefix('%')
                                             ->label('Comision')
                                             ->numeric()
                                             ->default(null),
-                                        Forms\Components\Toggle::make('is_active')
+                                        Toggle::make('is_active')
                                             ->default(true)
                                             ->required(),
                                     ])
                             ]),
-                        Tabs\Tab::make('Datos de Familiares')
+                        \Filament\Schemas\Components\Tabs\Tab::make('Datos de Familiares')
                             ->icon('heroicon-o-phone')
                             ->columns(2)
                             ->schema([
-                                Forms\Components\Card::make('Datos Familiares')
+                                Section::make('Datos Familiares')
                                     ->description('Datos Familiares')
                                     ->icon('heroicon-o-briefcase')
                                     ->compact()
                                     ->columns(2)
                                     ->schema([
 
-                                        Forms\Components\Select::make('marital_status')
+                                        Select::make('marital_status')
                                             ->label('Estado Civil')
                                             ->options([
                                                 'Soltero/a' => 'Soltero/a',
@@ -238,11 +257,11 @@ class EmployeeResource extends Resource
                                                 'Viudo/a' => 'Viudo/a',
                                             ])
                                             ->required(),
-                                        Forms\Components\TextInput::make('marital_name')
+                                        TextInput::make('marital_name')
                                             ->maxLength(255)
                                             ->label('Nombre Conyugue')
                                             ->default(null),
-                                        Forms\Components\TextInput::make('marital_phone')
+                                        TextInput::make('marital_phone')
                                             ->label('Telefono Conyugue')
                                             ->tel()
                                             ->maxLength(255)
@@ -260,94 +279,94 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lastname')
+                TextColumn::make('lastname')
                     ->searchable(),
 //                Tables\Columns\TextColumn::make('email')
 //                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('birthdate')
+                TextColumn::make('birthdate')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('gender'),
-                Tables\Columns\TextColumn::make('marital_status')
+                TextColumn::make('gender'),
+                TextColumn::make('marital_status')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('marital_name')
+                TextColumn::make('marital_name')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('marital_phone')
+                TextColumn::make('marital_phone')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('dui')
+                TextColumn::make('dui')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nit')
+                TextColumn::make('nit')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('departamento.name')
+                TextColumn::make('departamento.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('municipio.name')
+                TextColumn::make('municipio.name')
                     ->label('Distrito')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('municipio.name')
+                TextColumn::make('municipio.name')
                     ->label('Municipio')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse.name')
+                TextColumn::make('wherehouse.name')
                     ->numeric()
                     ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('job_title_id')
+                TextColumn::make('job_title_id')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_comisioned')
+                IconColumn::make('is_comisioned')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
-                Tables\Filters\SelectFilter::make('Sucursales')->relationship('wherehouse', 'name'),
-                Tables\Filters\TrashedFilter::make(),
+                SelectFilter::make('Sucursales')->relationship('wherehouse', 'name'),
+                TrashedFilter::make(),
 
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\ActionGroup::make([
-                Tables\Actions\Action::make('select_date_range')
+                Action::make('select_date_range')
                     ->label('')
                     ->icon('heroicon-s-calendar-date-range')
                     ->color('success')
                     ->visible(fn ($record) => $record->job_title_id != 4)
                     ->iconSize(IconSize::Medium)
                     ->modalWidth('max-w-2xl')
-                    ->form([
-                        Forms\Components\DatePicker::make('start_date')
+                    ->schema([
+                        DatePicker::make('start_date')
                             ->label('Fecha Inicio')
                             ->default(Carbon::now()->startOfMonth())
                             ->required(),
-                        Forms\Components\DatePicker::make('end_date')
+                        DatePicker::make('end_date')
                             ->label('Fecha Fin')
                             ->default(Carbon::now()->endOfMonth())
                             ->required(),
@@ -361,18 +380,18 @@ class EmployeeResource extends Resource
                         ]);
 
                         // Devolver la URL como una respuesta JSON para que el frontend la maneje
-                        return \Filament\Notifications\Notification::make()
+                        return Notification::make()
                             ->title('Reporte de ventas')
                             ->body('Haz clic aquí para ver los resultados.')
                             ->actions([
-                                \Filament\Notifications\Actions\Action::make('Ver reporte')
+                                Action::make('Ver reporte')
                                     ->button()
                                     ->url($url, true) // true = abrir en nueva pestaña
                             ])
                             ->send();
                     })
                 ->modalButton('Generar Reporte'),
-                Tables\Actions\Action::make('select_date_range_detail')
+                Action::make('select_date_range_detail')
                     ->label('')
                     ->icon('heroicon-o-presentation-chart-line')
                     ->iconSize('medium')
@@ -380,12 +399,12 @@ class EmployeeResource extends Resource
                     ->visible(fn ($record) => $record->job_title_id != 4)
                     ->iconSize(IconSize::Medium)
                     ->modalWidth('max-w-2xl')
-                    ->form([
-                        Forms\Components\DatePicker::make('start_date')
+                    ->schema([
+                        DatePicker::make('start_date')
                             ->label('Fecha Inicio')
                             ->default(Carbon::now()->subWeek())
                             ->required(),
-                        Forms\Components\DatePicker::make('end_date')
+                        DatePicker::make('end_date')
                             ->label('Fecha Fin')
                             ->default(Carbon::now()->endOfMonth())
                             ->required(),
@@ -399,30 +418,30 @@ class EmployeeResource extends Resource
                         ]);
 
                         // Devolver la URL como una respuesta JSON para que el frontend la maneje
-                        return \Filament\Notifications\Notification::make()
+                        return Notification::make()
                             ->title('Reporte de ventas detalle')
                             ->body('Haz clic aquí para ver los resultados.')
                             ->actions([
-                                \Filament\Notifications\Actions\Action::make('Ver reporte')
+                                Action::make('Ver reporte')
                                     ->button()
                                     ->url($url, true) // true = abrir en nueva pestaña
                             ])
                             ->send();
                     })
                     ->modalButton('Generar Reporte'),
-                Tables\Actions\Action::make('workReport')
+                Action::make('workReport')
                     ->label('')
                     ->visible(fn ($record) => $record->job_title_id == 4)
                     ->icon('heroicon-s-calendar-date-range')
                     ->color('danger')
                     ->iconSize(IconSize::Medium)
                     ->modalWidth('max-w-2xl')
-                    ->form([
-                        Forms\Components\DatePicker::make('start_date')
+                    ->schema([
+                        DatePicker::make('start_date')
                             ->label('Fecha Inicio')
                             ->default(Carbon::now()->startOfMonth())
                             ->required(),
-                        Forms\Components\DatePicker::make('end_date')
+                        DatePicker::make('end_date')
                             ->label('Fecha Fin')
                             ->default(Carbon::now()->endOfMonth())
                             ->required(),
@@ -436,11 +455,11 @@ class EmployeeResource extends Resource
                         ]);
 
                         // Devolver la URL como una respuesta JSON para que el frontend la maneje
-                        return \Filament\Notifications\Notification::make()
+                        return Notification::make()
                             ->title('Reporte de manos de Obra')
                             ->body('Haz clic aquí para ver los resultados.')
                             ->actions([
-                                \Filament\Notifications\Actions\Action::make('Ver reporte')
+                                Action::make('Ver reporte')
                                     ->button()
                                     ->url($url, true) // true = abrir en nueva pestaña
                             ])
@@ -448,17 +467,17 @@ class EmployeeResource extends Resource
                     })
                     ->modalButton('Generar Reporte'),
 
-                Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
+                ViewAction::make()->label('')->iconSize(IconSize::Medium),
 //                    Tables\Actions\ReplicateAction::make()->label('')->excludeAttributes(['email','dui','nit','photo','created_at','updated_at','deleted_at']),
-                Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-                Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
+                EditAction::make()->label('')->iconSize(IconSize::Medium),
+                DeleteAction::make()->label('')->iconSize(IconSize::Medium),
+                RestoreAction::make()->label('')->iconSize(IconSize::Medium),
 
 //                ]),
-            ], position: ActionsPosition::BeforeColumns)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ], position: RecordActionsPosition::BeforeColumns)
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -481,9 +500,9 @@ class EmployeeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEmployees::route('/'),
-            'create' => Pages\CreateEmployee::route('/create'),
-            'edit' => Pages\EditEmployee::route('/{record}/edit'),
+            'index' => ListEmployees::route('/'),
+            'create' => CreateEmployee::route('/create'),
+            'edit' => EditEmployee::route('/{record}/edit'),
         ];
     }
 }

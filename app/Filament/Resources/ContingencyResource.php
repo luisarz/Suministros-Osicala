@@ -2,6 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\ContingencyResource\Pages\ListContingencies;
 use App\Filament\Resources\ContingencyResource\Pages;
 use App\Filament\Resources\ContingencyResource\RelationManagers;
 use App\Http\Controllers\ContingencyController;
@@ -18,7 +23,7 @@ class ContingencyResource extends Resource
 {
     protected static ?string $model = Contingency::class;
 
-    protected static ?string $navigationGroup = 'Configuración';
+    protected static string | \UnitEnum | null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 4;
     protected static ?string $label = 'Trans. Contingencia';
 
@@ -31,26 +36,26 @@ class ContingencyResource extends Resource
 //                    ->label('ID')
 //                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('warehouse.name')
+                TextColumn::make('warehouse.name')
                     ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('uuid_hacienda')
+                TextColumn::make('uuid_hacienda')
                     ->label('Hacienda')
                     ->limit(15)
                     ->copyable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('start_date')
+                TextColumn::make('start_date')
                     ->label('Fecha Inicio')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->label('Fecha Fin')
                     ->placeholder('Fecha Inicio')
                     ->dateTime()
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('is_close')
+                BadgeColumn::make('is_close')
                     ->extraAttributes(['class' => 'text-lg'])  // Cambia el tamaño de la fuente
                     ->label('Estado')
 
@@ -60,13 +65,13 @@ class ContingencyResource extends Resource
                     ->formatStateUsing(fn ($state) => $state === 1 ? 'Cerrada' : 'Abierta'),
 
 
-                Tables\Columns\TextColumn::make('contingencyType.name')
+                TextColumn::make('contingencyType.name')
                     ->label('Tipo')
                     ->limit(15)
                     ->tooltip(fn ($state) => $state ? $state : 'Nombre no disponible')  // Mostrar el nombre directamente en el tooltip
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('contingency_motivation')
+                TextColumn::make('contingency_motivation')
                     ->label('Motivo')
                     ->limit(15)
                     ->tooltip(fn ($state) => $state ? $state : 'Nombre no disponible')  // Mostrar el nombre directamente en el tooltip
@@ -80,9 +85,9 @@ class ContingencyResource extends Resource
             ->filters([
 
             ])
-            ->actions([
+            ->recordActions([
 //                Tables\Actions\Action::make()
-                Tables\Actions\Action::make('close')
+                Action::make('close')
                     ->label('Cerrar')
                     ->icon('heroicon-o-plus-circle')
                     ->requiresConfirmation()
@@ -91,7 +96,7 @@ class ContingencyResource extends Resource
                     })
 
                     ->modalSubmitActionLabel('Cerrar Contingencia')
-                    ->form([
+                    ->schema([
 
                             Select::make('confirmacion')
                                 ->label('Confirmar')
@@ -131,8 +136,8 @@ class ContingencyResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -148,7 +153,7 @@ class ContingencyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListContingencies::route('/'),
+            'index' => ListContingencies::route('/'),
 //            'create' => Pages\CreateContingency::route('/create'),
 //            'edit' => Pages\EditContingency::route('/{record}/edit'),
         ];

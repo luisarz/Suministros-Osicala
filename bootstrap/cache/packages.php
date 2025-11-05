@@ -18,6 +18,13 @@
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
   ),
+  'bezhansalleh/filament-plugin-essentials' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'BezhanSalleh\\PluginEssentials\\PluginEssentialsServiceProvider',
+    ),
+  ),
   'bezhansalleh/filament-shield' => 
   array (
     'aliases' => 
@@ -41,6 +48,24 @@
     'providers' => 
     array (
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
+    ),
+  ),
+  'codeat3/blade-phosphor-icons' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Codeat3\\BladePhosphorIcons\\BladePhosphorIconsServiceProvider',
+    ),
+  ),
+  'codewithdennis/filament-simple-alert' => 
+  array (
+    'aliases' => 
+    array (
+      'SimpleAlert' => 'CodeWithDennis\\SimpleAlert\\Facades\\SimpleAlert',
+    ),
+    'providers' => 
+    array (
+      0 => 'CodeWithDennis\\SimpleAlert\\SimpleAlertServiceProvider',
     ),
   ),
   'filament/actions' => 
@@ -78,6 +103,20 @@
       0 => 'Filament\\Notifications\\NotificationsServiceProvider',
     ),
   ),
+  'filament/query-builder' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Filament\\QueryBuilder\\QueryBuilderServiceProvider',
+    ),
+  ),
+  'filament/schemas' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Filament\\Schemas\\SchemasServiceProvider',
+    ),
+  ),
   'filament/support' => 
   array (
     'providers' => 
@@ -92,11 +131,29 @@
       0 => 'Filament\\Tables\\TablesServiceProvider',
     ),
   ),
+  'filament/upgrade' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Filament\\Upgrade\\UpgradeServiceProvider',
+    ),
+  ),
   'filament/widgets' => 
   array (
     'providers' => 
     array (
       0 => 'Filament\\Widgets\\WidgetsServiceProvider',
+    ),
+  ),
+  'hydrat/filament-table-layout-toggle' => 
+  array (
+    'aliases' => 
+    array (
+      'TableLayoutToggle' => 'Hydrat\\TableLayoutToggle\\Facades\\TableLayoutToggle',
+    ),
+    'providers' => 
+    array (
+      0 => 'Hydrat\\TableLayoutToggle\\TableLayoutToggleServiceProvider',
     ),
   ),
   'kirschbaum-development/eloquent-power-joins' => 
@@ -167,18 +224,22 @@
       0 => 'Malzariey\\FilamentDaterangepickerFilter\\FilamentDaterangepickerFilterServiceProvider',
     ),
   ),
+  'marcelweidum/filament-expiration-notice' => 
+  array (
+    'aliases' => 
+    array (
+      'ExpirationNoticePlugin' => 'MarcelWeidum\\ExpirationNoticePlugin\\Facades\\ExpirationNoticePlugin',
+    ),
+    'providers' => 
+    array (
+      0 => 'MarcelWeidum\\ExpirationNoticePlugin\\ExpirationNoticeServiceProvider',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 
     array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
-    ),
-  ),
-  'novadaemon/filament-pretty-json' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Novadaemon\\FilamentPrettyJson\\FilamentPrettyJsonServiceProvider',
     ),
   ),
   'nunomaduro/collision' => 
@@ -195,22 +256,18 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
+  'phiki/phiki' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Phiki\\Adapters\\Laravel\\PhikiServiceProvider',
+    ),
+  ),
   'pxlrbt/filament-excel' => 
   array (
     'providers' => 
     array (
       0 => 'pxlrbt\\FilamentExcel\\FilamentExcelServiceProvider',
-    ),
-  ),
-  'rmsramos/activitylog' => 
-  array (
-    'aliases' => 
-    array (
-      'Activitylog' => 'Rmsramos\\Activitylog\\Facades\\Activitylog',
-    ),
-    'providers' => 
-    array (
-      0 => 'Rmsramos\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
   'ryangjchandler/blade-capture-directive' => 
@@ -224,6 +281,24 @@
       0 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
     ),
   ),
+  'saade/filament-laravel-log' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Saade\\FilamentLaravelLog\\FilamentLaravelLogServiceProvider',
+    ),
+  ),
+  'schmeits/filament-4-phosphor-icons' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentPhosphorIcons' => 'Schmeits\\FilamentPhosphorIcons\\Facades\\FilamentPhosphorIcons',
+    ),
+    'providers' => 
+    array (
+      0 => 'Schmeits\\FilamentPhosphorIcons\\FilamentPhosphorIconsServiceProvider',
+    ),
+  ),
   'simplesoftwareio/simple-qrcode' => 
   array (
     'providers' => 
@@ -233,13 +308,6 @@
     'aliases' => 
     array (
       'QrCode' => 'SimpleSoftwareIO\\QrCode\\Facades\\QrCode',
-    ),
-  ),
-  'spatie/laravel-activitylog' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 

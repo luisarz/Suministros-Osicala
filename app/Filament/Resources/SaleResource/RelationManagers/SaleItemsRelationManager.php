@@ -2,6 +2,21 @@
 
 namespace App\Filament\Resources\SaleResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Exception;
 use App\Models\Distrito;
 use App\Models\Inventory;
 use App\Models\Price;
@@ -11,9 +26,7 @@ use App\Models\RetentionTaxe;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -44,15 +57,15 @@ class SaleItemsRelationManager extends RelationManager
 
 
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
 
-                Forms\Components\Section::make('')
+                Section::make('')
                     ->schema([
 
-                        Forms\Components\Grid::make(12)
+                        Grid::make(12)
                             ->schema([
 
                                 Section::make('Venta')
@@ -78,7 +91,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->preload(true)
                                             ->debounce(300)
                                             ->getSearchResultsUsing(function (string $query, callable $get) {
-                                                $whereHouse = \Auth::user()->employee->branch_id; // Sucursal del usuario
+                                                $whereHouse = Auth::user()->employee->branch_id; // Sucursal del usuario
                                                 $aplications = $get('aplications');
                                                 $searchType = $get('search_type');
                                                 if (strlen($query) < 2) {
@@ -183,7 +196,7 @@ class SaleItemsRelationManager extends RelationManager
 
 
                                             }),
-                                        Forms\Components\TextInput::make('aplications')
+                                        TextInput::make('aplications')
                                             ->inlineLabel(false)
                                             //                                            ->columnSpanFull()
                                             ->label('Aplicaciones'),
@@ -218,7 +231,7 @@ class SaleItemsRelationManager extends RelationManager
                                             }),
 
 
-                                        Forms\Components\TextInput::make('quantity')
+                                        TextInput::make('quantity')
                                             ->label('Cantidad')
                                             ->step(1)
                                             ->numeric()
@@ -230,7 +243,7 @@ class SaleItemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('price')
+                                        TextInput::make('price')
                                             ->label('Precio')
                                             ->step(0.01)
                                             ->numeric()
@@ -241,7 +254,7 @@ class SaleItemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('discount')
+                                        TextInput::make('discount')
                                             ->label('Descuento')
                                             ->step(0.01)
                                             ->prefix('%')
@@ -254,7 +267,7 @@ class SaleItemsRelationManager extends RelationManager
                                                 $this->calculateTotal($get, $set);
                                             }),
 
-                                        Forms\Components\TextInput::make('total')
+                                        TextInput::make('total')
                                             ->label('Total')
                                             ->step(0.01)
                                             ->readOnly()
@@ -285,7 +298,7 @@ class SaleItemsRelationManager extends RelationManager
 //                                                $this->calculateTotal($get, $set);
 //                                            }),
 
-                                        Forms\Components\TextInput::make('minprice')
+                                        TextInput::make('minprice')
                                             ->label('Tributos')
                                             ->hidden(true)
                                             ->columnSpan(3)
@@ -307,14 +320,14 @@ class SaleItemsRelationManager extends RelationManager
                                         Section::make('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\Textarea::make('description')
+                                                Textarea::make('description')
                                                     ->label('Descripción')
                                                     ->inlineLabel(false)
                                             ]),
                                         Section::make('')
                                             ->compact()
                                             ->schema([
-                                                Forms\Components\FileUpload::make('product_image')
+                                                FileUpload::make('product_image')
                                                     ->label('')
                                                     ->previewable(true)
                                                     ->openable()
@@ -343,7 +356,7 @@ class SaleItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Sales Item')
             ->columns([
-                Tables\Columns\TextColumn::make('inventory')
+                TextColumn::make('inventory')
                     ->wrap()
                     ->formatStateUsing(function ($record) {
                         $productName = $record->inventory->product->name ?? '';
@@ -356,7 +369,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->label('Producto'),
 
 
-                Tables\Columns\BooleanColumn::make('inventory.product.is_service')
+                BooleanColumn::make('inventory.product.is_service')
                     ->label('Producto/Servicio')
                     ->trueIcon('heroicon-o-bug-ant') // Icono cuando `is_service` es true
                     ->falseIcon('heroicon-o-cog-8-tooth') // Icono cuando `is_service` es false
@@ -366,21 +379,21 @@ class SaleItemsRelationManager extends RelationManager
                     }),
 
 
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD', locale: 'en_US')
                     ->formatStateUsing(fn($state) => number_format($state, 4))
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->suffix('%')
                     ->numeric()
                     ->columnSpan(1),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->formatStateUsing(fn($state) => number_format($state, 4))
                     ->summarize(Sum::make()->label('Total')->money('USD', locale: 'en_US'))
@@ -393,7 +406,7 @@ class SaleItemsRelationManager extends RelationManager
 //                    ->icon('heroicon-o-arrow-path')
 //                    ->outlined(),
 //                    ->dispatchSelf('refreshComments'),
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a venta')
                     ->label('Agregar Producto')
@@ -402,15 +415,15 @@ class SaleItemsRelationManager extends RelationManager
                         $livewire->dispatch('refreshSale');
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make('edit')
+            ->recordActions([
+                EditAction::make('edit')
                     ->modalWidth('7xl')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
 
                     }),
-                Tables\Actions\DeleteAction::make('delete')
+                DeleteAction::make('delete')
                     ->label('Quitar')
                     ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
@@ -418,9 +431,9 @@ class SaleItemsRelationManager extends RelationManager
 
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (SaleItem $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
@@ -470,7 +483,7 @@ class SaleItemsRelationManager extends RelationManager
 
             $set('price', $price);
             $set('total', $total);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
@@ -505,7 +518,7 @@ class SaleItemsRelationManager extends RelationManager
                 $sale->retention = round($retention, 4);
                 $sale->sale_total = round($montoTotal - $retention, 2);
                 $sale->save();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
 

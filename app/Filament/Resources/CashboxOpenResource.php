@@ -2,6 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use App\Models\CashBox;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\CashboxOpenResource\Pages\ListCashboxOpens;
+use App\Filament\Resources\CashboxOpenResource\Pages\CreateCashboxOpen;
+use App\Filament\Resources\CashboxOpenResource\Pages\EditCashboxOpen;
+use Exception;
 use App\Filament\Resources\CashboxOpenResource\Pages;
 use App\Filament\Resources\CashboxOpenResource\RelationManagers;
 use App\Models\CashBoxOpen;
@@ -10,8 +25,6 @@ use App\Services\CashBoxResumenService;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,23 +36,23 @@ class CashboxOpenResource extends Resource
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     public static ?string $label = "Apertura de Cajas";
-    public static ?string $navigationGroup = 'Facturación';
+    public static string | \UnitEnum | null $navigationGroup = 'Facturación';
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
 
         $resumen = new CashBoxResumenService();
 
 
-        return $form
-            ->schema([
-                Forms\Components\Section::make('')
+        return $schema
+            ->components([
+                Section::make('')
                     ->compact()
                     ->columnSpan(2)
                     ->label('Administracion Aperturas de caja')
                     ->schema([
-                        Forms\Components\Section::make('Datos de apertura')
+                        Section::make('Datos de apertura')
                             ->compact()
                             ->icon('heroicon-o-shopping-cart')
                             ->iconColor('success')
@@ -48,7 +61,7 @@ class CashboxOpenResource extends Resource
                                     ->relationship('cashbox', 'description')
                                     ->options(function () {
                                         $whereHouse = auth()->user()->employee->branch_id;
-                                        return \App\Models\CashBox::where('branch_id', $whereHouse)
+                                        return CashBox::where('branch_id', $whereHouse)
                                             ->where('is_open', '0')
                                             ->get()
                                             ->pluck('description', 'id');
@@ -60,7 +73,7 @@ class CashboxOpenResource extends Resource
                                     ->preload()
                                     ->searchable()
                                     ->required(),
-                                Forms\Components\Select::class::make('open_employee_id')
+                                Select::class::make('open_employee_id')
                                     ->relationship('openEmployee', 'name', function ($query) {
                                         $whereHouse = auth()->user()->employee->branch_id;
                                         $query->where('branch_id', $whereHouse);
@@ -74,7 +87,7 @@ class CashboxOpenResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required(),
-                                Forms\Components\DateTimePicker::make('opened_at')
+                                DateTimePicker::make('opened_at')
                                     ->label('Fecha de apertura')
                                     ->inlineLabel(true)
                                     ->default(now())
@@ -93,35 +106,35 @@ class CashboxOpenResource extends Resource
                                     ->label('Monto Apertura'),
                             ])->columns(2)
                         ,
-                        Forms\Components\Section::make('')
+                        Section::make('')
                             ->hidden(function (?CashBoxOpen $record = null) {
                                 if ($record === null) {
                                     return true;
                                 }
                             })
                             ->schema([
-                                Forms\Components\Section::make('Ingresos')
+                                Section::make('Ingresos')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('ingreso_factura')
+                                        Placeholder::make('ingreso_factura')
                                             ->label('Factura')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_factura, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('ingreso_ccf')
+                                        Placeholder::make('ingreso_ccf')
                                             ->label('CCF')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_ccf, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('ingreso_ordenes')
+                                        Placeholder::make('ingreso_ordenes')
                                             ->label('Ordenes')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $ingreso_ordenes = (new GetCashBoxOpenedService())->getTotal(true, true);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_ordenes, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('ingreso_taller')
+                                        Placeholder::make('ingreso_taller')
                                             ->label('Taller')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
@@ -129,53 +142,53 @@ class CashboxOpenResource extends Resource
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_taller, 2) . '</span>');
                                             }),
 
-                                        Forms\Components\Placeholder::make('ingreso_caja_chica')
+                                        Placeholder::make('ingreso_caja_chica')
                                             ->label('Caja Chica')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $ingreso_caja_chica = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Ingreso');
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->ingreso_caja_chica, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('ingreso_totales')
+                                        Placeholder::make('ingreso_totales')
                                             ->label('INGRESOS TOTALES')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px; border-top: #1e2c2e solid 1px;">$ ' . number_format($resumen->ingreso_total, 2) . '</span>');
                                             }),
                                     ])->columnSpan(1),
-                                Forms\Components\Section::make('Egresos')
+                                Section::make('Egresos')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('egreso_caja_chica')
+                                        Placeholder::make('egreso_caja_chica')
                                             ->label('Caja Chica')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Egreso');
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->egreso_caja_chica, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('egreso_nc')
+                                        Placeholder::make('egreso_nc')
                                             ->label('Notas de Crédito')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, 5);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->egreso_nc, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('egresos_totales')
+                                        Placeholder::make('egresos_totales')
                                             ->label('EGRESOS TOTALES')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
                                                 return new HtmlString('<span style="font-weight: bold; color:red; font-size: 15px; border-top: #1e2c2e solid 1px;">-   $ ' . number_format($resumen->egreso_total, 2) . '</span>');
                                             }),
                                     ])->columnSpan(1),
-                                Forms\Components\Section::make('Saldos')
+                                Section::make('Saldos')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('saldo_efectivo_ventas')
+                                        Placeholder::make('saldo_efectivo_ventas')
                                             ->label('Efectivo Ventas')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [1]);
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_efectivo_ventas, 2) . '</span>');
                                             }),
-                                        Forms\Components\TextInput::make('saldo_tarjeta')
+                                        TextInput::make('saldo_tarjeta')
                                             ->label('Tarjeta')
                                             ->readonly()
                                             ->inlineLabel(true)
@@ -186,7 +199,7 @@ class CashboxOpenResource extends Resource
 ////                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [2, 3]);
 //                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_tarjeta, 2) . '</span>');
 //                                            }),
-                                        Forms\Components\TextInput::make('saldo_cheque')
+                                        TextInput::make('saldo_cheque')
                                             ->label('Cheques')
                                             ->inlineLabel(true)
                                             ->readonly()
@@ -197,14 +210,14 @@ class CashboxOpenResource extends Resource
 ////                                                $smalCashBoxEgresoTotal = (new GetCashBoxOpenedService())->getTotal(false, false, null, [4, 5]);
 //                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_cheques, 2) . '</span>');
 //                                            }),
-                                        Forms\Components\Placeholder::make('saldo_efectivo_ordenes')
+                                        Placeholder::make('saldo_efectivo_ordenes')
                                             ->label('Efectivo Ordenes')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 //                                                $smalCashBoxEgresoTotal = $openedCashBox = (new GetCashBoxOpenedService())->getTotal(true, true);;
                                                 return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_efectivo_ordenes, 2) . '</span>');
                                             }),
-                                        Forms\Components\TextInput::make('saldo_caja_chica')
+                                        TextInput::make('saldo_caja_chica')
                                             ->label('Caja Chica')
                                             ->readonly()
                                             ->inlineLabel(true)
@@ -215,21 +228,21 @@ class CashboxOpenResource extends Resource
 ////                                                $smalCashBoxIngresoTotal = (new GetCashBoxOpenedService())->minimalCashBoxTotal('Ingreso');
 //                                                return new HtmlString('<span style="font-weight: bold; font-size: 15px;">$ ' . number_format($resumen->saldo_caja_chica, 2) . '</span>');
 //                                            }),
-                                        Forms\Components\Placeholder::make('saldo_egresos_totales')
+                                        Placeholder::make('saldo_egresos_totales')
                                             ->label('-EGRESOS TOTALES')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
 
                                                 return new HtmlString('<span style="font-weight: bold; color:red; font-size: 15px;">-$ ' . number_format($resumen->egreso_total, 2) . '</span>');
                                             }),
-                                        Forms\Components\Placeholder::make('saldo_total_operaciones')
+                                        Placeholder::make('saldo_total_operaciones')
                                             ->label('SALDOS OPERACIONES')
                                             ->inlineLabel(true)
                                             ->content(function () use ($resumen) {
                                                 return new HtmlString('<span style=" border-top: #1e2c2e solid 1px; color:green; font-weight:  bold; font-size: 15px;">$ ' . number_format($resumen->saldo_total, 2) . '</span>');
                                             }),
                                     ])->columnSpan(1),
-                                Forms\Components\Section::make('Datos de cierre')
+                                Section::make('Datos de cierre')
                                     ->compact()
                                     ->icon('heroicon-o-shield-check')
                                     ->iconColor('danger')
@@ -240,7 +253,7 @@ class CashboxOpenResource extends Resource
                                     })
                                     ->schema([
 
-                                        Forms\Components\TextInput::make('cant_cien')
+                                        TextInput::make('cant_cien')
                                             ->label('100')
                                             ->prefix('$')
                                             ->default(0)
@@ -252,7 +265,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cincuenta')
+                                        TextInput::make('cant_cincuenta')
                                             ->label('50')
                                             ->prefix('$')
                                             ->default(0)
@@ -264,7 +277,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_veinte')
+                                        TextInput::make('cant_veinte')
                                             ->label('20')
                                             ->prefix('$')
                                             ->default(0)
@@ -276,7 +289,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_diez')
+                                        TextInput::make('cant_diez')
                                             ->label('10')
                                             ->prefix('$')
                                             ->default(0)
@@ -288,7 +301,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cinco')
+                                        TextInput::make('cant_cinco')
                                             ->label('5')
                                             ->prefix('$')
                                             ->default(0)
@@ -300,7 +313,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_uno')
+                                        TextInput::make('cant_uno')
                                             ->label('1')
                                             ->prefix('$')
                                             ->default(0)
@@ -312,7 +325,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cora')
+                                        TextInput::make('cant_cora')
                                             ->label('0.25')
                                             ->prefix('$')
                                             ->default(0)
@@ -324,7 +337,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cero_diez')
+                                        TextInput::make('cant_cero_diez')
                                             ->label('0.10')
                                             ->prefix('$')
                                             ->default(0)
@@ -336,7 +349,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cero_cinco')
+                                        TextInput::make('cant_cero_cinco')
                                             ->label('0.05')
                                             ->prefix('$')
                                             ->default(0)
@@ -348,7 +361,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('cant_cero_cero_uno')
+                                        TextInput::make('cant_cero_cero_uno')
                                             ->label('0.01')
                                             ->prefix('$')
                                             ->default(0)
@@ -360,7 +373,7 @@ class CashboxOpenResource extends Resource
                                             ->required()
                                             ->inlineLabel(true),
 
-                                        Forms\Components\TextInput::make('total_efectivo')
+                                        TextInput::make('total_efectivo')
                                             ->label('Total Efectivo')
                                             ->prefix('$')
                                             ->default(0)
@@ -373,7 +386,7 @@ class CashboxOpenResource extends Resource
 
                             ])->columns(2)
                         ,
-                        Forms\Components\Section::make('Cierre')
+                        Section::make('Cierre')
                             ->hidden(function (?CashBoxOpen $record = null) {
                                 if ($record === null) {
                                     return true;
@@ -381,7 +394,7 @@ class CashboxOpenResource extends Resource
                             })
                             ->columns(5)
                             ->schema([
-                                Forms\Components\DateTimePicker::make('closed_at')
+                                DateTimePicker::make('closed_at')
                                     ->label('Fecha de cierre')
                                     ->required()
                                     ->inlineLabel(false)
@@ -390,7 +403,7 @@ class CashboxOpenResource extends Resource
                                         return $record === null;
                                     }),
 
-                                Forms\Components\Placeholder::make('closed_amount')
+                                Placeholder::make('closed_amount')
                                     ->label('Monto Cierre')
                                     ->inlineLabel(false)
                                     ->content(function (callable $get) use ($resumen) {
@@ -404,7 +417,7 @@ class CashboxOpenResource extends Resource
                                             return true;
                                         }
                                     }),
-                                Forms\Components\TextInput::make('dh_cierre')
+                                TextInput::make('dh_cierre')
                                     ->label('DH')
                                     ->inlineLabel(false)
                                     ->prefix('$')
@@ -417,7 +430,7 @@ class CashboxOpenResource extends Resource
 
 
 
-        Forms\Components\Placeholder::make('hay_cierre')
+        Placeholder::make('hay_cierre')
                                     ->label('Hay')
                                     ->inlineLabel(false)
                                     ->reactive()
@@ -431,7 +444,7 @@ class CashboxOpenResource extends Resource
                                     })
                                     ->hidden(fn(?CashBoxOpen $record) => $record === null),
 
-                                Forms\Components\Placeholder::make('dif_cierre')
+                                Placeholder::make('dif_cierre')
                                     ->label('DIF')
                                     ->reactive()
                                     ->inlineLabel(false)
@@ -446,7 +459,7 @@ class CashboxOpenResource extends Resource
                                     ->hidden(fn(?CashBoxOpen $record) => $record === null),
 
 
-                                Forms\Components\Select::make('close_employee_id')
+                                Select::make('close_employee_id')
                                     ->relationship('closeEmployee', 'name', function ($query) {
                                         $whereHouse = auth()->user()->employee->branch_id;
                                         $query->where('branch_id', $whereHouse);
@@ -476,40 +489,40 @@ class CashboxOpenResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('cashbox.description')
+                TextColumn::make('cashbox.description')
                     ->placeholder('Caja')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('openEmployee.name')
+                TextColumn::make('openEmployee.name')
                     ->label('Aperturó')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('opened_at')
+                TextColumn::make('opened_at')
                     ->label('Fecha de apertura')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('open_amount')
+                TextColumn::make('open_amount')
                     ->label('Monto Apertura')
                     ->money('USD', true, locale: 'es_US')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('closed_at')
+                TextColumn::make('closed_at')
                     ->label('Fecha de cierre')
                     ->placeholder('Sin cerrar')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('saldo_total_operaciones')
+                TextColumn::make('saldo_total_operaciones')
                     ->label('Monto Cierre')
                     ->money('USD', true, locale: 'es_US')
                     ->placeholder('Sin cerrar')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('closeEmployee.name')
+                TextColumn::make('closeEmployee.name')
                     ->label('Cerró')
                     ->placeholder('Sin cerrar')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('status'),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -518,31 +531,31 @@ class CashboxOpenResource extends Resource
                 $query->orderby('created_at', 'desc');
             })
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'open' => 'Abierta',
                         'closed' => 'Cerrada',
                     ])
                     ->label('Estado'),
-                Tables\Filters\SelectFilter::make('cash_box_id')
+                SelectFilter::make('cash_box_id')
                     ->options(function () {
                         $whereHouse = auth()->user()->employee->branch_id;
-                        return \App\Models\CashBox::where('branch_id', $whereHouse)
+                        return CashBox::where('branch_id', $whereHouse)
                             ->get()
                             ->pluck('description', 'id');
                     })
                     ->label('Caja'),
             ])
             ->recordUrl(null)
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->label('Cerrar Caja')
                     ->icon('heroicon-o-shield-check')
                     ->hidden(function (CashboxOpen $record) {
                         return $record->status == 'closed';
                     })
                     ->color('danger'),
-                Tables\Actions\Action::make('print')
+                Action::make('print')
                     ->label('Imprimir')
                     ->icon('heroicon-o-printer')
                     ->color('primary')
@@ -553,8 +566,8 @@ class CashboxOpenResource extends Resource
                     ->openUrlInNewTab() // Esto asegura que se abra en una nueva pestaña
 
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -564,9 +577,9 @@ class CashboxOpenResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCashboxOpens::route('/'),
-            'create' => Pages\CreateCashboxOpen::route('/create'),
-            'edit' => Pages\EditCashboxOpen::route('/{record}/edit'),
+            'index' => ListCashboxOpens::route('/'),
+            'create' => CreateCashboxOpen::route('/create'),
+            'edit' => EditCashboxOpen::route('/{record}/edit'),
         ];
     }
 
@@ -597,7 +610,7 @@ class CashboxOpenResource extends Resource
             $difencia = $hay - $dh;
 //            dd($difencia,'=',);
             $set('dif_cierre', number_format($difencia, 2, '.', ''));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
         }
 
