@@ -8,7 +8,6 @@ use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\Sale;
 use App\Models\SaleItem;
-use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
@@ -90,7 +89,7 @@ class EditOrder extends EditRecord
                 ])
                 ->action(function (Actions\DeleteAction $delete) {
                     if ($this->record->is_dte) {
-                        PageAlert::make()
+                        Notification::make()
                             ->title('Error al anular venta')
                             ->body('No se puede cancelar una venta con DTE.')
                             ->danger()
@@ -128,13 +127,7 @@ class EditOrder extends EditRecord
 
     protected function afterSave(): void
     {
-//        Notification::make('Orden enviada')
-//            ->title('Orden enviada')
-//            ->body('La orden ha sido enviada correctamente')
-//            ->success()
-//            ->send();
-
-        PageAlert::make()
+        Notification::make()
             ->title('Orden enviada')
             ->body('La orden ha sido enviada correctamente')
             ->success()

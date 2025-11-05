@@ -6,8 +6,8 @@ use App\Filament\Resources\ContingencyResource;
 use App\Http\Controllers\ContingencyController;
 use App\Http\Controllers\DTEController;
 use App\Models\Contingency;
-use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
@@ -59,18 +59,18 @@ class ListContingencies extends ListRecords
                         $resultado = $dteController->contingencyDTE($descripcion);
 //                        dd($resultado);
                         if($resultado){
-                            PageAlert::make()
+                            Notification::make()
                                 ->title('Contingencia generada Exitosa')
                                 ->success()
                                 ->send();
                         }else{
-                            PageAlert::make()
+                            Notification::make()
                                 ->title('Fallo en envío')
                                 ->danger()
                                 ->send();
                         }
                     } else {
-                        PageAlert::make()
+                        Notification::make()
                             ->title('Se canceló el envío')
                             ->warning()
                             ->send();

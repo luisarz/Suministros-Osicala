@@ -11,7 +11,6 @@ use App\Models\InventoryGrouped;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Service\GetCashBoxOpenedService;
-use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -42,7 +41,7 @@ class EditCreditNote extends EditRecord
                 ->modalButton('Sí, Finalizar Nota')
                 ->action(function (Actions\EditAction $edit) {
                     if ($this->record->sale_total <= 0) {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar Nota')
                             ->body('El monto total de la Nota debe ser mayor a 0')
                             ->danger()
@@ -55,7 +54,7 @@ class EditCreditNote extends EditRecord
 
                     $documentType = $this->data['document_type_id'];
                     if ($documentType == "") {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Tipo de documento')
                             ->body('No se puede finalizar la venta, selecciona el tipo de documento a emitir')
                             ->danger()
@@ -66,7 +65,7 @@ class EditCreditNote extends EditRecord
 
 //                    $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBox(false);
 //                    if (!$openedCashBox) {
-//                        PageAlert::make('No se puede finalizar la venta')
+//                        Notification::make('No se puede finalizar la venta')
 //                            ->title('Caja cerrada')
 //                            ->body('No se puede finalizar la NOTA porque no hay caja abierta')
 //                            ->danger()
@@ -200,7 +199,7 @@ class EditCreditNote extends EditRecord
 //                    $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $documentType)->first();
 //                    $correlativo->current_number = $document_internal_number_new;
 //                    $correlativo->save();
-                    PageAlert::make()
+                    Notification::make()
                         ->title('Nota Finalizada')
                         ->body('Nota finalizada con éxito. # Comprobante **' . $document_internal_number_new . '**')
                         ->success()
@@ -222,7 +221,7 @@ class EditCreditNote extends EditRecord
                 ->modalButton('Sí, cancelar venta')
                 ->action(function (Actions\DeleteAction $delete) {
                     if ($this->record->is_dte) {
-                        PageAlert::make()
+                        Notification::make()
                             ->title('Error al anular venta')
                             ->body('No se puede cancelar una venta con DTE.')
                             ->danger()

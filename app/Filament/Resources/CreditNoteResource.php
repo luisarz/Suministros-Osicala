@@ -17,7 +17,6 @@ use App\Service\GetCashBoxOpenedService;
 use App\Tables\Actions\creditNotesActions;
 use App\Tables\Actions\dteActions;
 use Carbon\Carbon;
-use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
@@ -49,7 +48,7 @@ function updateTotalNC(mixed $idItem, array $data): void
     $change = $data['change'] ?? false;
     if ($cash < 0) {
 
-        PageAlert::make()
+        Notification::make()
             ->title('Saved successfully')
             ->body('El monto ingresado no puede ser menor que 0.')
             ->success()

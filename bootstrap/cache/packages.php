@@ -43,28 +43,6 @@
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
     ),
   ),
-  'devonab/filament-easy-footer' => 
-  array (
-    'aliases' => 
-    array (
-      'FilamentEasyFooter' => 'Devonab\\FilamentEasyFooter\\Facades\\EasyFooter',
-    ),
-    'providers' => 
-    array (
-      0 => 'Devonab\\FilamentEasyFooter\\EasyFooterServiceProvider',
-    ),
-  ),
-  'eightynine/filament-page-alerts' => 
-  array (
-    'aliases' => 
-    array (
-      'FilamentPageAlerts' => 'EightyNine\\FilamentPageAlerts\\Facades\\FilamentPageAlerts',
-    ),
-    'providers' => 
-    array (
-      0 => 'EightyNine\\FilamentPageAlerts\\FilamentPageAlertsServiceProvider',
-    ),
-  ),
   'filament/actions' => 
   array (
     'providers' => 
@@ -119,13 +97,6 @@
     'providers' => 
     array (
       0 => 'Filament\\Widgets\\WidgetsServiceProvider',
-    ),
-  ),
-  'hasnayeen/themes' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Hasnayeen\\Themes\\ThemesServiceProvider',
     ),
   ),
   'kirschbaum-development/eloquent-power-joins' => 

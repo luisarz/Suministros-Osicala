@@ -13,7 +13,6 @@ use App\Models\InventoryGrouped;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Service\GetCashBoxOpenedService;
-use EightyNine\FilamentPageAlerts\PageAlert;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -41,7 +40,7 @@ class EditAdjustmentInventory extends EditRecord
                     $id_sale = $this->record->id; // Obtener el registro de la compra
                     $ajusteProceso = adjustmentInventory::find($id_sale);
                     if ($ajusteProceso->monto <= 0) {
-                        PageAlert::make('No se puede finalizar la venta')
+                        Notification::make('No se puede finalizar la venta')
                             ->title('Error al finalizar proceso')
                             ->body('El monto total del proceso debe ser mayor a 0')
                             ->danger()
@@ -160,7 +159,7 @@ class EditAdjustmentInventory extends EditRecord
                     $ajusteProceso->status = "FINALIZADO";
                     $ajusteProceso->save();
 
-                    PageAlert::make()
+                    Notification::make()
                         ->title($tipoProceso)
                         ->body($tipoProceso . ' finalizada con éxito.')
                         ->success()
@@ -182,7 +181,7 @@ class EditAdjustmentInventory extends EditRecord
                 ->modalButton('Sí, cancelar venta')
                 ->action(function (Actions\DeleteAction $delete) {
                     if ($this->record->is_dte) {
-                        PageAlert::make()
+                        Notification::make()
                             ->title('Error al anular venta')
                             ->body('No se puede cancelar una venta con DTE.')
                             ->danger()
