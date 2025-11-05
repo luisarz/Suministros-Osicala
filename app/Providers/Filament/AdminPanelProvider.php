@@ -46,7 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->font('Poppins')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#fd0705'),
                 'gray' => Color::Zinc,
                 'danger' => Color::Red,
                 'info' => Color::Sky,
