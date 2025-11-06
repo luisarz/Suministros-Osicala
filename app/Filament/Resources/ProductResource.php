@@ -9,7 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Filters\SelectFilter;
 use App\Models\Category;
 use App\Models\Marca;
@@ -25,22 +24,20 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Support\HtmlString;
 
@@ -368,39 +365,36 @@ class ProductResource extends Resource
                     ->native(false),
             ])
             ->filtersFormColumns(3)
-            ->actionsPosition(Tables\Enums\ActionsPosition::BeforeColumns)
             ->recordActions([
-                ViewAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-eye')
-                    ->iconSize(IconSize::Medium)
-                    ->tooltip('Ver'),
                 EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary')
                     ->label('')
-                    ->icon('heroicon-m-pencil-square')
-                    ->iconSize(IconSize::Medium)
-                    ->color('warning')
-                    ->tooltip('Modificar'),
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Editar producto'),
+
                 ReplicateAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-document-duplicate')
-                    ->iconSize(IconSize::Medium)
-                    ->color('info')
-                    ->excludeAttributes(['sku', 'bar_code'])
-                    ->tooltip('Duplicar'),
-                DeleteAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-trash')
-                    ->iconSize(IconSize::Medium)
-                    ->color('danger')
-                    ->tooltip('Eliminar'),
-                RestoreAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-arrow-path')
-                    ->iconSize(IconSize::Medium)
+                    ->icon('heroicon-o-document-duplicate')
                     ->color('success')
-                    ->tooltip('Restaurar'),
-            ])
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Duplicar producto')
+                    ->excludeAttributes(['sku', 'bar_code']),
+
+                DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Eliminar producto'),
+
+                RestoreAction::make()
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('success')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Restaurar producto'),
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
