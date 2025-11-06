@@ -188,24 +188,32 @@ class ProductResource extends Resource
                     ])->columns(4),
 
                 Section::make('Imagen del Producto')
-                    ->description('Fotografía o imagen representativa')
+                    ->description('Fotografía o imagen representativa del producto')
                     ->icon('heroicon-o-photo')
                     ->schema([
                         FileUpload::make('images')
-                            ->label('Imagen')
+                            ->label('')
                             ->directory('products')
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '1:1',
                                 '4:3',
+                                '16:9',
                             ])
                             ->maxSize(2048)
                             ->openable()
                             ->downloadable()
-                            ->helperText('Tamaño máximo: 2MB. Formatos: JPG, PNG')
+                            ->imagePreviewHeight('250')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->uploadButtonPosition('left')
+                            ->uploadProgressIndicatorPosition('left')
+                            ->helperText('📸 Tamaño máximo: 2MB | Formatos: JPG, PNG, WEBP | Recomendado: 800x800px')
                             ->columnSpanFull(),
-                    ])->collapsible(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(false),
             ]);
     }
 
@@ -215,10 +223,13 @@ class ProductResource extends Resource
             ->columns([
                 ImageColumn::make('images')
                     ->label('Imagen')
-                    ->placeholder('Sin imagen')
-                    ->defaultImageUrl(url('storage/products/noimage.png'))
                     ->circular()
-                    ->size(50),
+                    ->size(60)
+                    ->defaultImageUrl(url('/storage/products/noimage.png'))
+                    ->extraImgAttributes([
+                        'class' => 'object-cover',
+                    ])
+                    ->tooltip(fn (Product $record): string => $record->name),
 
                 TextColumn::make('id')
                     ->label('ID')
