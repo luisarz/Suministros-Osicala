@@ -220,13 +220,20 @@ class ProductResource extends Resource
             ->columns([
                 ImageColumn::make('images')
                     ->label('Imagen')
+                    ->disk('public')
                     ->circular()
-                    ->size(60)
-                    ->defaultImageUrl(url('/storage/products/noimage.png'))
-                    ->extraImgAttributes([
-                        'class' => 'object-cover',
-                    ])
-                    ->tooltip(fn (Product $record): string => $record->name),
+                    ->defaultImageUrl(function ($record) {
+                        // Genera un avatar bonito con las iniciales del producto
+                        $nombre = urlencode($record->name);
+                        $iniciales = urlencode(substr($record->name, 0, 2));
+                        // Colores aleatorios pero consistentes basados en el nombre
+                        $colors = ['3b82f6', '8b5cf6', 'ec4899', 'f97316', '10b981', '06b6d4', 'f59e0b', 'ef4444'];
+                        $colorIndex = abs(crc32($record->name)) % count($colors);
+                        $bgColor = $colors[$colorIndex];
+
+                        return "https://ui-avatars.com/api/?name={$iniciales}&color=ffffff&background={$bgColor}&bold=true&size=128";
+                    })
+                    ->size(40),
 
                 TextColumn::make('id')
                     ->label('ID')
