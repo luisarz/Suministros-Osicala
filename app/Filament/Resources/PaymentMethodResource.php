@@ -29,7 +29,8 @@ class PaymentMethodResource extends Resource
 {
     protected static ?string $model = PaymentMethod::class;
 
-    protected static ?string $label = 'Cat-017 Métodos de pago';
+    protected static ?string $label = 'Cat-017 Método de pago';
+    protected static ?string $pluralLabel = 'Cat-017 Métodos de pago';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 17;
 

@@ -30,7 +30,8 @@ class DistritoResource extends Resource
 {
     protected static ?string $model = Distrito::class;
 
-    protected static  ?string $label= 'Cat-013 Municipios';
+    protected static ?string $label = 'Cat-013 Municipio';
+    protected static ?string $pluralLabel = 'Cat-013 Municipios';
     protected static ?bool $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 13;

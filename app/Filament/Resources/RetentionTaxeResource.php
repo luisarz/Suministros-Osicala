@@ -30,9 +30,10 @@ class RetentionTaxeResource extends Resource
 {
     protected static ?string $model = RetentionTaxe::class;
 
-protected static ?string $label = 'Cat-006 Retención IVA';
-protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
-protected static ?int $navigationSort = 6;
+    protected static ?string $label = 'Cat-006 Retención IVA';
+    protected static ?string $pluralLabel = 'Cat-006 Retenciones IVA';
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 6;
     public static function form(Schema $schema): Schema
     {
         return $schema

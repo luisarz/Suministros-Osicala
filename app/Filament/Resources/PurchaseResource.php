@@ -73,7 +73,8 @@ function updateTotaPurchase(mixed $idItem, array $data): void
 class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
-    protected static ?string $label = 'Compras';
+    protected static ?string $label = 'Compra';
+    protected static ?string $pluralLabel = 'Compras';
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

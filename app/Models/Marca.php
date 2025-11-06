@@ -12,7 +12,7 @@ class Marca extends Model
     protected $fillable = ['nombre', 'descripcion', 'imagen', 'estado'];
 
     protected $casts = [
-        'imagen' => 'array',
+        'estado' => 'boolean',
     ];
     public function productos(): HasMany
     {

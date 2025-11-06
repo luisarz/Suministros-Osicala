@@ -39,7 +39,8 @@ class CustomerResource extends Resource
     protected static ?string $model = Customer::class;
 
     protected static string | \UnitEnum | null $navigationGroup = "Facturación";
-    protected static ?string $label = 'Clientes';
+    protected static ?string $label = 'Cliente';
+    protected static ?string $pluralLabel = 'Clientes';
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'last_name', 'nrc', 'dui', 'nit', 'email', 'phone'];

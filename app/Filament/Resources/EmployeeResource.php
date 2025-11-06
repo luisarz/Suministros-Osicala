@@ -48,7 +48,8 @@ use NunoMaduro\Collision\Adapters\Phpunit\State;
 class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
-    protected static ?string $label = 'Empleados';
+    protected static ?string $label = 'Empleado';
+    protected static ?string $pluralLabel = 'Empleados';
     protected static string | \UnitEnum | null $navigationGroup = 'Recursos Humanos';
     protected static ?int $navigationSort = 2;
 

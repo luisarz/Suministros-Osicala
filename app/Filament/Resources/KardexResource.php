@@ -32,7 +32,8 @@ class KardexResource extends Resource
 {
     protected static ?string $model = Kardex::class;
 
-    protected static ?string $label = 'Kardex productos';
+    protected static ?string $label = 'Kardex producto';
+    protected static ?string $pluralLabel = 'Kardex productos';
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
     public static function form(Schema $schema): Schema

@@ -31,10 +31,11 @@ use Filament\Forms\Components\MarkdownEditor;
 class DepartamentoResource extends Resource
 {
     protected static ?string $model = Departamento::class;
-    protected static  ?string $label= 'Cat-012 Departamentos';
+    protected static ?string $label = 'Cat-012 Departamento';
+    protected static ?string $pluralLabel = 'Cat-012 Departamentos';
     protected static ?bool $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
-protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 12;
 
     public static function form(Schema $schema): Schema
     {

@@ -26,7 +26,8 @@ class DestinationEnviromentResource extends Resource
 {
     protected static ?string $model = DestinationEnviroment::class;
 
-    protected static ?string $label="Cat-001 Ambiente de Destino";
+    protected static ?string $label = 'Cat-001 Ambiente de Destino';
+    protected static ?string $pluralLabel = 'Cat-001 Ambientes de Destino';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 1;
 

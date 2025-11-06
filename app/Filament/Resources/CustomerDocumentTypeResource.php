@@ -28,7 +28,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CustomerDocumentTypeResource extends Resource
 {
     protected static ?string $model = CustomerDocumentType::class;
-    protected static ?string $label = 'Cat-022 T.  Doc. Cliente';
+    protected static ?string $label = 'Cat-022 T. Doc. Cliente';
+    protected static ?string $pluralLabel = 'Cat-022 T. Doc. Clientes';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 22;
 

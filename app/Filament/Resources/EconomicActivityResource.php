@@ -26,7 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class EconomicActivityResource extends Resource
 {
     protected static ?string $model = EconomicActivity::class;
-    protected static ?string $label = 'Cat-019 Actividades Económicas';
+    protected static ?string $label = 'Cat-019 Actividad Económica';
+    protected static ?string $pluralLabel = 'Cat-019 Actividades Económicas';
     protected static string $icon = 'heroicon-o-collection';
     protected static $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';

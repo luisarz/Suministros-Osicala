@@ -68,7 +68,9 @@ class MarcaResource extends Resource
                         FileUpload::make('imagen')
                             ->label('Logo de la marca')
                             ->image()
+                            ->disk('public')
                             ->directory('marcas')
+                            ->visibility('public')
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '1:1',
@@ -101,8 +103,19 @@ class MarcaResource extends Resource
 
                 ImageColumn::make('imagen')
                     ->label('Logo')
+                    ->disk('public')
                     ->circular()
-                    ->defaultImageUrl(url('/images/no-image.png'))
+                    ->defaultImageUrl(function ($record) {
+                        // Genera un avatar bonito con las iniciales de la marca
+                        $nombre = urlencode($record->nombre);
+                        $iniciales = urlencode(substr($record->nombre, 0, 2));
+                        // Colores aleatorios pero consistentes basados en el nombre
+                        $colors = ['3b82f6', '8b5cf6', 'ec4899', 'f97316', '10b981', '06b6d4', 'f59e0b', 'ef4444'];
+                        $colorIndex = abs(crc32($record->nombre)) % count($colors);
+                        $bgColor = $colors[$colorIndex];
+
+                        return "https://ui-avatars.com/api/?name={$iniciales}&color=ffffff&background={$bgColor}&bold=true&size=128";
+                    })
                     ->size(40),
 
                 TextColumn::make('nombre')

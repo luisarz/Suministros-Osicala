@@ -34,7 +34,8 @@ use Illuminate\Support\Facades\Auth;
 class AdjustmentInventoryResource extends Resource
 {
     protected static ?string $model = adjustmentInventory::class;
-    protected static ?string $label = 'Entradas/Salidas';
+    protected static ?string $label = 'Entrada/Salida';
+    protected static ?string $pluralLabel = 'Entradas/Salidas';
     protected static string | \UnitEnum | null $navigationGroup = "Inventario";
 
 

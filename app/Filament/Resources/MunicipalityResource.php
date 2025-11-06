@@ -36,7 +36,8 @@ class MunicipalityResource extends Resource
 
     protected static bool $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = "Catálogos Hacienda";
-    protected static ?string $label = 'Distritos';
+    protected static ?string $label = 'Distrito';
+    protected static ?string $pluralLabel = 'Distritos';
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?int $navigationSort = 4;
     public static function form(Schema $schema): Schema

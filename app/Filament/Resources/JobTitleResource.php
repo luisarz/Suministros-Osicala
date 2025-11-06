@@ -29,9 +29,10 @@ class JobTitleResource extends Resource
 {
     protected static ?string $model = JobTitle::class;
 
-protected static ?string $label = 'Cargos laborales';
-protected static string | \UnitEnum | null $navigationGroup = 'Recursos Humanos';
-protected static ?int $navigationSort = 1;
+    protected static ?string $label = 'Cargo laboral';
+    protected static ?string $pluralLabel = 'Cargos laborales';
+    protected static string | \UnitEnum | null $navigationGroup = 'Recursos Humanos';
+    protected static ?int $navigationSort = 1;
     public static function form(Schema $schema): Schema
     {
         return $schema

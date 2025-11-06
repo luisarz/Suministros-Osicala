@@ -29,7 +29,8 @@ class CashboxResource extends Resource
 {
     protected static ?string $model = CashBox::class;
 
-    protected static ?string $label = 'Cajas';
+    protected static ?string $label = 'Caja';
+    protected static ?string $pluralLabel = 'Cajas';
     protected static  string | \UnitEnum | null $navigationGroup="Configuración";
     protected static  ?int $navigationSort=3;
     public static function form(Schema $schema): Schema

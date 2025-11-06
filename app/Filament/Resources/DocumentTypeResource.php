@@ -29,9 +29,10 @@ use mysql_xdevapi\Schema;
 class DocumentTypeResource extends Resource
 {
     protected static ?string $model = DocumentType::class;
-protected static ?string $label = 'Cat-002 T. D. Tributario';
+    protected static ?string $label = 'Cat-002 T. D. Tributario';
+    protected static ?string $pluralLabel = 'Cat-002 T. D. Tributarios';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
-    protected static ?int $navigationSort=2;
+    protected static ?int $navigationSort = 2;
 
     public static function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {

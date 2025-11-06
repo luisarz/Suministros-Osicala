@@ -102,7 +102,8 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $label = 'Ordenes';
+    protected static ?string $label = 'Orden';
+    protected static ?string $pluralLabel = 'Órdenes';
     protected static string | \UnitEnum | null $navigationGroup = 'Facturación';
 
     protected static bool $softDelete = true;

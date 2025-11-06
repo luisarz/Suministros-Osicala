@@ -33,13 +33,10 @@ class OperationConditionResource extends Resource
 {
     protected static ?string $model = OperationCondition::class;
 
-    protected static ?string $label = 'Cat-016 Condiciones de operacióne';
+    protected static ?string $label = 'Cat-016 Condición de operación';
+    protected static ?string $pluralLabel = 'Cat-016 Condiciones de operación';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 16;
-    public static function getNavigationLabel(): string
-    {
-        return substr(static::$label, 0, -1);
-    }
     public static function form(Schema $schema): Schema
     {
         return $schema

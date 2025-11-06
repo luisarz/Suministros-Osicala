@@ -72,7 +72,8 @@ function updateTotaCredtiNotePurchase(mixed $idItem, array $data): void
 class CreditNotePurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
-    protected static ?string $label = 'Notas Crédito Compra';
+    protected static ?string $label = 'Nota Crédito Compra';
+    protected static ?string $pluralLabel = 'Notas Crédito Compra';
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

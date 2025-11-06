@@ -48,7 +48,8 @@ use Illuminate\Support\HtmlString;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-    protected static ?string $label = 'Prodúctos';
+    protected static ?string $label = 'Producto';
+    protected static ?string $pluralLabel = 'Productos';
     protected static string | \UnitEnum | null $navigationGroup = 'Almacén';
     protected static ?string $recordTitleAttribute = 'name';
 

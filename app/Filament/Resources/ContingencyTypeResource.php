@@ -25,6 +25,7 @@ class ContingencyTypeResource extends Resource
     protected static ?string $model = ContingencyType::class;
 
     protected static ?string $label = 'CAT-005 Tipo de Contingencia';
+    protected static ?string $pluralLabel = 'CAT-005 Tipos de Contingencia';
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 5;
 

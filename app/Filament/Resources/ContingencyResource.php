@@ -26,6 +26,7 @@ class ContingencyResource extends Resource
     protected static string | \UnitEnum | null $navigationGroup = 'Configuración';
     protected static ?int $navigationSort = 4;
     protected static ?string $label = 'Trans. Contingencia';
+    protected static ?string $pluralLabel = 'Trans. Contingencias';
 
 
     public static function table(Table $table): Table

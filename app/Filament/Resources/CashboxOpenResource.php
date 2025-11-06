@@ -35,7 +35,8 @@ class CashboxOpenResource extends Resource
     protected static ?string $model = CashBoxOpen::class;
 
 //    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    public static ?string $label = "Apertura de Cajas";
+    protected static ?string $label = "Apertura de Caja";
+    protected static ?string $pluralLabel = "Aperturas de Cajas";
     public static string | \UnitEnum | null $navigationGroup = 'Facturación';
 
 

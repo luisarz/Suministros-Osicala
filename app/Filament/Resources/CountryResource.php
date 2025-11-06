@@ -28,7 +28,8 @@ class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
-    protected static  ?string $label= 'Cat-020 Paises';
+    protected static ?string $label = 'Cat-020 País';
+    protected static ?string $pluralLabel = 'Cat-020 Países';
     protected static ?bool $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
     protected static ?int $navigationSort = 20;

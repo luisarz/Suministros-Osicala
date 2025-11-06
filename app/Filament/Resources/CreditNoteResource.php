@@ -101,7 +101,8 @@ class CreditNoteResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $label = 'Notas';
+    protected static ?string $label = 'Nota de Crédito';
+    protected static ?string $pluralLabel = 'Notas de Crédito';
     protected static string | \UnitEnum | null $navigationGroup = 'Facturación';
     protected static bool $softDelete = true;
 

@@ -37,7 +37,8 @@ use Filament\Tables\Table;
 class ProviderResource extends Resource
 {
     protected static ?string $model = Provider::class;
-    protected static ?string $label = 'Proveedores';
+    protected static ?string $label = 'Proveedor';
+    protected static ?string $pluralLabel = 'Proveedores';
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
 

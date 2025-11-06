@@ -29,6 +29,7 @@ class PersonTypeResource extends Resource
 {
     protected static ?string $model = personType::class;
     protected static ?string $label = 'Cat-029 Tipo Persona';
+    protected static ?string $pluralLabel = 'Cat-029 Tipos Persona';
     protected static ?int $navigationSort = 29;
     protected static string | \UnitEnum | null $navigationGroup = 'Catálogos Hacienda';
 
