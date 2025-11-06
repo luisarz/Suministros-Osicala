@@ -368,6 +368,7 @@ class ProductResource extends Resource
                     ->native(false),
             ])
             ->filtersFormColumns(3)
+            ->actionsPosition(Tables\Enums\ActionsPosition::BeforeColumns)
             ->recordActions([
                 ViewAction::make()
                     ->label('')
@@ -399,7 +400,7 @@ class ProductResource extends Resource
                     ->iconSize(IconSize::Medium)
                     ->color('success')
                     ->tooltip('Restaurar'),
-            ], position: Tables\Enums\ActionsPosition::BeforeColumns)
+            ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
