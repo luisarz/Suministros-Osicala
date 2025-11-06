@@ -12,13 +12,11 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\BulkAction;
-use Filament\Tables;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\MarcaResource\RelationManagers\ProductosRelationManagerRelationManager;
@@ -38,7 +36,7 @@ use Illuminate\Database\Eloquent\Collection;
 class MarcaResource extends Resource
 {
     protected static ?string $model = Marca::class;
-    protected static ?string $label = 'Marca';
+    protected static ?string $label = 'Marcas';
     protected static ?string $pluralLabel = 'Marcas';
     protected static bool $softDelete = true;
     protected static string | \UnitEnum | null $navigationGroup = 'Almacén';
@@ -48,34 +46,27 @@ class MarcaResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Información General')
-                    ->description('Datos básicos de la marca')
-                    ->icon('heroicon-o-information-circle')
+                Section::make('Información de la marca')
+                    ->description('Complete los datos de la marca de productos')
                     ->schema([
                         TextInput::make('nombre')
-                            ->label('Nombre de la Marca')
+                            ->label('Nombre de la marca')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
                             ->placeholder('Ej: Samsung, Sony, Nike, etc.')
-                            ->helperText('Nombre oficial de la marca')
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
 
                         TextInput::make('descripcion')
                             ->label('Descripción')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Breve descripción de la marca')
-                            ->helperText('Información adicional sobre la marca y sus productos')
-                            ->columnSpanFull(),
-                    ])->columns(1),
+                            ->helperText('Ingrese una descripción breve de la marca')
+                            ->columnSpan(2),
 
-                Section::make('Logo de la Marca')
-                    ->description('Imagen representativa de la marca')
-                    ->icon('heroicon-o-photo')
-                    ->schema([
                         FileUpload::make('imagen')
-                            ->label('')
+                            ->label('Logo de la marca')
                             ->image()
                             ->disk('public')
                             ->directory('marcas')
@@ -83,33 +74,19 @@ class MarcaResource extends Resource
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '1:1',
-                                '4:3',
                                 '16:9',
                             ])
                             ->maxSize(2048)
-                            ->openable()
-                            ->downloadable()
-                            ->imagePreviewHeight('250')
-                            ->panelLayout('integrated')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->uploadButtonPosition('left')
-                            ->uploadProgressIndicatorPosition('left')
-                            ->helperText('📸 Tamaño máximo: 2MB | Formatos: JPG, PNG, WEBP | Recomendado: 512x512px')
-                            ->columnSpanFull(),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                            ->helperText('Tamaño máximo: 2MB. Formatos: JPG, PNG')
+                            ->columnSpan(1),
 
-                Section::make('Configuración')
-                    ->description('Estado de la marca')
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->schema([
                         Toggle::make('estado')
-                            ->label('Marca Activa')
-                            ->helperText('Solo las marcas activas estarán disponibles para productos')
+                            ->label('Estado activo')
+                            ->helperText('Solo las marcas activas estarán disponibles')
                             ->default(true)
-                            ->inline(false),
-                    ]),
+                            ->inline(false)
+                            ->columnSpan(1),
+                    ])->columns(2),
             ]);
     }
 
@@ -128,7 +105,6 @@ class MarcaResource extends Resource
                     ->label('Logo')
                     ->disk('public')
                     ->circular()
-                    ->size(60)
                     ->defaultImageUrl(function ($record) {
                         // Genera un avatar bonito con las iniciales de la marca
                         $nombre = urlencode($record->nombre);
@@ -140,10 +116,7 @@ class MarcaResource extends Resource
 
                         return "https://ui-avatars.com/api/?name={$iniciales}&color=ffffff&background={$bgColor}&bold=true&size=128";
                     })
-                    ->extraImgAttributes([
-                        'class' => 'object-cover',
-                    ])
-                    ->tooltip(fn (Marca $record): string => $record->nombre),
+                    ->size(40),
 
                 TextColumn::make('nombre')
                     ->label('Marca')
@@ -219,38 +192,31 @@ class MarcaResource extends Resource
                     )
                     ->native(false),
             ])
-            ->actionsPosition(Tables\Enums\ActionsPosition::BeforeColumns)
             ->recordActions([
-                ViewAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-eye')
-                    ->iconSize(IconSize::Medium)
-                    ->tooltip('Ver'),
-
                 EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary')
                     ->label('')
-                    ->icon('heroicon-m-pencil-square')
-                    ->iconSize(IconSize::Medium)
-                    ->color('warning')
-                    ->tooltip('Modificar'),
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Editar marca'),
 
                 ReplicateAction::make()
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('success')
                     ->label('')
-                    ->icon('heroicon-m-document-duplicate')
-                    ->iconSize(IconSize::Medium)
-                    ->color('info')
-                    ->tooltip('Duplicar')
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Duplicar marca')
                     ->excludeAttributes(['imagen'])
                     ->beforeReplicaSaved(function ($record, $replica): void {
                         $replica->nombre = $record->nombre . ' (Copia)';
                     }),
 
                 DeleteAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-trash')
-                    ->iconSize(IconSize::Medium)
+                    ->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->tooltip('Eliminar')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->tooltip('Eliminar marca')
                     ->before(function (DeleteAction $action, Marca $record) {
                         $productosCount = $record->productos()->count();
 
@@ -265,14 +231,7 @@ class MarcaResource extends Resource
                             $action->cancel();
                         }
                     }),
-
-                RestoreAction::make()
-                    ->label('')
-                    ->icon('heroicon-m-arrow-path')
-                    ->iconSize(IconSize::Medium)
-                    ->color('success')
-                    ->tooltip('Restaurar'),
-            ])
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
@@ -337,10 +296,7 @@ class MarcaResource extends Resource
             ->emptyStateHeading('No hay marcas registradas')
             ->emptyStateDescription('Comience creando su primera marca de productos')
             ->emptyStateIcon('heroicon-o-tag')
-            ->striped()
-            ->persistFiltersInSession()
-            ->persistSearchInSession()
-            ->persistColumnSearchesInSession();
+            ->striped();
     }
 
     public static function getRelations(): array
