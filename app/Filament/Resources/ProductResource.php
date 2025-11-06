@@ -369,32 +369,37 @@ class ProductResource extends Resource
             ])
             ->filtersFormColumns(3)
             ->recordActions([
-                ActionGroup::make([
-                    ViewAction::make()
-                        ->label('Ver')
-                        ->iconSize(IconSize::Large),
-                    EditAction::make()
-                        ->label('Modificar')
-                        ->iconSize(IconSize::Large)
-                        ->color('warning'),
-                    ReplicateAction::make()
-                        ->label('Duplicar')
-                        ->iconSize(IconSize::Large)
-                        ->excludeAttributes(['sku', 'bar_code']),
-                    DeleteAction::make()
-                        ->label('Eliminar')
-                        ->iconSize(IconSize::Large)
-                        ->color('danger'),
-                    RestoreAction::make()
-                        ->label('Restaurar')
-                        ->iconSize(IconSize::Large)
-                        ->color('success'),
-                ])
-                ->link()
-                ->label('Acciones')
-                ->icon('heroicon-m-ellipsis-vertical')
-                ->color('gray'),
-            ])
+                ViewAction::make()
+                    ->label('')
+                    ->icon('heroicon-m-eye')
+                    ->iconSize(IconSize::Medium)
+                    ->tooltip('Ver'),
+                EditAction::make()
+                    ->label('')
+                    ->icon('heroicon-m-pencil-square')
+                    ->iconSize(IconSize::Medium)
+                    ->color('warning')
+                    ->tooltip('Modificar'),
+                ReplicateAction::make()
+                    ->label('')
+                    ->icon('heroicon-m-document-duplicate')
+                    ->iconSize(IconSize::Medium)
+                    ->color('info')
+                    ->excludeAttributes(['sku', 'bar_code'])
+                    ->tooltip('Duplicar'),
+                DeleteAction::make()
+                    ->label('')
+                    ->icon('heroicon-m-trash')
+                    ->iconSize(IconSize::Medium)
+                    ->color('danger')
+                    ->tooltip('Eliminar'),
+                RestoreAction::make()
+                    ->label('')
+                    ->icon('heroicon-m-arrow-path')
+                    ->iconSize(IconSize::Medium)
+                    ->color('success')
+                    ->tooltip('Restaurar'),
+            ], position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
