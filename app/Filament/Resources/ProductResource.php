@@ -4,42 +4,38 @@ namespace App\Filament\Resources;
 
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid as FormGrid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use App\Models\Category;
 use App\Models\Marca;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ForceDeleteBulkAction;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
-use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
-use Filament\Forms;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\IconSize;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Storage;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use Filament\Tables\Columns\ImageColumn;
-use Illuminate\Support\HtmlString;
 
 
 class ProductResource extends Resource
@@ -49,6 +45,7 @@ class ProductResource extends Resource
     protected static ?string $pluralLabel = 'Productos';
     protected static string | \UnitEnum | null $navigationGroup = 'Almacén';
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?int $navigationSort = 3;
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -68,130 +65,146 @@ class ProductResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Información General')
-                    ->description('Datos básicos del producto')
-                    ->icon('heroicon-o-information-circle')
+                Section::make('Información del Producto')
+                    ->description('Configure los detalles del producto o servicio')
+                    ->icon('heroicon-o-cube')
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nombre del Producto')
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('Ej: Aceite para motor 20W-50')
-                            ->helperText('Nombre completo y descriptivo del producto')
-                            ->columnSpanFull(),
-
-                        TextInput::make('aplications')
-                            ->label('Aplicaciones')
-                            ->placeholder('Motor; Transmisión; Hidráulico')
-                            ->helperText('Separar con punto y coma (;)')
-                            ->columnSpanFull(),
-
-                        TextInput::make('sku')
-                            ->label('SKU (Código Interno)')
-                            ->maxLength(255)
-                            ->placeholder('Ej: ACE-20W50-001')
-                            ->helperText('Código único del producto en el sistema')
-                            ->unique(ignoreRecord: true)
-                            ->alphaDash(),
-
-                        TextInput::make('bar_code')
-                            ->label('Código de Barras')
-                            ->maxLength(255)
-                            ->placeholder('Ej: 7501234567890')
-                            ->helperText('Código de barras del fabricante (EAN/UPC)')
-                            ->unique(ignoreRecord: true)
-                            ->numeric(),
-
-                    ])->columns(2),
-
-                Section::make('Clasificación')
-                    ->description('Categorización del producto')
-                    ->icon('heroicon-o-tag')
-                    ->schema([
-                        Select::make('category_id')
-                            ->label('Categoría')
-                            ->relationship(
-                                name: 'category',
-                                titleAttribute: 'name',
-                                modifyQueryUsing: fn ($query) => $query->whereNotNull('parent_id')
-                            )
-                            ->preload()
-                            ->searchable()
-                            ->required()
-                            ->createOptionForm([
+                        FormGrid::make(2)
+                            ->schema([
                                 TextInput::make('name')
-                                    ->label('Nombre de categoría')
-                                    ->required(),
-                                Select::make('parent_id')
-                                    ->label('Categoría padre')
-                                    ->relationship('parent', 'name')
+                                    ->label('Nombre del Producto')
                                     ->required()
-                            ])
-                            ->helperText('Selecciona o crea una categoría'),
+                                    ->maxLength(255)
+                                    ->placeholder('Ej: Aceite para motor 20W-50')
+                                    ->helperText('Nombre descriptivo del producto o servicio')
+                                    ->columnSpan(2),
 
-                        Select::make('marca_id')
-                            ->label('Marca')
-                            ->preload()
-                            ->searchable()
-                            ->relationship('marca', 'nombre')
-                            ->required()
-                            ->createOptionForm([
-                                TextInput::make('nombre')
-                                    ->label('Nombre de marca')
-                                    ->required(),
-                                FileUpload::make('logo')
-                                    ->label('Logo')
-                                    ->image()
-                                    ->directory('marcas')
-                            ])
-                            ->helperText('Selecciona o crea una marca'),
+                                TextInput::make('aplications')
+                                    ->label('Aplicaciones')
+                                    ->placeholder('Ej: Motor; Transmisión; Hidráulico')
+                                    ->helperText('Separar con punto y coma (;)')
+                                    ->columnSpan(2),
+                            ]),
 
-                        Select::make('unit_measurement_id')
-                            ->label('Unidad de Medida')
-                            ->preload()
-                            ->searchable()
-                            ->relationship('unitMeasurement', 'description')
-                            ->required()
-                            ->helperText('Unidad de presentación del producto'),
+                        FormGrid::make(2)
+                            ->schema([
+                                TextInput::make('sku')
+                                    ->label('SKU')
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true)
+                                    ->placeholder('Ej: ACE-20W50-001')
+                                    ->helperText('Código único del producto (Stock Keeping Unit)')
+                                    ->columnSpan(1),
 
-                    ])->columns(3),
+                                TextInput::make('bar_code')
+                                    ->label('Código de Barras')
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true)
+                                    ->placeholder('Ej: 7501234567890')
+                                    ->helperText('Código de barras único para escaneo')
+                                    ->columnSpan(1),
+                            ]),
+
+                        FormGrid::make(3)
+                            ->schema([
+                                Select::make('category_id')
+                                    ->label('Categoría')
+                                    ->relationship(
+                                        name: 'category',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn ($query) => $query->whereNotNull('parent_id')
+                                    )
+                                    ->preload()
+                                    ->searchable()
+                                    ->required()
+                                    ->createOptionForm([
+                                        TextInput::make('name')
+                                            ->label('Nombre de categoría')
+                                            ->required(),
+                                        Select::make('parent_id')
+                                            ->label('Categoría padre')
+                                            ->relationship('parent', 'name')
+                                            ->required()
+                                    ])
+                                    ->placeholder('Seleccione una categoría')
+                                    ->helperText('Línea o categoría del producto')
+                                    ->columnSpan(1),
+
+                                Select::make('marca_id')
+                                    ->label('Marca')
+                                    ->preload()
+                                    ->searchable()
+                                    ->relationship('marca', 'nombre')
+                                    ->required()
+                                    ->createOptionForm([
+                                        TextInput::make('nombre')
+                                            ->label('Nombre de marca')
+                                            ->required(),
+                                        FileUpload::make('logo')
+                                            ->label('Logo')
+                                            ->image()
+                                            ->directory('marcas')
+                                    ])
+                                    ->placeholder('Seleccione una marca')
+                                    ->helperText('Marca o fabricante')
+                                    ->columnSpan(1),
+
+                                Select::make('unit_measurement_id')
+                                    ->label('Unidad de Medida')
+                                    ->preload()
+                                    ->searchable()
+                                    ->relationship('unitMeasurement', 'description')
+                                    ->required()
+                                    ->placeholder('Seleccione unidad')
+                                    ->helperText('Presentación o unidad de venta')
+                                    ->columnSpan(1),
+                            ]),
+                    ]),
 
                 Section::make('Configuración del Producto')
-                    ->description('Opciones de comportamiento del producto')
+                    ->description('Configure las propiedades y características')
                     ->icon('heroicon-o-cog-6-tooth')
                     ->schema([
-                        Toggle::make('is_service')
-                            ->label('Es un Servicio')
-                            ->helperText('Activar si es un servicio en lugar de producto físico')
-                            ->inline(false),
+                        FormGrid::make(4)
+                            ->schema([
+                                Toggle::make('is_service')
+                                    ->label('Es un Servicio')
+                                    ->default(false)
+                                    ->inline(false)
+                                    ->helperText('Marcar si es servicio, desmarcar si es producto físico'),
 
-                        Toggle::make('is_active')
-                            ->label('Producto Activo')
-                            ->default(true)
-                            ->helperText('Desactivar para ocultar de ventas sin eliminar')
-                            ->inline(false),
+                                Toggle::make('is_active')
+                                    ->label('Producto Activo')
+                                    ->default(true)
+                                    ->inline(false)
+                                    ->helperText('Solo productos activos están disponibles'),
 
-                        Toggle::make('is_grouped')
-                            ->label('Producto Compuesto')
-                            ->default(false)
-                            ->helperText('Activar si el producto está compuesto por otros productos')
-                            ->inline(false),
+                                Toggle::make('is_grouped')
+                                    ->label('Producto Compuesto')
+                                    ->default(false)
+                                    ->inline(false)
+                                    ->helperText('Producto compuesto por varios artículos'),
 
-                        Toggle::make('is_taxed')
-                            ->label('Producto Gravado')
-                            ->default(true)
-                            ->helperText('Aplica IVA en ventas y compras')
-                            ->inline(false),
-                    ])->columns(4),
+                                Toggle::make('is_taxed')
+                                    ->label('Producto Gravado')
+                                    ->default(true)
+                                    ->inline(false)
+                                    ->helperText('Aplica IVA y otros impuestos'),
+                            ]),
+                    ]),
 
-                Section::make('Imagen del Producto')
-                    ->description('Fotografía o imagen representativa del producto')
+                Section::make('Imágenes del Producto')
+                    ->description('Cargue imágenes del producto (máximo 2MB por imagen)')
                     ->icon('heroicon-o-photo')
                     ->schema([
                         FileUpload::make('images')
-                            ->label('')
+                            ->label('Imágenes')
+                            ->disk('public')
+                            ->visibility('public')
                             ->directory('products')
                             ->image()
+                            ->multiple()
+                            ->maxFiles(5)
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '1:1',
@@ -199,18 +212,12 @@ class ProductResource extends Resource
                                 '16:9',
                             ])
                             ->maxSize(2048)
+                            ->reorderable()
                             ->openable()
                             ->downloadable()
-                            ->imagePreviewHeight('250')
-                            ->panelLayout('integrated')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->uploadButtonPosition('left')
-                            ->uploadProgressIndicatorPosition('left')
-                            ->helperText('📸 Tamaño máximo: 2MB | Formatos: JPG, PNG, WEBP | Recomendado: 800x800px')
+                            ->helperText('Puede cargar hasta 5 imágenes. Recomendado: 800x800px')
                             ->columnSpanFull(),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                    ]),
             ]);
     }
 
@@ -218,176 +225,254 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('#')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->size('sm'),
+
                 ImageColumn::make('images')
                     ->label('Imagen')
                     ->disk('public')
                     ->circular()
-                    ->defaultImageUrl(function ($record) {
-                        // Genera un avatar bonito con las iniciales del producto
-                        $nombre = urlencode($record->name);
-                        $iniciales = urlencode(substr($record->name, 0, 2));
-                        // Colores aleatorios pero consistentes basados en el nombre
-                        $colors = ['3b82f6', '8b5cf6', 'ec4899', 'f97316', '10b981', '06b6d4', 'f59e0b', 'ef4444'];
-                        $colorIndex = abs(crc32($record->name)) % count($colors);
-                        $bgColor = $colors[$colorIndex];
-
-                        return "https://ui-avatars.com/api/?name={$iniciales}&color=ffffff&background={$bgColor}&bold=true&size=128";
-                    })
-                    ->size(40),
-
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->defaultImageUrl(fn ($record) =>
+                        'https://ui-avatars.com/api/?name=' . urlencode($record->name) .
+                        '&color=ffffff&background=01d5f2&bold=true&size=128'
+                    )
+                    ->size(40)
+                    ->toggleable(),
 
                 TextColumn::make('name')
                     ->label('Producto')
-                    ->weight(FontWeight::SemiBold)
-                    ->sortable()
-                    ->icon('heroicon-m-cube')
-                    ->wrap()
                     ->searchable()
-                    ->description(fn (Product $record): string => $record->sku ? "SKU: {$record->sku}" : ''),
-
-                TextColumn::make('category.name')
-                    ->label('Categoría')
-                    ->icon('heroicon-m-tag')
-                    ->badge()
-                    ->color('info')
                     ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('marca.nombre')
-                    ->label('Marca')
-                    ->icon('heroicon-m-check-badge')
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('unitMeasurement.description')
-                    ->label('U. Medida')
-                    ->icon('heroicon-m-scale')
-                    ->badge()
-                    ->color('gray')
-                    ->sortable(),
-
-                TextColumn::make('aplications')
-                    ->label('Aplicaciones')
-                    ->badge()
-                    ->icon('heroicon-m-wrench-screwdriver')
-                    ->separator(';')
-                    ->limit(2)
-                    ->searchable()
-                    ->toggleable(),
+                    ->weight('medium')
+                    ->icon('heroicon-o-cube')
+                    ->iconColor('primary')
+                    ->description(fn (Product $record): ?string =>
+                        $record->aplications
+                            ? 'Aplicaciones: ' . str_replace(';', ' • ', $record->aplications)
+                            : null
+                    ),
 
                 TextColumn::make('sku')
                     ->label('SKU')
-                    ->copyable()
-                    ->icon('heroicon-m-qr-code')
-                    ->copyMessage('SKU copiado')
                     ->searchable()
-                    ->toggleable(),
+                    ->icon('heroicon-m-qr-code')
+                    ->copyable()
+                    ->copyMessage('SKU copiado')
+                    ->copyMessageDuration(1500)
+                    ->placeholder('Sin SKU')
+                    ->toggleable()
+                    ->size('sm'),
 
                 TextColumn::make('bar_code')
+                    ->label('Código de Barras')
+                    ->searchable()
                     ->icon('heroicon-m-bars-3-bottom-left')
-                    ->label('Código Barras')
-                    ->toggleable(isToggledHiddenByDefault: true)
                     ->copyable()
-                    ->searchable(),
+                    ->copyMessage('Código copiado')
+                    ->placeholder('Sin código')
+                    ->toggleable()
+                    ->size('sm'),
 
+                TextColumn::make('category.name')
+                    ->label('Categoría')
+                    ->badge()
+                    ->color('info')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('marca.nombre')
+                    ->label('Marca')
+                    ->badge()
+                    ->color('primary')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('unitMeasurement.description')
+                    ->label('Unidad')
+                    ->badge()
+                    ->color('gray')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('inventories_count')
+                    ->label('Stock')
+                    ->counts('inventories')
+                    ->formatStateUsing(fn ($state) =>
+                        $state > 0
+                            ? "{$state} " . ($state === 1 ? 'sucursal' : 'sucursales')
+                            : 'Sin stock'
+                    )
+                    ->badge()
+                    ->color(fn ($state) => match(true) {
+                        $state === 0 => 'danger',
+                        $state < 3 => 'warning',
+                        default => 'success',
+                    })
+                    ->sortable()
+                    ->alignCenter(),
+
+                IconColumn::make('is_service')
+                    ->label('Tipo')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-wrench-screwdriver')
+                    ->falseIcon('heroicon-o-cube')
+                    ->trueColor('info')
+                    ->falseColor('gray')
+                    ->sortable()
+                    ->alignCenter()
+                    ->toggleable(),
+
+                TextColumn::make('created_at')
+                    ->label('Fecha Creación')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->size('sm'),
+
+                TextColumn::make('updated_at')
+                    ->label('Última Actualización')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->size('sm'),
             ])
-            ->paginationPageOptions([
-                10, 25, 50, 100
-            ])
-            ->defaultSort('id', 'desc')
+            ->defaultSort('name', 'asc')
             ->filters([
                 SelectFilter::make('category_id')
                     ->label('Categoría')
                     ->searchable()
                     ->preload()
-                    ->multiple()
                     ->relationship('category', 'name')
-                    ->options(fn() => Category::whereNotNull('parent_id')->pluck('name', 'id')->toArray()),
+                    ->placeholder('Todas las categorías'),
 
                 SelectFilter::make('marca_id')
                     ->label('Marca')
                     ->searchable()
                     ->preload()
-                    ->multiple()
                     ->relationship('marca', 'nombre')
-                    ->options(fn() => Marca::pluck('nombre', 'id')->toArray()),
+                    ->placeholder('Todas las marcas'),
 
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Estado')
-                    ->placeholder('Todos')
-                    ->trueLabel('Activos')
-                    ->falseLabel('Inactivos')
-                    ->native(false),
-
-                Tables\Filters\TernaryFilter::make('is_service')
+                TernaryFilter::make('is_service')
                     ->label('Tipo')
                     ->placeholder('Todos')
                     ->trueLabel('Servicios')
-                    ->falseLabel('Productos')
-                    ->native(false),
+                    ->falseLabel('Productos'),
 
-                Tables\Filters\TernaryFilter::make('is_taxed')
-                    ->label('Gravado')
+                TernaryFilter::make('has_image')
+                    ->label('Con Imagen')
                     ->placeholder('Todos')
-                    ->trueLabel('Con IVA')
-                    ->falseLabel('Sin IVA')
-                    ->native(false),
+                    ->trueLabel('Con imagen')
+                    ->falseLabel('Sin imagen')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('images'),
+                        false: fn ($query) => $query->whereNull('images'),
+                    ),
+
+                TernaryFilter::make('has_inventory')
+                    ->label('Con Inventario')
+                    ->placeholder('Todos')
+                    ->trueLabel('Con inventario')
+                    ->falseLabel('Sin inventario')
+                    ->queries(
+                        true: fn ($query) => $query->has('inventories'),
+                        false: fn ($query) => $query->doesntHave('inventories'),
+                    ),
 
                 TrashedFilter::make()
-                    ->label('Eliminados')
-                    ->native(false),
+                    ->label('Eliminados'),
             ])
-            ->filtersFormColumns(3)
             ->recordActions([
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->color('primary')
                     ->label('')
                     ->iconSize(IconSize::Large)
-                    ->tooltip('Editar producto'),
+                    ->color('primary')
+                    ->tooltip('Editar producto')
+                    ->modalHeading('Editar Producto')
+                    ->modalSubmitActionLabel('Guardar cambios')
+                    ->successNotificationTitle('Producto actualizado correctamente'),
 
                 ReplicateAction::make()
                     ->icon('heroicon-o-document-duplicate')
-                    ->color('success')
                     ->label('')
                     ->iconSize(IconSize::Large)
+                    ->color('success')
                     ->tooltip('Duplicar producto')
-                    ->excludeAttributes(['sku', 'bar_code']),
+                    ->modalHeading('Duplicar Producto')
+                    ->modalSubmitActionLabel('Duplicar')
+                    ->excludeAttributes(['name', 'sku', 'bar_code'])
+                    ->successNotificationTitle('Producto duplicado correctamente'),
 
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->color('danger')
                     ->label('')
                     ->iconSize(IconSize::Large)
-                    ->tooltip('Eliminar producto'),
+                    ->color('danger')
+                    ->tooltip('Eliminar producto')
+                    ->requiresConfirmation()
+                    ->modalHeading('Eliminar Producto')
+                    ->modalDescription('¿Está seguro de eliminar este producto? Podrá recuperarlo después.')
+                    ->modalSubmitActionLabel('Sí, eliminar')
+                    ->modalCancelActionLabel('Cancelar')
+                    ->successNotificationTitle('Producto eliminado correctamente'),
 
                 RestoreAction::make()
                     ->icon('heroicon-o-arrow-path')
-                    ->color('success')
                     ->label('')
                     ->iconSize(IconSize::Large)
-                    ->tooltip('Restaurar producto'),
+                    ->color('success')
+                    ->tooltip('Restaurar producto')
+                    ->successNotificationTitle('Producto restaurado correctamente'),
+
+                ForceDeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('danger')
+                    ->tooltip('Eliminar permanentemente')
+                    ->requiresConfirmation()
+                    ->modalHeading('Eliminar Permanentemente')
+                    ->modalDescription('¿Está seguro? Esta acción NO se puede deshacer.')
+                    ->modalSubmitActionLabel('Sí, eliminar permanentemente')
+                    ->successNotificationTitle('Producto eliminado permanentemente'),
             ], position: RecordActionsPosition::BeforeColumns)
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Eliminar seleccionados'),
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->modalHeading('Eliminar Productos Seleccionados')
+                        ->modalDescription(fn (Collection $records) =>
+                            '¿Está seguro de eliminar ' . $records->count() . ' producto(s)? Podrá recuperarlos después.'
+                        )
+                        ->modalSubmitActionLabel('Sí, eliminar')
+                        ->successNotificationTitle('Productos eliminados correctamente'),
+
                     RestoreBulkAction::make()
-                        ->label('Restaurar seleccionados'),
-                ])
+                        ->icon('heroicon-o-arrow-path')
+                        ->successNotificationTitle('Productos restaurados correctamente'),
+
+                    ForceDeleteBulkAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->modalHeading('Eliminar Permanentemente')
+                        ->modalDescription(fn (Collection $records) =>
+                            '¿Está seguro de eliminar permanentemente ' . $records->count() . ' producto(s)? Esta acción NO se puede deshacer.'
+                        )
+                        ->modalSubmitActionLabel('Sí, eliminar permanentemente')
+                        ->successNotificationTitle('Productos eliminados permanentemente'),
+                ]),
             ])
             ->emptyStateHeading('No hay productos registrados')
-            ->emptyStateDescription('Comienza agregando tu primer producto al sistema.')
+            ->emptyStateDescription('Cree su primer producto para comenzar.')
             ->emptyStateIcon('heroicon-o-cube')
             ->striped()
             ->persistFiltersInSession()
-            ->persistSearchInSession()
-            ->persistColumnSearchesInSession();
+            ->persistSearchInSession();
     }
 
     public static function getRelations(): array

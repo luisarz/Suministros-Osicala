@@ -130,6 +130,8 @@ class CompanyResource extends Resource
                             ->inlineLabel()
                             ->default(null),
                         FileUpload::make('logo')
+                            ->disk('public')
+                            ->visibility('public')
                             ->directory('/configuracion')
                             ->avatar()
                             ->imageEditor()

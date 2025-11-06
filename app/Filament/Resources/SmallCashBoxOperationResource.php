@@ -80,6 +80,8 @@ class SmallCashBoxOperationResource extends Resource
                             ->maxLength(255),
                         FileUpload::make('voucher')
                             ->label('Comprobante')
+                            ->disk('public')
+                            ->visibility('public')
                             ->directory('vouchers')
                             ->columnSpanFull(),
                         Toggle::make('status')

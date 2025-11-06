@@ -160,6 +160,8 @@ class EmployeeResource extends Resource
 //                                                        ->inlineLabel()
                                             ->columnSpanFull()
                                             ->label('Foto')
+                                            ->disk('public')
+                                            ->visibility('public')
                                             ->directory('employees'),
 
                                     ]),
