@@ -393,7 +393,6 @@ class ProductResource extends Resource
                 ->link()
                 ->label('Acciones')
                 ->icon('heroicon-m-ellipsis-vertical')
-                ->size(IconSize::Small)
                 ->color('gray'),
             ])
             ->toolbarActions([
