@@ -288,35 +288,6 @@ class ProductResource extends Resource
                     ->copyable()
                     ->searchable(),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Activo')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger')
-                    ->sortable(),
-
-                Tables\Columns\IconColumn::make('is_taxed')
-                    ->label('Gravado')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-currency-dollar')
-                    ->falseIcon('heroicon-o-no-symbol')
-                    ->trueColor('warning')
-                    ->falseColor('gray')
-                    ->sortable()
-                    ->toggleable(),
-
-                Tables\Columns\IconColumn::make('is_service')
-                    ->label('Servicio')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-server-stack')
-                    ->falseIcon('heroicon-o-cube')
-                    ->trueColor('info')
-                    ->falseColor('gray')
-                    ->sortable()
-                    ->toggleable(),
-
             ])
             ->paginationPageOptions([
                 10, 25, 50, 100
