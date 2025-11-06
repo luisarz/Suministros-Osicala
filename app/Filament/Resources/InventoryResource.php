@@ -8,62 +8,57 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ActionGroup;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\Filter;
 use Filament\Actions\EditAction;
-use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\Exports\Enums\ExportFormat;
+use Filament\Actions\BulkAction;
 use App\Filament\Resources\InventoryResource\RelationManagers\PricesRelationManager;
 use App\Filament\Resources\InventoryResource\RelationManagers\GroupingInventoryRelationManager;
 use App\Filament\Resources\InventoryResource\Pages\ListInventories;
 use App\Filament\Resources\InventoryResource\Pages\CreateInventory;
 use App\Filament\Resources\InventoryResource\Pages\EditInventory;
 use App\Filament\Exports\InventoryExporter;
-use App\Filament\Resources\InventoryResource\Pages;
-use App\Filament\Resources\InventoryResource\RelationManagers;
 use App\Models\Inventory;
-use App\Models\Product;
 use App\Models\Tribute;
-use Filament\Actions\ExportAction;
-use Filament\Actions\Exports\Enums\ExportFormat;
-use Filament\Actions\ReplicateAction;
-use Filament\Forms;
 use Filament\Notifications\Notification;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables\Table;
-use Filament\Notifications\Actions\Action;
-use Filament\Tables\Actions;
-use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Exception;
 
 class InventoryResource extends Resource
 {
     protected static function getWhereHouse(): string
     {
-        return Auth::user()->employee->wherehouse->name ?? 'N/A'; // Si no hay valor, usa 'N/A'
+        return Auth::user()->employee->wherehouse->name ?? 'N/A';
     }
 
     protected static ?string $model = Inventory::class;
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
-    protected static ?string $label = 'Inventario'; // Singular
+    protected static ?string $label = 'Inventario';
     protected static ?string $pluralLabel = "Lista de inventario";
-    protected static ?string $badgeColor = 'danger';
-
-
-
-//
+    protected static ?string $recordTitleAttribute = 'record_title';
 
     public static function form(Schema $schema): Schema
     {
@@ -73,102 +68,171 @@ class InventoryResource extends Resource
         }
         $divider = ($tax->is_percentage) ? 100 : 1;
         $iva = $tax->rate / $divider;
+
         return $schema
             ->components([
-                Section::make()
-                    ->compact()
-                    ->columns(2)
+                Section::make('Información del Inventario')
+                    ->description('Configure los detalles del inventario del producto')
+                    ->icon('heroicon-o-cube-transparent')
+                    ->columns(3)
                     ->schema([
-                        Section::make('Informacion del Inventario')
-                            ->columns(3)
-                            ->compact()
-                            ->schema([
-                                Select::make('product_id')
-                                    ->required()
-                                    ->inlineLabel(false)
-                                    ->preload()
-                                    ->columnSpanFull()
-                                    ->relationship('product', 'name')
-                                    ->searchable(['name', 'sku'])
-                                    ->placeholder('Seleccionar producto')
-                                    ->loadingMessage('Cargando productos...')
-                                    ->getOptionLabelsUsing(function ($record) {
-                                        return "{$record->name} (SKU: {$record->sku})";  // Formato de la etiqueta
-                                    }),
+                        Select::make('product_id')
+                            ->label('Producto')
+                            ->required()
+                            ->preload()
+                            ->columnSpanFull()
+                            ->relationship('product', 'name')
+                            ->searchable(['name', 'sku'])
+                            ->placeholder('Seleccione un producto')
+                            ->loadingMessage('Cargando productos...')
+                            ->helperText('Busque por nombre o SKU del producto')
+                            ->getOptionLabelsUsing(function ($record) {
+                                return "{$record->name} (SKU: {$record->sku})";
+                            })
+                            ->live()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get, $record) {
+                                $branchId = $get('branch_id');
+                                if ($state && $branchId) {
+                                    $query = Inventory::where('product_id', $state)
+                                        ->where('branch_id', $branchId);
 
-                                Select::make('branch_id')
-                                    ->label('Sucursal')
-                                    ->placeholder('Seleccionar sucursal')
-                                    ->relationship('branch', 'name')
-                                    ->preload()
-                                    ->searchable(['name'])
-                                    ->required(),
+                                    if ($record) {
+                                        $query->where('id', '!=', $record->id);
+                                    }
 
-                                TextInput::make('stock')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(0),
-                                Hidden::make('stock_actual')
-                                    ->default(0) // Valor predeterminado para nuevos registros
-                                    ->afterStateHydrated(function (Hidden $component, $state, $record) {
-                                        if ($record) {
-                                            $component->state($record->stock);
-                                        }
-                                    }),
+                                    $exists = $query->exists();
 
-                                TextInput::make('stock_min')
-                                    ->label('Stock Minimo')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(0),
-                                TextInput::make('stock_max')
-                                    ->label('Stock Maximo')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(0),
-                                TextInput::make('cost_without_taxes')
-                                    ->required()
-                                    ->prefix('$')
-                                    ->label('C. sin IVA')
-                                    ->numeric()
-                                    ->inputMode('decimal')
-                                    ->hintColor('red')
-                                    ->debounce(500) // Espera 500 ms después de que el usuario deje de escribir
-                                    ->afterStateUpdated(function ($state, callable $set) use ($iva) {
-                                        $costWithoutTaxes = $state ?: 0; // Valor predeterminado en 0 si está vacío
-                                        $costWithTaxes = number_format($costWithoutTaxes * $iva, 2,'.',''); // Cálculo del costo con impuestos
-                                        $costWithTaxes += $costWithoutTaxes; // Suma el costo sin impuestos
-                                        $set('cost_with_taxes',number_format( $costWithTaxes,2,'.','')); // Actualiza el campo
-                                    })
-                                    ->default(0.00),
-                                TextInput::make('cost_with_taxes')
-                                    ->label('C. + IVA')
-                                    ->required()
-                                    ->readOnly()
-                                    ->numeric()
-                                    ->prefix('$')
-                                    ->default(0.00),
+                                    if ($exists) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Inventario Duplicado')
+                                            ->body('Este producto ya tiene inventario en la sucursal seleccionada.')
+                                            ->persistent()
+                                            ->send();
+                                    }
+                                }
+                            }),
 
+                        Select::make('branch_id')
+                            ->label('Sucursal')
+                            ->placeholder('Seleccione la sucursal')
+                            ->relationship('branch', 'name')
+                            ->preload()
+                            ->searchable(['name'])
+                            ->required()
+                            ->helperText('Sucursal donde se gestionará el inventario')
+                            ->live()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get, $record) {
+                                $productId = $get('product_id');
+                                if ($state && $productId) {
+                                    $query = Inventory::where('product_id', $productId)
+                                        ->where('branch_id', $state);
 
-                            ]),
-                        Section::make('Configuración')
-                            ->columns(3)
-                            ->compact()
-                            ->schema([
-                                Toggle::make('is_stock_alert')
-                                    ->label('Alerta de stock minimo')
-                                    ->default(true)
-                                    ->required(),
-                                Toggle::make('is_expiration_date')
-                                    ->label('Tiene vencimiento')
-                                    ->default(true)
-                                    ->required(),
-                                Toggle::make('is_active')
-                                    ->default(true)
-                                    ->label('Activo')
-                                    ->required(),
-                            ]) // Fin de la sección de configuración
+                                    if ($record) {
+                                        $query->where('id', '!=', $record->id);
+                                    }
 
+                                    $exists = $query->exists();
+
+                                    if ($exists) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Inventario Duplicado')
+                                            ->body('Este producto ya tiene inventario en la sucursal seleccionada.')
+                                            ->persistent()
+                                            ->send();
+                                    }
+                                }
+                            }),
+
+                        TextInput::make('stock')
+                            ->label('Stock Actual')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->placeholder('0')
+                            ->helperText('Cantidad actual en inventario'),
+
+                        Hidden::make('stock_actual')
+                            ->default(0)
+                            ->afterStateHydrated(function (Hidden $component, $state, $record) {
+                                if ($record) {
+                                    $component->state($record->stock);
+                                }
+                            }),
+
+                        TextInput::make('stock_min')
+                            ->label('Stock Mínimo')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->placeholder('0')
+                            ->helperText('Stock mínimo para generar alertas'),
+
+                        TextInput::make('stock_max')
+                            ->label('Stock Máximo')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->placeholder('0')
+                            ->helperText('Stock máximo permitido'),
+
+                        TextInput::make('cost_without_taxes')
+                            ->required()
+                            ->prefix('$')
+                            ->label('Costo sin IVA')
+                            ->numeric()
+                            ->inputMode('decimal')
+                            ->debounce(500)
+                            ->live()
+                            ->afterStateUpdated(function ($state, callable $set) use ($iva) {
+                                $costWithoutTaxes = $state ?: 0;
+                                $costWithTaxes = number_format($costWithoutTaxes * $iva, 2, '.', '');
+                                $costWithTaxes += $costWithoutTaxes;
+                                $set('cost_with_taxes', number_format($costWithTaxes, 2, '.', ''));
+                            })
+                            ->default(0.00)
+                            ->placeholder('0.00')
+                            ->helperText('Costo del producto sin impuestos'),
+
+                        TextInput::make('cost_with_taxes')
+                            ->label('Costo + IVA')
+                            ->required()
+                            ->readOnly()
+                            ->numeric()
+                            ->prefix('$')
+                            ->default(0.00)
+                            ->helperText('Costo calculado automáticamente'),
+                    ]),
+
+                Section::make('Configuración')
+                    ->description('Opciones de alertas y estado del inventario')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->columns(3)
+                    ->schema([
+                        Toggle::make('is_stock_alert')
+                            ->label('Alerta de Stock Mínimo')
+                            ->default(true)
+                            ->required()
+                            ->inline(false)
+                            ->helperText('Enviar alertas cuando el stock sea menor al mínimo'),
+
+                        Toggle::make('is_expiration_date')
+                            ->label('Tiene Vencimiento')
+                            ->default(true)
+                            ->required()
+                            ->inline(false)
+                            ->helperText('Producto sujeto a fecha de vencimiento'),
+
+                        Toggle::make('is_active')
+                            ->default(true)
+                            ->label('Inventario Activo')
+                            ->required()
+                            ->inline(false)
+                            ->helperText('Solo los inventarios activos están disponibles'),
                     ])
             ]);
     }
@@ -185,191 +249,421 @@ class InventoryResource extends Resource
                                 ->columns(1)
                                 ->schema([
                                     ImageColumn::make('product.images')
-                                        ->placeholder('Sin imagen')
-                                        ->defaultImageUrl(url('storage/products/noimage.png'))
-                                        ->openUrlInNewTab()
-                                        ->height(150)
-                                        ->width(120)
+                                        ->label('')
+                                        ->disk('public')
+                                        ->circular()
+                                        ->defaultImageUrl(fn ($record) =>
+                                            'https://ui-avatars.com/api/?name=' . urlencode($record->product->name) .
+                                            '&color=ffffff&background=01d5f2&bold=true&size=120'
+                                        )
+                                        ->size(120)
                                         ->extraAttributes([
-                                            'class' => 'rounded-md',
+                                            'class' => 'shadow-lg',
                                             'loading' => 'lazy'
                                         ])
                                 ])->grow(false),
+
                             Stack::make([
                                 TextColumn::make('product.name')
                                     ->label('Producto')
                                     ->wrap()
                                     ->weight(FontWeight::Medium)
+                                    ->size('sm')
                                     ->sortable()
-                                    ->icon('heroicon-s-cube')
                                     ->searchable()
-                                    ->sortable(),
-                                TextColumn::make('product.aplications')
-                                    ->label('Aplicaciones')
-                                    ->badge()
-                                    ->icon('heroicon-s-cog')
-                                    ->searchable()
-                                    ->separator(';'),
-                                TextColumn::make('product.sku')
-                                    ->label('SKU')
-//                                    ->getStateUsing(fn ($record) => $record->product?->sku)
-//                                    ->copyable()
-//                                    ->copyMessage('SKU copiado')
-//                                    ->copyMessageDuration(1500)
-                                    ->icon('heroicon-s-qr-code')
-                                    ->searchable()
-                                    ->sortable(),
+                                    ->icon('heroicon-o-cube')
+                                    ->iconColor('primary')
+                                    ->description(fn (Inventory $record): ?string =>
+                                        $record->product->aplications
+                                            ? 'Aplicaciones: ' . str_replace(';', ' • ', $record->product->aplications)
+                                            : null
+                                    ),
 
+                                Stack::make([
+                                    TextColumn::make('product.sku')
+                                        ->label('SKU')
+                                        ->copyable()
+                                        ->copyMessage('SKU copiado')
+                                        ->copyMessageDuration(1500)
+                                        ->icon('heroicon-o-qr-code')
+                                        ->placeholder('Sin SKU')
+                                        ->searchable(),
 
+                                    TextColumn::make('product.bar_code')
+                                        ->label('Código de Barras')
+                                        ->copyable()
+                                        ->copyMessage('Código copiado')
+                                        ->icon('heroicon-o-bars-3-bottom-left')
+                                        ->placeholder('Sin código')
+                                        ->searchable(),
+                                ])->space(1),
 
+                                Stack::make([
+                                    TextColumn::make('branch.name')
+                                        ->label('Sucursal')
+                                        ->icon('heroicon-o-building-office-2')
+                                        ->badge()
+                                        ->color('info')
+                                        ->sortable()
+                                        ->searchable(),
 
-                                TextColumn::make('branch.name')
-                                    ->label('Sucursal')
-                                    ->icon('heroicon-s-building-office-2')
-                                    ->sortable(),
-                                TextColumn::make('stock')
-                                    ->numeric()
-                                    ->icon('heroicon-s-circle-stack')
-                                    ->getStateUsing(function ($record) {
-//                                        return $record->stock>0?number_format($record->stock,2):'Sin Existencia';
-                                        return $record->stock
-                                            ? number_format($record['stock'], 2, '.')
-                                            : 'Sin Stock';
-                                    })
-                                    ->color(function ($record) {
-                                        // Si no hay stock, el texto será rojo
-                                        return $record->stock > 0 ? null : 'danger';
-                                    })
-                                    ->weight(FontWeight::Medium)
-                                    ->sortable(),
-                                TextColumn::make('prices')
-                                    ->numeric()
-                                    ->icon('heroicon-s-currency-dollar')
-                                    ->weight(FontWeight::Bold)
-                                    ->getStateUsing(function ($record) {
-                                        // Filtrar el precio donde 'is_default' sea igual a 1
-                                        $defaultPrice = collect($record->prices)->firstWhere('is_default', 1);
+                                    TextColumn::make('product.marca.nombre')
+                                        ->label('Marca')
+                                        ->icon('heroicon-o-bookmark')
+                                        ->badge()
+                                        ->color('primary')
+                                        ->searchable(),
 
-                                        // Retornar el precio formateado como moneda con signo de dólar o 'Sin precio' si no se encuentra
-                                        return $defaultPrice
-                                            ? '$' . number_format($defaultPrice['price'], 2)
-                                            : 'Sin precio';
-                                    }),
-//                                    ->sortable(),
+                                    TextColumn::make('product.category.name')
+                                        ->label('Categoría')
+                                        ->icon('heroicon-o-tag')
+                                        ->badge()
+                                        ->color('gray')
+                                        ->searchable(),
+                                ])->space(1),
+
+                                Stack::make([
+                                    TextColumn::make('stock')
+                                        ->label('Stock')
+                                        ->icon('heroicon-o-archive-box')
+                                        ->badge()
+                                        ->formatStateUsing(fn ($record) =>
+                                            $record->stock > 0
+                                                ? number_format($record->stock, 2)
+                                                : 'Sin stock'
+                                        )
+                                        ->color(function ($record) {
+                                            if ($record->stock <= 0) return 'danger';
+                                            if ($record->stock < $record->stock_min) return 'danger';
+                                            if ($record->stock < ($record->stock_min * 1.5)) return 'warning';
+                                            return 'success';
+                                        })
+                                        ->sortable(),
+
+                                    TextColumn::make('default_price')
+                                        ->label('Precio')
+                                        ->icon('heroicon-o-currency-dollar')
+                                        ->badge()
+                                        ->color('success')
+                                        ->getStateUsing(function ($record) {
+                                            $defaultPrice = collect($record->prices)->firstWhere('is_default', 1);
+                                            return $defaultPrice
+                                                ? '$' . number_format($defaultPrice['price'], 2)
+                                                : 'Sin precio';
+                                        }),
+                                ])->space(1),
+
                             ])->extraAttributes([
-                                'class' => 'space-y-2'
-                            ])
-                                ->grow(),
-
+                                'class' => 'space-y-2 p-4'
+                            ])->grow(),
                         ])
-
-
                     ]),
-
             ])
             ->contentGrid([
-                'md' => 3,
-                'xs' => 4,
+                'md' => 2,
+                'lg' => 3,
+                'xl' => 3,
             ])
-//            ->deferLoading()
+            ->paginationPageOptions([9, 18, 30, 60])
             ->striped()
             ->filters([
-                TrashedFilter::make(),
-                SelectFilter::make('branch_id')
-                    ->relationship('branch', 'name')
-                    ->label('Sucursal')
-                    ->preload()
-                    ->default(Auth::user()->employee->wherehouse->id)
-                    ->placeholder('Buscar por sucursal'),
-//
-            ])->filtersFormColumns(2)
-            ->recordActions([
-                ActionGroup::make([
-//                    Tables\Actions\ViewAction::make(),
-                    EditAction::make(),
-                    ReplicateAction::make()
-                        ->schema([
-                            Select::make('branch_did')
-                                ->relationship('branch', 'name')
-                                ->label('Sucursal Destino')
-                                ->required()
-                                ->placeholder('Ingresa el ID de la sucursal'),
-                        ])
-                        ->beforeReplicaSaved(function (Inventory $record, \Filament\Actions\Action $action, $replica, array $data): void {
-                            try {
-                                $existencia = Inventory::withTrashed()
-                                    ->where('product_id', $record->product_id)
-                                    ->where('branch_id', $data['branch_did'])
-                                    ->first();
-                                if ($existencia) {
-                                    // Si el registro está eliminado
-                                    if ($existencia->trashed()) {
-                                        Notification::make('Inventario Eliminado')
-                                            ->title('Replicar Inventario')
-                                            ->danger()
-                                            ->body('El inventario ya existe en la sucursal destino, pero el estado es eliminado, restarualo para poder replicarlo')
-                                            ->send();
-                                        $action->halt(); // Detener la acción si el inventario está eliminado
-                                    } else {
-                                        // Si el registro existe y no está eliminado
-                                        Notification::make('Registro Duplicado')
-                                            ->danger()
-                                            ->body('Ya existe un registro con el producto ' . $record->product->name . ' en la sucursal ' . $record->branch->name . '.')
-                                            ->send();
-                                        $action->halt(); // Detener la acción si se encuentra un registro duplicado
-                                    }
-                                }
-                            } catch (Exception $e) {
-                                $action->halt(); // Detener la acción en caso de error
-                            }
-                        }),
-                    DeleteAction::make(),
-                    ForceDeleteAction::make(),
-                ])
-                    ->link()
-                    ->label('Acciones'),
-            ])
-            ->persistFiltersInSession()
-            ->recordUrl(null)
-            ->headerActions([
+                Filter::make('Buscar por nombre')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Producto')
+                            ->placeholder('Buscar producto...')
+                            ->prefixIcon('heroicon-o-magnifying-glass'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['name'], fn ($q, $nombre) =>
+                            $q->whereHas('product', fn ($subQuery) =>
+                            $subQuery->where('name', 'like', "%{$nombre}%")
+                            )
+                            );
+                    }),
 
+                SelectFilter::make('branch_id')
+                    ->label('Sucursal')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('branch', 'name')
+                    ->placeholder('Todas las sucursales'),
+
+                SelectFilter::make('product.marca')
+                    ->label('Marca')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('product.marca', 'nombre')
+                    ->placeholder('Todas las marcas'),
+
+                SelectFilter::make('product.category')
+                    ->label('Categoría')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('product.category', 'name')
+                    ->placeholder('Todas las categorías'),
+
+                SelectFilter::make('is_active')
+                    ->label('Estado')
+                    ->options([
+                        '1' => 'Activos',
+                        '0' => 'Inactivos',
+                    ])
+                    ->placeholder('Todos los estados'),
+
+                Filter::make('stock_critico')
+                    ->label('Stock Crítico/Bajo')
+                    ->toggle()
+                    ->query(fn (Builder $query) =>
+                        $query->where(function ($q) {
+                            $q->whereColumn('stock', '<', 'stock_min')
+                              ->orWhereColumn('stock', '<', \DB::raw('stock_min * 1.5'));
+                        })
+                    ),
+
+                Filter::make('sin_precio')
+                    ->label('Sin Precio Asignado')
+                    ->toggle()
+                    ->query(fn (Builder $query) =>
+                        $query->whereDoesntHave('prices', fn ($q) =>
+                            $q->where('is_default', 1)
+                        )
+                    ),
+
+                TrashedFilter::make()
+                    ->label('Eliminados'),
             ])
-            ->searchable('product.name', 'product.sku', 'branch.name', 'product.aplications')
-            ->toolbarActions([
+            ->recordActions([
+                EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('primary')
+                    ->tooltip('Editar inventario'),
+
+                ReplicateAction::make()
+                    ->icon('heroicon-o-document-duplicate')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('success')
+                    ->tooltip('Replicar a otra sucursal')
+                    ->modalHeading('Replicar Inventario a Otra Sucursal')
+                    ->modalSubmitActionLabel('Replicar')
+                    ->schema([
+                        Select::make('branch_did')
+                            ->relationship('branch', 'name')
+                            ->label('Sucursal Destino')
+                            ->required()
+                            ->placeholder('Seleccione la sucursal destino'),
+                    ])
+                    ->beforeReplicaSaved(function (Inventory $record, \Filament\Actions\Action $action, $replica, array $data): void {
+                        try {
+                            $existencia = Inventory::withTrashed()
+                                ->where('product_id', $record->product_id)
+                                ->where('branch_id', $data['branch_did'])
+                                ->first();
+                            if ($existencia) {
+                                if ($existencia->trashed()) {
+                                    Notification::make('Inventario Eliminado')
+                                        ->title('Replicar Inventario')
+                                        ->danger()
+                                        ->body('El inventario ya existe en la sucursal destino, pero está eliminado. Restáurelo para poder replicarlo.')
+                                        ->send();
+                                    $action->halt();
+                                } else {
+                                    Notification::make('Registro Duplicado')
+                                        ->danger()
+                                        ->body('Ya existe un inventario del producto ' . $record->product->name . ' en la sucursal seleccionada.')
+                                        ->send();
+                                    $action->halt();
+                                }
+                            }
+                        } catch (Exception $e) {
+                            $action->halt();
+                        }
+                    })
+                    ->successNotificationTitle('Inventario replicado correctamente'),
+
+                DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('danger')
+                    ->tooltip('Eliminar inventario')
+                    ->requiresConfirmation()
+                    ->modalHeading('Eliminar Inventario')
+                    ->modalDescription('¿Está seguro de eliminar este inventario? Podrá recuperarlo después.')
+                    ->modalSubmitActionLabel('Sí, eliminar')
+                    ->before(function (DeleteAction $action, Inventory $record) {
+                        if ($record->stock > 0) {
+                            Notification::make()
+                                ->warning()
+                                ->title('No se puede eliminar')
+                                ->body('Este inventario tiene ' . number_format($record->stock, 2) . ' unidades en stock. Debe ajustar el stock a 0 antes de eliminarlo.')
+                                ->persistent()
+                                ->send();
+
+                            $action->cancel();
+                        }
+                    })
+                    ->successNotificationTitle('Inventario eliminado correctamente'),
+
+                RestoreAction::make()
+                    ->icon('heroicon-o-arrow-path')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('success')
+                    ->tooltip('Restaurar inventario')
+                    ->successNotificationTitle('Inventario restaurado correctamente'),
+
+                ForceDeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->label('')
+                    ->iconSize(IconSize::Large)
+                    ->color('danger')
+                    ->tooltip('Eliminar permanentemente')
+                    ->requiresConfirmation()
+                    ->modalHeading('Eliminar Permanentemente')
+                    ->modalDescription('¿Está seguro? Esta acción NO se puede deshacer.')
+                    ->modalSubmitActionLabel('Sí, eliminar permanentemente')
+                    ->successNotificationTitle('Inventario eliminado permanentemente'),
+            ], position: RecordActionsPosition::BeforeColumns)
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('activate')
+                        ->label('Activar seleccionados')
+                        ->icon('heroicon-o-check-badge')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Activar Inventarios')
+                        ->modalDescription(fn (Collection $records) =>
+                            'Se activarán ' . $records->count() . ' inventario(s) seleccionado(s).'
+                        )
+                        ->modalSubmitActionLabel('Sí, activar')
+                        ->action(fn (Collection $records) =>
+                            $records->each->update(['is_active' => true])
+                        )
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle('Inventarios activados correctamente'),
+
+                    BulkAction::make('deactivate')
+                        ->label('Desactivar seleccionados')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Desactivar Inventarios')
+                        ->modalDescription(fn (Collection $records) =>
+                            'Se desactivarán ' . $records->count() . ' inventario(s) seleccionado(s).'
+                        )
+                        ->modalSubmitActionLabel('Sí, desactivar')
+                        ->action(fn (Collection $records) =>
+                            $records->each->update(['is_active' => false])
+                        )
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle('Inventarios desactivados correctamente'),
+
+                    BulkAction::make('enable_stock_alert')
+                        ->label('Activar alerta de stock')
+                        ->icon('heroicon-o-bell-alert')
+                        ->color('info')
+                        ->requiresConfirmation()
+                        ->modalHeading('Activar Alerta de Stock')
+                        ->modalDescription(fn (Collection $records) =>
+                            'Se activará la alerta de stock mínimo en ' . $records->count() . ' inventario(s).'
+                        )
+                        ->modalSubmitActionLabel('Sí, activar alertas')
+                        ->action(fn (Collection $records) =>
+                            $records->each->update(['is_stock_alert' => true])
+                        )
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle('Alertas de stock activadas correctamente'),
+
+                    BulkAction::make('disable_stock_alert')
+                        ->label('Desactivar alerta de stock')
+                        ->icon('heroicon-o-bell-slash')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->modalHeading('Desactivar Alerta de Stock')
+                        ->modalDescription(fn (Collection $records) =>
+                            'Se desactivará la alerta de stock mínimo en ' . $records->count() . ' inventario(s).'
+                        )
+                        ->modalSubmitActionLabel('Sí, desactivar alertas')
+                        ->action(fn (Collection $records) =>
+                            $records->each->update(['is_stock_alert' => false])
+                        )
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle('Alertas de stock desactivadas correctamente'),
+
+                    DeleteBulkAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->modalHeading('Eliminar Inventarios Seleccionados')
+                        ->modalDescription(fn (Collection $records) =>
+                            '¿Está seguro de eliminar ' . $records->count() . ' inventario(s)? Podrá recuperarlos después.'
+                        )
+                        ->modalSubmitActionLabel('Sí, eliminar')
+                        ->before(function (DeleteBulkAction $action, Collection $records) {
+                            $withStock = $records->filter(fn ($r) => $r->stock > 0);
+
+                            if ($withStock->count() > 0) {
+                                $details = [];
+
+                                foreach ($withStock as $record) {
+                                    $details[] = "• {$record->product->name} (Sucursal: {$record->branch->name}): " . number_format($record->stock, 2) . " unidades";
+                                }
+
+                                Notification::make()
+                                    ->warning()
+                                    ->title('Algunos inventarios no se pueden eliminar')
+                                    ->body('Los siguientes inventarios tienen stock y deben ser ajustados a 0 primero:<br>' . implode('<br>', $details))
+                                    ->persistent()
+                                    ->send();
+
+                                $action->cancel();
+                            }
+                        })
+                        ->successNotificationTitle('Inventarios eliminados correctamente'),
+
+                    RestoreBulkAction::make()
+                        ->icon('heroicon-o-arrow-path')
+                        ->successNotificationTitle('Inventarios restaurados correctamente'),
+
+                    ForceDeleteBulkAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->modalHeading('Eliminar Permanentemente')
+                        ->modalDescription(fn (Collection $records) =>
+                            '¿Está seguro de eliminar permanentemente ' . $records->count() . ' inventario(s)? Esta acción NO se puede deshacer.'
+                        )
+                        ->modalSubmitActionLabel('Sí, eliminar permanentemente')
+                        ->successNotificationTitle('Inventarios eliminados permanentemente'),
+
                     ExportAction::make()
+                        ->icon('heroicon-o-arrow-down-tray')
                         ->exporter(InventoryExporter::class)
                         ->formats([
-                            ExportFormat::Csv,
-                        ])
-                        ->formats([
-                            ExportFormat::Xlsx,
-                        ])
-                        // or
-                        ->formats([
                             ExportFormat::Xlsx,
                             ExportFormat::Csv,
                         ])
-
+                        ->label('Exportar a Excel'),
                 ]),
-            ]);
+            ])
+            ->persistFiltersInSession()
+            ->persistSearchInSession()
+            ->recordUrl(null)
+            ->emptyStateHeading('No hay inventarios registrados')
+            ->emptyStateDescription('Cree su primer inventario para comenzar.')
+            ->emptyStateIcon('heroicon-o-cube-transparent');
     }
 
     public static function getRelations(): array
     {
-        $relations = [];
-
-
-
         return [
             PricesRelationManager::class,
             GroupingInventoryRelationManager::class,
         ];
     }
-
-
-
 
     public static function getPages(): array
     {
@@ -379,6 +673,4 @@ class InventoryResource extends Resource
             'edit' => EditInventory::route('/{record}/edit'),
         ];
     }
-
-
 }
